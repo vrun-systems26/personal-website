@@ -348,16 +348,16 @@ html, body { height: 100%; overflow: hidden; }
 
 .bp-protractor-needle {
   transform-origin: 0 0;
-  animation: protractor-sweep 3.6s infinite;
+  animation: protractor-sweep 13s ease-in-out infinite;
 }
 @keyframes protractor-sweep {
-  0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.6, 0, 0.95, 0.35); }
-  55% { transform: rotate(-180deg); animation-timing-function: ease-out; }
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(-180deg); }
   100% { transform: rotate(0deg); }
 }
 .bp-tool text.bp-protractor-value { font-family: var(--font-mono); font-size: 15px; font-weight: 700; fill: var(--accent); text-anchor: middle; }
 .bp-caliper-slider {
-  animation: caliper-slide 3.2s ease-in-out infinite alternate;
+  animation: caliper-slide 4s ease-in-out infinite alternate;
 }
 @keyframes caliper-slide {
   from { transform: translateX(0); }
@@ -503,6 +503,8 @@ html, body { height: 100%; overflow: hidden; }
 .gear-arm-1 { top: 1rem; right: -4rem; }
 .gear-morebuilds-1 { top: 1rem; right: -4rem; }
 .gear-hardware-1 { top: 1rem; left: -4rem; }
+.gear-hardware-2 { top: 8%; left: 460px; width: 140px; height: 140px; opacity: 0.5; }
+.gear-hardware-3 { top: 58%; left: 600px; width: 100px; height: 100px; opacity: 0.45; }
 .gear-awards-1 { bottom: 1rem; left: -4rem; }
 .gear-awards-2 { top: 1rem; right: -4rem; }
 
@@ -626,11 +628,12 @@ html, body { height: 100%; overflow: hidden; }
 
 .about-footer {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
   border-top: 1px dashed var(--line);
+  max-width: 320px;
 }
 .about-fact { display: flex; flex-direction: column; gap: 0.3rem; }
 .fact-label { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-dim); }
@@ -811,6 +814,7 @@ html, body { height: 100%; overflow: hidden; }
 @media (max-width: 900px) {
   .gate { padding-top: 3.5rem; gap: 0.3rem; }
   .about-footer { grid-template-columns: 1fr; }
+  .gear-hardware-2, .gear-hardware-3 { display: none; }
   .project-card.flagship { grid-template-columns: 1fr; }
   .project-card.flagship.reverse .project-media,
   .project-card.flagship.reverse .project-body { order: initial; }
