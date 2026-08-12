@@ -1,5 +1,7 @@
 // ---------- year ----------
-document.getElementById("year").textContent = new Date().getFullYear();
+document.querySelectorAll(".js-year").forEach((el) => {
+  el.textContent = new Date().getFullYear();
+});
 
 // ---------- mobile nav ----------
 const navToggle = document.getElementById("navToggle");

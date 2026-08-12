@@ -182,7 +182,7 @@ html, body { height: 100%; overflow: hidden; }
     repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 1px, transparent 1px 136px),
     repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 34px),
     repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 34px),
-    radial-gradient(ellipse at 50% 35%, #002a80 0%, #001f64 55%, #000f38 100%);
+    radial-gradient(ellipse at 50% 35%, #001f5c 0%, #00133e 55%, #000a22 100%);
   overflow: hidden;
 }
 .blueprint-hint {
@@ -205,7 +205,7 @@ html, body { height: 100%; overflow: hidden; }
 }
 .blueprint-arm-wrap {
   position: relative;
-  aspect-ratio: 1672 / 941;
+  aspect-ratio: 1671 / 941;
   max-width: 100%;
   max-height: 100%;
 }
@@ -233,7 +233,7 @@ html, body { height: 100%; overflow: hidden; }
   white-space: nowrap;
   text-shadow: 0 1px 5px rgba(0, 20, 70, 0.85);
 }
-.bp-fact-html.title { top: 1.5%; left: 50%; transform: translateX(-50%); font-size: 0.62rem; color: var(--accent); letter-spacing: 0.1em; }
+.bp-fact-html.title { bottom: 1.5%; left: 2%; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.1em; }
 .bp-fact-html.corner.tr { top: 1.5%; right: 2%; }
 .bp-fact-html.corner.tr2 { top: 4.5%; right: 2%; }
 .bp-fact-html.corner.br { bottom: 5%; right: 2%; }
@@ -261,33 +261,41 @@ html, body { height: 100%; overflow: hidden; }
 }
 .arm-hotspot-leader {
   position: absolute;
-  background: rgba(255, 255, 255, 0.55);
-  transition: background 0.2s ease;
+  background: var(--accent);
+  opacity: 0.75;
+  box-shadow: 0 0 4px rgba(79, 195, 247, 0.6);
+  transition: opacity 0.2s ease;
 }
-.dir-right .arm-hotspot-leader { left: 0; top: 0; width: 68px; height: 1px; }
-.dir-left .arm-hotspot-leader { right: 0; top: 0; width: 68px; height: 1px; }
-.dir-up .arm-hotspot-leader { bottom: 0; left: 0; width: 1px; height: 68px; }
-.dir-down .arm-hotspot-leader { top: 0; left: 0; width: 1px; height: 68px; }
+.dir-right .arm-hotspot-leader { left: 0; top: 0; width: 95px; height: 1.5px; }
+.dir-left .arm-hotspot-leader { right: 0; top: 0; width: 100px; height: 1.5px; }
+.dir-up .arm-hotspot-leader { bottom: 0; left: 0; width: 1.5px; height: 90px; }
+.dir-down .arm-hotspot-leader { top: 0; left: 0; width: 1.5px; height: 90px; }
 .dir-up-right .arm-hotspot-leader,
 .dir-down-right .arm-hotspot-leader { display: none; }
 .dir-up-right .arm-hotspot-leader-h,
-.dir-down-right .arm-hotspot-leader-h { position: absolute; left: 0; width: 46px; height: 1px; background: rgba(255, 255, 255, 0.55); }
-.dir-up-right .arm-hotspot-leader-v { position: absolute; left: 0; width: 1px; height: 42px; background: rgba(255, 255, 255, 0.55); bottom: 0; }
-.dir-up-right .arm-hotspot-leader-h { bottom: 42px; }
-.dir-down-right .arm-hotspot-leader-v { position: absolute; left: 0; width: 1px; height: 42px; background: rgba(255, 255, 255, 0.55); top: 0; }
-.dir-down-right .arm-hotspot-leader-h { top: 42px; }
+.dir-down-right .arm-hotspot-leader-h { position: absolute; left: 0; width: 60px; height: 1.5px; background: var(--accent); opacity: 0.75; box-shadow: 0 0 4px rgba(79, 195, 247, 0.6); }
+.dir-up-right .arm-hotspot-leader-v { position: absolute; left: 0; width: 1.5px; height: 55px; background: var(--accent); opacity: 0.75; box-shadow: 0 0 4px rgba(79, 195, 247, 0.6); bottom: 0; }
+.dir-up-right .arm-hotspot-leader-h { bottom: 55px; }
+.dir-down-right .arm-hotspot-leader-v { position: absolute; left: 0; width: 1.5px; height: 55px; background: var(--accent); opacity: 0.75; box-shadow: 0 0 4px rgba(79, 195, 247, 0.6); top: 0; }
+.dir-down-right .arm-hotspot-leader-h { top: 55px; }
 .arm-hotspot-label {
   position: absolute;
   display: flex;
   flex-direction: column;
   font-family: var(--font-mono);
 }
-.dir-right .arm-hotspot-label { left: 72px; top: 50%; transform: translateY(-50%); }
-.dir-left .arm-hotspot-label { right: 72px; top: 50%; transform: translateY(-50%); text-align: right; }
-.dir-up .arm-hotspot-label { bottom: 72px; left: 50%; transform: translateX(-50%); text-align: center; }
-.dir-down .arm-hotspot-label { top: 72px; left: 50%; transform: translateX(-50%); text-align: center; }
-.dir-up-right .arm-hotspot-label { bottom: 46px; left: 46px; }
-.dir-down-right .arm-hotspot-label { top: 46px; left: 46px; }
+.dir-right .arm-hotspot-label { left: 99px; top: 50%; transform: translateY(-50%); }
+.dir-left .arm-hotspot-label { right: 104px; top: 50%; transform: translateY(-50%); text-align: right; }
+.dir-up .arm-hotspot-label { bottom: 94px; left: 50%; transform: translateX(-50%); text-align: center; }
+.dir-down .arm-hotspot-label { top: 94px; left: 50%; transform: translateX(-50%); text-align: center; }
+.dir-up-right .arm-hotspot-label { bottom: 59px; left: 64px; }
+.dir-down-right .arm-hotspot-label { top: 59px; left: 64px; }
+
+/* base/01 and knuckle/06 sit deep in the arm's glow - need extra reach to clear it */
+.arm-hotspot[data-card="about"] .arm-hotspot-leader-h { width: 170px; }
+.arm-hotspot[data-card="about"] .arm-hotspot-label { left: 174px; }
+.arm-hotspot[data-card="morebuilds"] .arm-hotspot-leader { width: 145px; }
+.arm-hotspot[data-card="morebuilds"] .arm-hotspot-label { left: 149px; }
 .arm-hotspot-label b { font-size: 0.72rem; font-weight: 700; color: #fff; letter-spacing: 0.03em; white-space: nowrap; text-shadow: 0 1px 4px rgba(0, 8, 30, 0.9), 0 0 10px rgba(0, 8, 30, 0.7); }
 .arm-hotspot:hover .arm-hotspot-dot,
 .arm-hotspot:focus-visible .arm-hotspot-dot { transform: scale(1.5); }
@@ -338,7 +346,7 @@ html, body { height: 100%; overflow: hidden; }
   z-index: 1;
   filter: drop-shadow(0 1px 3px rgba(0, 8, 30, 0.7));
 }
-.bp-tool-caliper { width: 200px; left: 63%; top: 2%; }
+.bp-tool-caliper { width: 130px; left: 3%; top: 16%; }
 .bp-tool-protractor { width: 150px; left: 76%; top: 46%; }
 .bp-tool-pliers { width: 46px; left: 88%; top: 68%; }
 .bp-pliers-arm-l { transform-origin: 0 0; animation: pliers-open-l 2.4s ease-in-out infinite alternate; }
@@ -419,18 +427,22 @@ html, body { height: 100%; overflow: hidden; }
   .bp-tool-standalone { display: none; }
   .gear-blueprint-1, .gear-blueprint-2 { display: none; }
   .bp-dim-line-v { height: 34px !important; }
-  .dir-right .arm-hotspot-leader, .dir-left .arm-hotspot-leader { width: 40px; }
-  .dir-up .arm-hotspot-leader, .dir-down .arm-hotspot-leader { height: 40px; }
-  .dir-right .arm-hotspot-label { left: 44px; }
-  .dir-left .arm-hotspot-label { right: 44px; }
-  .dir-up .arm-hotspot-label { bottom: 44px; }
-  .dir-down .arm-hotspot-label { top: 44px; }
-  .dir-up-right .arm-hotspot-leader-h, .dir-down-right .arm-hotspot-leader-h { width: 30px; }
-  .dir-up-right .arm-hotspot-leader-v, .dir-down-right .arm-hotspot-leader-v { left: 0; height: 26px; }
-  .dir-up-right .arm-hotspot-leader-h { bottom: 26px; }
-  .dir-down-right .arm-hotspot-leader-h { top: 26px; }
-  .dir-up-right .arm-hotspot-label { bottom: 30px; left: 30px; }
-  .dir-down-right .arm-hotspot-label { top: 30px; left: 30px; }
+  .dir-right .arm-hotspot-leader, .dir-left .arm-hotspot-leader { width: 58px; }
+  .dir-up .arm-hotspot-leader, .dir-down .arm-hotspot-leader { height: 58px; }
+  .dir-right .arm-hotspot-label { left: 62px; }
+  .dir-left .arm-hotspot-label { right: 62px; }
+  .dir-up .arm-hotspot-label { bottom: 62px; }
+  .dir-down .arm-hotspot-label { top: 62px; }
+  .dir-up-right .arm-hotspot-leader-h, .dir-down-right .arm-hotspot-leader-h { width: 40px; }
+  .dir-up-right .arm-hotspot-leader-v, .dir-down-right .arm-hotspot-leader-v { left: 0; height: 36px; }
+  .dir-up-right .arm-hotspot-leader-h { bottom: 36px; }
+  .dir-down-right .arm-hotspot-leader-h { top: 36px; }
+  .dir-up-right .arm-hotspot-label { bottom: 40px; left: 40px; }
+  .dir-down-right .arm-hotspot-label { top: 40px; left: 40px; }
+  .arm-hotspot[data-card="about"] .arm-hotspot-leader-h { width: 110px; }
+  .arm-hotspot[data-card="about"] .arm-hotspot-label { left: 114px; }
+  .arm-hotspot[data-card="morebuilds"] .arm-hotspot-leader { width: 100px; }
+  .arm-hotspot[data-card="morebuilds"] .arm-hotspot-label { left: 104px; }
   .tb-footer-note { display: none; }
   .arm-hotspot-label b { font-size: 0.62rem; }
   .bp-fact-html { font-size: 0.5rem; }
@@ -507,6 +519,7 @@ html, body { height: 100%; overflow: hidden; }
 .gear-hardware-3 { top: 58%; left: 600px; width: 100px; height: 100px; opacity: 0.45; }
 .gear-awards-1 { bottom: 1rem; left: -4rem; }
 .gear-awards-2 { top: 1rem; right: -4rem; }
+.gear-contact-1 { top: 1rem; right: -4rem; }
 
 .overline {
   font-family: var(--font-mono);
