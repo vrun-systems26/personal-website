@@ -307,15 +307,47 @@ html, body { height: 100%; overflow: hidden; }
 .arm-hotspot[data-card="morebuilds"] .arm-hotspot-label { left: 149px; }
 .arm-hotspot-label b { font-size: 0.72rem; font-weight: 700; color: #fff; letter-spacing: 0.03em; white-space: nowrap; text-shadow: 0 1px 4px rgba(0, 8, 30, 0.9), 0 0 10px rgba(0, 8, 30, 0.7); }
 .arm-hotspot:hover .arm-hotspot-dot,
-.arm-hotspot:focus-visible .arm-hotspot-dot { transform: scale(1.5); }
+.arm-hotspot:focus-visible .arm-hotspot-dot,
+.arm-hotspot.hover-linked .arm-hotspot-dot { transform: scale(1.5); }
 .arm-hotspot:hover .arm-hotspot-leader,
 .arm-hotspot:focus-visible .arm-hotspot-leader,
+.arm-hotspot.hover-linked .arm-hotspot-leader,
 .arm-hotspot:hover .arm-hotspot-leader-h,
 .arm-hotspot:focus-visible .arm-hotspot-leader-h,
+.arm-hotspot.hover-linked .arm-hotspot-leader-h,
 .arm-hotspot:hover .arm-hotspot-leader-v,
-.arm-hotspot:focus-visible .arm-hotspot-leader-v { background: var(--accent); }
+.arm-hotspot:focus-visible .arm-hotspot-leader-v,
+.arm-hotspot.hover-linked .arm-hotspot-leader-v { background: var(--accent); }
 .arm-hotspot:hover .arm-hotspot-label b,
-.arm-hotspot:focus-visible .arm-hotspot-label b { color: var(--accent); }
+.arm-hotspot:focus-visible .arm-hotspot-label b,
+.arm-hotspot.hover-linked .arm-hotspot-label b { color: var(--accent); }
+
+.arm-part-highlight {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(79, 195, 247, 0.85) 0%, rgba(79, 195, 247, 0.78) 70%, rgba(79, 195, 247, 0.35) 100%);
+  filter: blur(2px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+  z-index: 2;
+}
+.arm-part-highlight.is-active,
+.arm-part-highlight:hover,
+.arm-part-highlight:focus-visible { opacity: 1; }
+
+.arm-part-highlight.is-link { border-radius: 999px; }
+
+.arm-part-highlight[data-for="about"] { left: 50.5%; top: 89.8%; width: 28.1%; height: 13.8%; border-radius: 40%; }
+.arm-part-highlight[data-for="fetch"] { left: 50.5%; top: 72.8%; width: 15.6%; height: 21.3%; }
+.arm-part-highlight[data-for="street-sweeper"] { left: 39.5%; top: 36.7%; width: 12.6%; height: 21.3%; }
+.arm-part-highlight[data-for="morebuilds"] { left: 52.3%; top: 11.2%; width: 11.4%; height: 20.2%; }
+.arm-part-highlight[data-for="skills"] { left: 65.8%; top: 23.9%; width: 12.6%; height: 19.1%; transform: translate(-50%, -50%) rotate(-20deg); }
+.arm-part-highlight[data-for="awards"] { left: 60.7%; top: 19.7%; width: 8.4%; height: 10.6%; transform: translate(-50%, -50%) rotate(-38deg); }
+.arm-part-highlight[data-for="hope"] { left: 45%; top: 54.7%; width: 23.8%; height: 12.8%; transform: translate(-50%, -50%) rotate(61.5deg); }
+.arm-part-highlight[data-for="arm"] { left: 45.9%; top: 23.9%; width: 19.3%; height: 10.1%; transform: translate(-50%, -50%) rotate(-48.2deg); }
 
 .bp-dim-html { position: absolute; }
 .bp-dim-line { display: block; height: 1px; background: rgba(255, 255, 255, 0.5); position: relative; }

@@ -42,6 +42,29 @@ document.querySelectorAll(".hotspot[data-card], .arm-hotspot[data-card], [data-n
   });
 });
 
+// ---------- hover a blueprint label OR the arm part itself, both light up and both click through ----------
+document.querySelectorAll(".arm-hotspot[data-card]").forEach((el) => {
+  const highlight = document.querySelector(`.arm-part-highlight[data-for="${el.dataset.card}"]`);
+  if (!highlight) return;
+
+  el.addEventListener("mouseenter", () => highlight.classList.add("is-active"));
+  el.addEventListener("mouseleave", () => highlight.classList.remove("is-active"));
+  el.addEventListener("focus", () => highlight.classList.add("is-active"));
+  el.addEventListener("blur", () => highlight.classList.remove("is-active"));
+
+  highlight.setAttribute("tabindex", "0");
+  highlight.setAttribute("role", "button");
+  highlight.setAttribute("aria-label", el.getAttribute("aria-label"));
+  highlight.addEventListener("mouseenter", () => el.classList.add("hover-linked"));
+  highlight.addEventListener("mouseleave", () => el.classList.remove("hover-linked"));
+  highlight.addEventListener("focus", () => el.classList.add("hover-linked"));
+  highlight.addEventListener("blur", () => el.classList.remove("hover-linked"));
+  highlight.addEventListener("click", (e) => {
+    e.preventDefault();
+    openCard(el.dataset.card);
+  });
+});
+
 document.querySelectorAll("[data-close]").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
