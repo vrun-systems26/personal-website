@@ -259,6 +259,15 @@ html, body { height: 100%; overflow: hidden; }
   box-shadow: 0 0 8px var(--accent);
   transition: transform 0.2s ease;
 }
+.arm-hotspot-dot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+}
 .arm-hotspot-leader {
   position: absolute;
   background: var(--accent);
@@ -426,6 +435,7 @@ html, body { height: 100%; overflow: hidden; }
   .tb-overline { display: none; }
   .bp-tool-standalone { display: none; }
   .gear-blueprint-1, .gear-blueprint-2 { display: none; }
+  .arm-hotspot-dot::before { width: 30px; height: 30px; }
   .bp-dim-line-v { height: 34px !important; }
   .dir-right .arm-hotspot-leader, .dir-left .arm-hotspot-leader { width: 58px; }
   .dir-up .arm-hotspot-leader, .dir-down .arm-hotspot-leader { height: 58px; }
@@ -846,6 +856,7 @@ html, body { height: 100%; overflow: hidden; }
   .project-media.gallery-3, .project-media.gallery-4 { grid-template-columns: 1fr; }
   .project-media.gallery-3 img:first-child { grid-column: 1; height: 220px; }
   .award-row { grid-template-columns: 1fr; }
+  .arm-hotspot-dot::before { width: 20px; height: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
