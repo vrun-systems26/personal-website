@@ -115,9 +115,14 @@ function splitCharsRecursive(node, delayRef) {
   if (node.nodeType === Node.TEXT_NODE) {
     const frag = document.createDocumentFragment();
     Array.from(node.textContent).forEach((ch) => {
+      if (ch === " ") {
+        // a plain space, not an inline-block span - keeps this a valid line-wrap point
+        frag.appendChild(document.createTextNode(" "));
+        return;
+      }
       const span = document.createElement("span");
       span.className = "char";
-      span.textContent = ch === " " ? " " : ch;
+      span.textContent = ch;
       span.style.animationDelay = delayRef.i * CHAR_STAGGER_MS + "ms";
       delayRef.i++;
       frag.appendChild(span);
