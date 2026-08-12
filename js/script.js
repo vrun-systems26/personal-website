@@ -114,18 +114,23 @@ const CHAR_STAGGER_MS = 45;
 function splitCharsRecursive(node, delayRef) {
   if (node.nodeType === Node.TEXT_NODE) {
     const frag = document.createDocumentFragment();
-    Array.from(node.textContent).forEach((ch) => {
-      if (ch === " ") {
-        // a plain space, not an inline-block span - keeps this a valid line-wrap point
-        frag.appendChild(document.createTextNode(" "));
-        return;
-      }
-      const span = document.createElement("span");
-      span.className = "char";
-      span.textContent = ch;
-      span.style.animationDelay = delayRef.i * CHAR_STAGGER_MS + "ms";
-      delayRef.i++;
-      frag.appendChild(span);
+    const words = node.textContent.split(" ");
+    words.forEach((word, i) => {
+      if (i > 0) frag.appendChild(document.createTextNode(" "));
+      if (word === "") return;
+      // each word's letters are grouped in a nowrap span - adjacent inline-block
+      // letter spans otherwise give the browser a break opportunity mid-word
+      const wordWrap = document.createElement("span");
+      wordWrap.className = "char-word";
+      Array.from(word).forEach((ch) => {
+        const span = document.createElement("span");
+        span.className = "char";
+        span.textContent = ch;
+        span.style.animationDelay = delayRef.i * CHAR_STAGGER_MS + "ms";
+        delayRef.i++;
+        wordWrap.appendChild(span);
+      });
+      frag.appendChild(wordWrap);
     });
     node.replaceWith(frag);
   } else if (node.nodeType === Node.ELEMENT_NODE) {
