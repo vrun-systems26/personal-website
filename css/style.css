@@ -343,9 +343,9 @@ html, body { height: 100%; overflow: hidden; }
 .arm-part-highlight[data-for="about"] { left: 50.5%; top: 89.8%; width: 28.1%; height: 13.8%; border-radius: 40%; }
 .arm-part-highlight[data-for="fetch"] { left: 50.5%; top: 72.8%; width: 15.6%; height: 21.3%; }
 .arm-part-highlight[data-for="street-sweeper"] { left: 39.5%; top: 36.7%; width: 12.6%; height: 21.3%; }
-.arm-part-highlight[data-for="morebuilds"] { left: 52.3%; top: 11.2%; width: 11.4%; height: 20.2%; }
-.arm-part-highlight[data-for="skills"] { left: 65.8%; top: 23.9%; width: 12.6%; height: 19.1%; transform: translate(-50%, -50%) rotate(-20deg); }
-.arm-part-highlight[data-for="awards"] { left: 60.7%; top: 19.7%; width: 8.4%; height: 10.6%; transform: translate(-50%, -50%) rotate(-38deg); }
+.arm-part-highlight[data-for="morebuilds"] { left: 51%; top: 9.5%; width: 11.4%; height: 20.2%; }
+.arm-part-highlight[data-for="skills"] { left: 67%; top: 26%; width: 12.6%; height: 19.1%; transform: translate(-50%, -50%) rotate(-20deg); }
+.arm-part-highlight[data-for="awards"] { left: 57.8%; top: 15.5%; width: 4.5%; height: 5.5%; transform: translate(-50%, -50%) rotate(-38deg); }
 .arm-part-highlight[data-for="hope"] { left: 45%; top: 54.7%; width: 23.8%; height: 12.8%; transform: translate(-50%, -50%) rotate(61.5deg); }
 .arm-part-highlight[data-for="arm"] { left: 45.9%; top: 23.9%; width: 19.3%; height: 10.1%; transform: translate(-50%, -50%) rotate(-48.2deg); }
 
@@ -388,8 +388,8 @@ html, body { height: 100%; overflow: hidden; }
   filter: drop-shadow(0 1px 3px rgba(0, 8, 30, 0.7));
 }
 .bp-tool-caliper { width: 130px; left: 3%; top: 16%; }
-.bp-tool-protractor { width: 150px; left: 76%; top: 46%; }
-.bp-tool-pliers { width: 46px; left: 88%; top: 68%; }
+.bp-tool-protractor { width: 150px; left: 82%; top: 46%; }
+.bp-tool-pliers { width: 46px; left: 8%; top: 45%; }
 .bp-pliers-arm-l { transform-origin: 0 0; animation: pliers-open-l 2.4s ease-in-out infinite alternate; }
 .bp-pliers-arm-r { transform-origin: 0 0; animation: pliers-open-r 2.4s ease-in-out infinite alternate; }
 @keyframes pliers-open-l { from { transform: rotate(0deg); } to { transform: rotate(-11deg); } }
