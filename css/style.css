@@ -324,10 +324,8 @@ html, body { height: 100%; overflow: hidden; }
 
 .arm-part-highlight {
   position: absolute;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(79, 195, 247, 0.85) 0%, rgba(79, 195, 247, 0.78) 70%, rgba(79, 195, 247, 0.35) 100%);
-  filter: blur(2px);
+  background: radial-gradient(ellipse, rgba(79, 195, 247, 0.85) 0%, rgba(79, 195, 247, 0.78) 65%, rgba(79, 195, 247, 0.4) 100%);
+  filter: blur(1px);
   mix-blend-mode: screen;
   opacity: 0;
   cursor: pointer;
@@ -338,16 +336,23 @@ html, body { height: 100%; overflow: hidden; }
 .arm-part-highlight:hover,
 .arm-part-highlight:focus-visible { opacity: 1; }
 
-.arm-part-highlight.is-link { border-radius: 999px; }
-
-.arm-part-highlight[data-for="about"] { left: 50.5%; top: 89.8%; width: 28.1%; height: 13.8%; border-radius: 40%; }
-.arm-part-highlight[data-for="fetch"] { left: 50.5%; top: 72.8%; width: 15.6%; height: 21.3%; }
-.arm-part-highlight[data-for="street-sweeper"] { left: 39.5%; top: 36.7%; width: 12.6%; height: 21.3%; }
-.arm-part-highlight[data-for="morebuilds"] { left: 51.7%; top: 10.6%; width: 11.4%; height: 20.2%; }
-.arm-part-highlight[data-for="skills"] { left: 64.1%; top: 21.5%; width: 15%; height: 18%; transform: translate(-50%, -50%) rotate(-15deg); }
-.arm-part-highlight[data-for="awards"] { left: 57.8%; top: 15.5%; width: 4.5%; height: 5.5%; transform: translate(-50%, -50%) rotate(-38deg); }
-.arm-part-highlight[data-for="hope"] { left: 45%; top: 54.7%; width: 23.8%; height: 12.8%; transform: translate(-50%, -50%) rotate(61.5deg); }
-.arm-part-highlight[data-for="arm"] { left: 45.9%; top: 23.9%; width: 19.3%; height: 10.1%; transform: translate(-50%, -50%) rotate(-48.2deg); }
+/* each shape traced from the artwork's actual silhouette (scratchpad/trace_part2.py) rather than a generic ellipse */
+.arm-part-highlight[data-for="about"] { left: 35.89%; top: 79.7%; width: 35.89%; height: 20.3%;
+  clip-path: polygon(0.0% 42.4%, 3.0% 46.6%, 0.0% 52.9%, 14.2% 55.5%, 0.0% 59.7%, 14.0% 62.3%, 11.0% 71.7%, 54.0% 78.0%, 93.5% 67.0%, 82.7% 27.2%, 77.2% 35.6%, 70.0% 30.9%, 63.0% 0.0%, 42.5% 0.0%, 41.3% 7.3%, 36.2% 0.0%, 35.7% 7.9%, 21.2% 0.0%, 20.7% 9.9%, 11.3% 11.5%, 8.3% 28.8%, 4.8% 25.1%); }
+.arm-part-highlight[data-for="fetch"] { left: 41.87%; top: 60.57%; width: 16.45%; height: 26.04%;
+  clip-path: polygon(70.5% 0.8%, 54.9% 2.0%, 26.5% 14.3%, 13.5% 26.9%, 9.1% 24.9%, 14.5% 31.8%, 6.5% 51.0%, 9.8% 79.2%, 99.6% 75.5%, 80.7% 73.9%, 82.2% 41.2%, 73.1% 24.1%, 57.8% 13.1%, 69.1% 11.4%); }
+.arm-part-highlight[data-for="street-sweeper"] { left: 33.19%; top: 24.44%; width: 16.45%; height: 22.85%;
+  clip-path: polygon(99.6% 25.6%, 69.1% 29.3%, 58.2% 13.5%, 57.5% 0.0%, 53.8% 11.2%, 29.1% 15.8%, 19.6% 23.3%, 7.6% 55.3%, 9.1% 72.6%, 24.0% 99.5%, 50.5% 99.5%, 52.7% 89.8%, 86.2% 74.9%, 95.3% 78.6%, 90.9% 74.0%, 90.9% 42.3%); }
+.arm-part-highlight[data-for="morebuilds"] { left: 45.45%; top: 0%; width: 13.76%; height: 23.91%;
+  clip-path: polygon(42.6% 14.2%, 29.1% 28.4%, 23.0% 53.3%, 13.0% 63.1%, 19.1% 60.4%, 37.0% 91.6%, 36.1% 79.6%, 62.2% 84.9%, 51.3% 99.6%, 57.8% 99.6%, 69.6% 75.6%, 99.6% 88.9%, 93.5% 86.2%, 99.6% 86.2%, 99.6% 62.7%, 94.3% 79.1%, 85.2% 74.2%, 99.6% 39.6%, 86.5% 38.7%, 84.8% 27.1%, 73.0% 14.2%, 79.1% 9.8%); }
+.arm-part-highlight[data-for="skills"] { left: 56.82%; top: 10.63%; width: 13.76%; height: 21.25%;
+  clip-path: polygon(0.0% 0.0%, 5.2% 12.5%, 0.0% 17.0%, 0.0% 42.0%, 16.5% 50.0%, 45.7% 85.0%, 68.3% 88.5%, 53.5% 76.5%, 42.2% 47.0%, 45.7% 31.0%, 57.0% 26.5%, 84.3% 41.0%, 77.8% 22.5%, 43.0% 3.0%, 32.6% 9.5%, 27.4% 0.0%, 13.5% 0.0%, 9.1% 6.0%); }
+.arm-part-highlight[data-for="awards"] { left: 54.13%; top: 9.03%; width: 9.27%; height: 21.79%;
+  clip-path: polygon(0.0% 0.0%, 0.0% 57.1%, 9.7% 41.5%, 33.5% 46.8%, 99.4% 90.2%, 99.4% 67.3%, 91.6% 55.1%, 99.4% 25.4%, 83.2% 19.0%, 87.1% 12.7%, 99.4% 12.2%, 84.5% 10.7%, 77.4% 16.6%, 59.4% 0.0%, 29.0% 0.0%, 28.4% 4.4%, 18.7% 0.0%, 18.1% 11.7%, 5.2% 11.2%, 5.8% 0.0%); }
+.arm-part-highlight[data-for="hope"] { left: 35.89%; top: 40.38%; width: 17.94%; height: 29.76%;
+  clip-path: polygon(0.0% 0.0%, 3.3% 20.4%, 15.3% 27.9%, 15.7% 44.6%, 44.3% 99.6%, 78.3% 99.6%, 64.3% 87.9%, 53.0% 94.3%, 67.3% 83.6%, 99.0% 99.6%, 72.3% 81.8%, 99.7% 92.1%, 86.3% 79.3%, 96.7% 77.9%, 96.7% 58.9%, 68.3% 0.0%, 34.0% 0.0%, 28.0% 8.6%, 28.3% 0.0%, 21.3% 9.6%, 14.0% 0.0%, 11.0% 11.4%, 7.0% 0.0%); }
+.arm-part-highlight[data-for="arm"] { left: 40.67%; top: 9.56%; width: 17.34%; height: 27.1%;
+  clip-path: polygon(99.7% 0.0%, 87.6% 0.0%, 86.9% 7.8%, 80.3% 7.1%, 80.0% 0.0%, 47.6% 0.0%, 44.1% 14.5%, 9.0% 63.1%, 0.0% 66.3%, 0.0% 83.9%, 7.9% 80.0%, 15.5% 99.6%, 20.3% 93.7%, 27.2% 99.6%, 27.6% 91.4%, 39.3% 92.2%, 44.5% 98.8%, 43.4% 89.4%, 73.4% 52.2%, 82.8% 31.4%, 99.7% 41.2%, 95.2% 30.2%, 99.7% 13.3%, 94.8% 10.2%); }
 
 .bp-dim-html { position: absolute; }
 .bp-dim-line { display: block; height: 1px; background: rgba(255, 255, 255, 0.5); position: relative; }
