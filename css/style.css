@@ -304,12 +304,12 @@ html, body { height: 100%; overflow: hidden; }
   overflow: hidden;
   pointer-events: none;
   font-family: var(--font-hand);
-  font-weight: 400;
-  font-size: 1rem;
+  font-weight: 700;
+  font-size: 1.4rem;
   line-height: 1.5;
-  color: var(--text);
-  opacity: 0.92;
-  text-shadow: 0 0 2px var(--bg), 0 0 4px var(--bg);
+  color: red;
+  opacity: 1;
+  background: yellow;
   padding: 0.5rem 0;
 }
 .margin-text.left { left: 1in; text-align: right; }
