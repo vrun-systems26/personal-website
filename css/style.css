@@ -174,7 +174,7 @@ html, body { height: 100%; overflow: hidden; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.6rem 1.2rem 2.4rem;
+  padding: 0.3rem 1.2rem 2.1rem;
   overflow: hidden;
   color: var(--text);
   background-color: #d9c088;
@@ -194,7 +194,7 @@ html, body { height: 100%; overflow: hidden; }
     url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 87.8 50.8 L 72.5 66.0 L 70.8 90.1 L 46.9 74.9 L 29.9 81.5 L 9.0 73.6 L 17.6 49.7 L 20.0 26.9 L 34.3 26.2 L 50.0 28.8 L 71.5 15.4 L 87.5 27.2 Z' fill='%2370502a' fill-opacity='0.12' filter='url(%23b)'/></svg>"),
     url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 96.5 44.3 L 81.7 75.7 L 45.8 90.8 L 30.2 72.3 L 2.8 46.9 L 26.4 24.0 L 48.9 18.7 L 74.0 28.9 Z' fill='%23654418' fill-opacity='0.1' filter='url(%23b)'/></svg>"),
     url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 73.5 53.3 L 91.0 75.4 L 56.2 72.3 L 34.1 74.9 L 24.4 56.1 L 24.5 36.5 L 28.1 9.2 L 60.5 5.1 L 67.0 37.5 Z' fill='%235c3e1a' fill-opacity='0.1' filter='url(%23b)'/></svg>"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    url("../images/paper-texture.webp");
   background-position:
     0 0, 0 0,
     6% 10%, 92% 8%, 88% 85%, 8% 90%, 50% 4%, 25% 95%, 4% 55%,
@@ -204,13 +204,13 @@ html, body { height: 100%; overflow: hidden; }
     auto, auto,
     190px, 130px, 200px, 150px, 80px, 100px, 160px,
     55px, 40px, 50px, 38px,
-    auto;
+    340px;
   background-repeat:
     repeat, repeat,
     no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
     no-repeat, no-repeat, no-repeat, no-repeat,
     repeat;
-  background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, overlay;
+  background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, multiply;
 }
 .gate::after {
   content: "";
@@ -247,24 +247,42 @@ html, body { height: 100%; overflow: hidden; }
 .s2 { width: 54px; bottom: 5.2rem; left: 4%; transform: rotate(-8deg); }
 .s3 { width: 108px; top: 5.6rem; left: 2%; transform: rotate(-2deg); opacity: 0.3; }
 .s4 { width: 56px; top: 4.4rem; right: 3%; transform: rotate(10deg); opacity: 0.32; }
+.pencil { stroke-width: 0.6; opacity: 0.22; }
+.s5 { width: 190px; top: 8%; left: 1%; transform: rotate(-3deg); }
+.s6 { width: 44px; bottom: 8rem; right: 1.5%; transform: rotate(4deg); }
+.s7 { width: 150px; bottom: 4.5rem; left: 30%; transform: rotate(2deg); }
+.s8 { width: 100px; top: 10%; right: 8%; transform: rotate(8deg); }
 
 .folio-header { text-align: center; position: relative; z-index: 2; margin-bottom: 0.1rem; }
 .folio-header .folio-title {
   font-family: var(--font-head);
   font-weight: 560;
-  font-size: clamp(1.35rem, 2.6vw, 2rem);
+  font-size: clamp(1.2rem, 2.2vw, 1.75rem);
   line-height: 1.05;
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.55rem;
   color: var(--text);
   letter-spacing: -0.01em;
 }
 .folio-byline {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: 0.76rem;
   letter-spacing: 0.03em;
   color: var(--text-dim);
   margin: 0;
   max-width: 46rem;
+}
+
+.folio-signature {
+  position: absolute;
+  z-index: 4;
+  right: 2.2rem;
+  bottom: 3.4rem;
+  font-family: var(--font-hand);
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+  color: var(--text);
+  opacity: 0.82;
+  transform: rotate(-3deg);
+  pointer-events: none;
 }
 
 .figure-wrap {
@@ -272,22 +290,24 @@ html, body { height: 100%; overflow: hidden; }
   z-index: 2;
   flex: 1 1 auto;
   min-height: 0;
-  width: min(105vh, 99vw);
-  max-width: 1320px;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   perspective: 1400px;
 }
 .vitruvian-img {
-  width: 100%;
-  height: auto;
-  max-height: 100%;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
   object-fit: contain;
   mix-blend-mode: multiply;
+  /* the photo's paper is lighter than our page tone - darken it a touch so it reads as the same sheet */
+  filter: brightness(0.84) saturate(1.08);
   /* fade the image's own rectangular/torn boundary into the page background instead of showing a hard edge */
-  -webkit-mask-image: radial-gradient(ellipse farthest-side at 50% 50%, #000 80%, transparent 100%);
-  mask-image: radial-gradient(ellipse farthest-side at 50% 50%, #000 80%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse farthest-side at 50% 50%, #000 78%, transparent 100%);
+  mask-image: radial-gradient(ellipse farthest-side at 50% 50%, #000 78%, transparent 100%);
   transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -295,11 +315,11 @@ html, body { height: 100%; overflow: hidden; }
   position: relative;
   z-index: 2;
   font-family: var(--font-mono);
-  font-size: 0.64rem;
+  font-size: 0.74rem;
   letter-spacing: 0.1em;
   color: var(--text-faint);
   text-align: center;
-  margin: 0.25rem 0 0;
+  margin: 0.3rem 0 0;
 }
 
 .figure-highlight {
@@ -337,7 +357,9 @@ html, body { height: 100%; overflow: hidden; }
   z-index: 3;
   font: inherit;
   color: inherit;
+  outline: none;
 }
+.figure-hotspot:focus-visible .fh-dot { outline: 2px solid var(--text); outline-offset: 2px; }
 .fh-dot {
   position: absolute;
   left: 0;
@@ -367,7 +389,7 @@ html, body { height: 100%; overflow: hidden; }
 .fh-label {
   position: absolute;
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   color: var(--text);
@@ -391,8 +413,7 @@ html, body { height: 100%; overflow: hidden; }
 
 @media (max-width: 900px) {
   .gate { padding: 0.7rem 0.8rem 2.2rem; }
-  .figure-wrap { width: min(80vh, 96vw); }
-  .fh-label { font-size: 0.58rem; }
+  .fh-label { font-size: 0.66rem; }
   .dir-right .fh-leader, .dir-left .fh-leader { width: 26px; }
   .dir-right .fh-label { left: 30px; }
   .dir-left .fh-label { right: 30px; }
@@ -400,14 +421,13 @@ html, body { height: 100%; overflow: hidden; }
   .dir-up .fh-label { bottom: 26px; }
   .dir-down .fh-label { top: 26px; }
   .fh-dot::before { width: 28px; height: 28px; }
-  .scribble, .marginalia { display: none; }
+  .scribble, .marginalia, .folio-signature { display: none; }
 }
 
 @media (max-height: 720px) {
-  .folio-header .folio-title { font-size: clamp(1.2rem, 4.6vw, 1.6rem); margin-bottom: 0.15rem; }
-  .folio-byline { font-size: 0.58rem; }
-  .figure-wrap { width: min(74vh, 92vw); }
-  .scribble, .marginalia { display: none; }
+  .folio-header .folio-title { font-size: clamp(1.2rem, 4.6vw, 1.6rem); margin-bottom: 0.3rem; }
+  .folio-byline { font-size: 0.66rem; }
+  .scribble, .marginalia, .folio-signature { display: none; }
 }
 /* ---------- card overlay system ---------- */
 .card {
