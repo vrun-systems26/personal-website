@@ -163,243 +163,181 @@ a { color: inherit; }
 .nav-toggle { display: none; flex-direction: column; gap: 4px; background: none; border: none; cursor: pointer; padding: 0.4rem; }
 .nav-toggle span { width: 22px; height: 2px; background: var(--text); display: block; }
 
-/* ---------- fixed gate: an aged 18th-century workshop folio, lamplit and soiled with use ---------- */
+/* ---------- fixed gate: a soiled, rustic sheet of 18th-century vellum, full-bleed ---------- */
 html, body { height: 100%; overflow: hidden; }
 
 .gate {
-  --mx: 50%;
-  --my: 32%;
   position: fixed;
   inset: 0;
   z-index: 10;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.6rem 1.4rem 3rem;
-  background:
-    radial-gradient(ellipse 1000px 760px at var(--mx) var(--my), #453218 0%, #251808 48%, #0e0904 100%);
+  padding: 1.2rem 1.2rem 2.6rem;
   overflow: hidden;
-  perspective: 2200px;
-}
-.gate::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(94deg, rgba(0, 0, 0, 0.1) 0 2px, transparent 2px 7px);
-  mix-blend-mode: multiply;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.codex-page {
-  position: relative;
-  width: min(1040px, 95vw);
-  max-height: 95vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: clamp(1.3rem, 3vw, 2.2rem) clamp(1.6rem, 4.2vw, 3.2rem) clamp(1.4rem, 3vw, 2rem);
-  transform: rotateX(6deg) rotateZ(-0.4deg);
-  transform-origin: 50% 30%;
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  color: var(--text);
   background:
-    radial-gradient(circle at 8% 6%, rgba(120, 78, 30, 0.32), transparent 22%),
-    radial-gradient(circle at 94% 10%, rgba(94, 60, 24, 0.28), transparent 20%),
-    radial-gradient(circle at 88% 92%, rgba(120, 78, 30, 0.3), transparent 24%),
-    radial-gradient(circle at 10% 88%, rgba(94, 60, 24, 0.26), transparent 22%),
-    radial-gradient(ellipse 340px 220px at 62% 46%, rgba(150, 108, 52, 0.16), transparent 70%),
-    radial-gradient(ellipse at 30% 12%, rgba(255, 250, 235, 0.4), transparent 58%),
-    repeating-linear-gradient(0deg, rgba(58, 42, 20, 0.06) 0 1px, transparent 1px 34px),
-    repeating-linear-gradient(90deg, rgba(58, 42, 20, 0.06) 0 1px, transparent 1px 34px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E"),
-    linear-gradient(160deg, #efe2bd 0%, #d9c393 55%, #cbb27f 100%);
-  box-shadow:
-    inset 0 0 90px rgba(60, 40, 14, 0.4),
-    inset 0 0 26px rgba(30, 18, 6, 0.35),
-    0 50px 100px rgba(6, 4, 2, 0.6),
-    0 8px 22px rgba(6, 4, 2, 0.4);
-  clip-path: polygon(
-    0.8% 2.2%, 5% 0.3%, 13% 1.4%, 23% 0.2%, 36% 1.1%, 49% 0.1%, 61% 0.9%, 75% 0.2%, 89% 1.1%, 96% 0.1%, 99.4% 2.4%,
-    100% 9%, 99.1% 21%, 100% 34%, 99.3% 48%, 100% 61%, 99.2% 75%, 100% 88%, 99.4% 97.4%, 97% 100%,
-    88% 99%, 76% 100%, 64% 99.1%, 50% 100%, 38% 99.2%, 25% 100%, 14% 99.1%, 5% 100%, 1.3% 97.8%,
-    0% 90%, 0.9% 78%, 0% 65%, 0.7% 52%, 0% 40%, 0.8% 27%, 0% 15%
-  );
+    /* fine woven-paper fiber, two crossing directions */
+    repeating-linear-gradient(12deg, rgba(58, 40, 16, 0.05) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-77deg, rgba(58, 40, 16, 0.04) 0 1px, transparent 1px 4px),
+    /* scattered stains and foxing, deliberately uneven */
+    radial-gradient(circle 130px at 88% 85%, transparent 55%, rgba(83, 55, 20, 0.28) 58%, rgba(83, 55, 20, 0.16) 66%, transparent 74%),
+    radial-gradient(circle 80px at 89% 87%, transparent 50%, rgba(66, 42, 14, 0.22) 56%, transparent 66%),
+    radial-gradient(ellipse 260px 180px at 6% 10%, rgba(94, 62, 24, 0.22), transparent 70%),
+    radial-gradient(ellipse 220px 300px at 96% 22%, rgba(78, 50, 18, 0.2), transparent 72%),
+    radial-gradient(ellipse 300px 200px at 14% 92%, rgba(94, 62, 24, 0.2), transparent 70%),
+    radial-gradient(ellipse 200px 160px at 60% 4%, rgba(120, 90, 45, 0.14), transparent 70%),
+    radial-gradient(circle at 22% 45%, rgba(70, 48, 20, 0.5), transparent 2.5%),
+    radial-gradient(circle at 77% 60%, rgba(70, 48, 20, 0.4), transparent 2%),
+    radial-gradient(circle at 40% 75%, rgba(70, 48, 20, 0.45), transparent 1.6%),
+    radial-gradient(circle at 65% 15%, rgba(70, 48, 20, 0.4), transparent 1.8%),
+    /* uneven overall wash - warmer lower-left, paler upper-right */
+    linear-gradient(128deg, #d8bd8a 0%, #e7d3a3 30%, #f1e2bb 55%, #ddc593 78%, #cbaf7c 100%),
+    /* coarse grain */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, overlay;
 }
-.codex-page::before {
-  /* a coffee-ring stain and a scatter of foxing spots, like the sheet's been handled for centuries */
+.gate::after {
+  /* heavy vignette - the sheet has darkened and worn at the edges from handling */
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle 46px at 85% 78%, transparent 63%, rgba(94, 58, 20, 0.32) 65%, rgba(94, 58, 20, 0.22) 71%, rgba(94, 58, 20, 0.08) 76%, transparent 80%),
-    radial-gradient(circle 30px at 87% 80%, transparent 55%, rgba(74, 44, 14, 0.18) 60%, transparent 68%),
-    radial-gradient(circle at 15% 62%, rgba(66, 44, 18, 0.14), transparent 7%),
-    radial-gradient(circle at 72% 8%, rgba(90, 60, 24, 0.12), transparent 6%),
-    radial-gradient(circle at 40% 95%, rgba(66, 44, 18, 0.1), transparent 9%),
-    radial-gradient(circle at 6% 30%, rgba(120, 90, 50, 0.55), transparent 3%),
-    radial-gradient(circle at 63% 55%, rgba(120, 90, 50, 0.4), transparent 2.2%),
-    radial-gradient(circle at 30% 20%, rgba(120, 90, 50, 0.45), transparent 2%);
+  z-index: 1;
+  box-shadow: inset 0 0 22vw 2vw rgba(40, 26, 10, 0.55);
 }
 
-.codex-page::after {
-  /* worn, darkened border where hands have held the page for centuries */
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  box-shadow: inset 0 0 60px 14px rgba(50, 32, 10, 0.35);
-}
-
-.codex-construction {
-  position: absolute;
-  top: -1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(560px, 90%);
-  height: auto;
-  fill: none;
-  stroke: var(--text);
-  stroke-width: 0.6;
-  opacity: 0.16;
-  pointer-events: none;
-}
-
-.codex-margin-note {
-  position: absolute;
-  font-family: var(--font-hand);
-  font-size: 1.1rem;
-  color: var(--accent-dim);
-  opacity: 0.75;
-  pointer-events: none;
-}
-.note-1 { top: 0.6rem; left: 1.2rem; transform: rotate(-4deg); }
-.note-2 { bottom: 0.4rem; right: 1.4rem; transform: rotate(2deg); font-size: 1rem; }
-
-.codex-header { text-align: center; margin-bottom: clamp(1.1rem, 2.6vw, 1.8rem); position: relative; }
-.codex-header .codex-title {
+.folio-header { text-align: center; position: relative; z-index: 2; margin-bottom: 0.2rem; }
+.folio-header .folio-title {
   font-family: var(--font-head);
   font-weight: 560;
-  font-size: clamp(1.9rem, 4.4vw, 3.1rem);
+  font-size: clamp(1.7rem, 3.6vw, 2.6rem);
   line-height: 1.05;
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.35rem;
   color: var(--text);
   letter-spacing: -0.01em;
-  position: relative;
 }
-.codex-byline {
+.folio-byline {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   letter-spacing: 0.05em;
   color: var(--text-dim);
   margin: 0;
-  position: relative;
 }
 
-.codex-plates {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(0.7rem, 1.8vw, 1.3rem);
-}
-
-.codex-plate {
-  --r: 0deg;
+.figure-wrap {
   position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: min(78vh, 92vw);
+  max-width: 640px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1.2rem 0.6rem 1rem;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.35), transparent 45%),
-    linear-gradient(165deg, #f6ecd2, #e6d3a4);
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  cursor: pointer;
-  transform: rotate(var(--r));
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, border-color 0.2s ease;
-  box-shadow: 0 3px 8px rgba(30, 18, 6, 0.28);
-  font: inherit;
+  justify-content: center;
+  perspective: 1400px;
+}
+.vitruvian {
+  width: 100%;
+  height: 100%;
+  color: #4a3115;
+  filter: url(#sketchy) drop-shadow(0 2px 1px rgba(74, 49, 21, 0.25));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.folio-hint {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
   text-align: center;
+  margin: 0.3rem 0 0;
+}
+
+.figure-hotspot {
+  position: absolute;
+  width: 0;
+  height: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  cursor: pointer;
+  z-index: 3;
+  font: inherit;
   color: inherit;
 }
-/* each plate a slightly different scrap of paper, not a uniform stamped-out set */
-.codex-plate:nth-child(3n+1) { background: radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.35), transparent 45%), radial-gradient(circle at 85% 90%, rgba(94, 58, 20, 0.14), transparent 40%), linear-gradient(165deg, #f6ecd2, #e6d3a4); }
-.codex-plate:nth-child(3n+2) { background: radial-gradient(circle at 75% 20%, rgba(255, 255, 255, 0.3), transparent 42%), radial-gradient(circle at 12% 85%, rgba(74, 44, 14, 0.16), transparent 38%), linear-gradient(200deg, #f2e6c4, #dcc48f); }
-.codex-plate:nth-child(3n+3) { background: radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.32), transparent 44%), radial-gradient(circle at 88% 15%, rgba(90, 60, 24, 0.15), transparent 36%), linear-gradient(150deg, #f4e9cb, #e1cb9c); }
-.codex-plate::before {
+.fh-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 7px rgba(var(--accent-rgb), 0.7);
+  transition: transform 0.2s ease;
+}
+.fh-dot::before {
   content: "";
   position: absolute;
-  top: -6px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #e0776a, var(--accent-dim));
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
 }
-.codex-plate:hover,
-.codex-plate:focus-visible {
-  transform: rotate(0deg) translateY(-8px) scale(1.06);
-  box-shadow: 0 22px 34px rgba(6, 4, 2, 0.45);
-  border-color: var(--accent);
-  z-index: 2;
-  outline: none;
-}
-.plate-icon {
-  width: 34px;
-  height: 34px;
-  color: var(--text-dim);
-  transition: color 0.2s ease;
-  filter: url(#sketchy);
-}
-.codex-plate:hover .plate-icon,
-.codex-plate:focus-visible .plate-icon { color: var(--accent); }
-.plate-label {
-  font-family: var(--font-head);
-  font-weight: 560;
-  font-size: 0.92rem;
+.fh-leader { position: absolute; background: var(--accent); opacity: 0.7; box-shadow: 0 0 3px rgba(var(--accent-rgb), 0.5); transition: opacity 0.2s ease; }
+.dir-right .fh-leader { left: 0; top: 0; width: 46px; height: 1.4px; }
+.dir-left .fh-leader { right: 0; top: 0; width: 46px; height: 1.4px; }
+.dir-up .fh-leader { bottom: 0; left: 0; width: 1.4px; height: 40px; }
+.dir-down .fh-leader { top: 0; left: 0; width: 1.4px; height: 40px; }
+.fh-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   color: var(--text);
-  line-height: 1.2;
+  white-space: nowrap;
+  transition: color 0.2s ease;
 }
-.plate-label em {
-  display: block;
-  font-family: var(--font-hand);
-  font-style: normal;
-  font-size: 0.78rem;
-  color: var(--text-faint);
-  margin-top: 0.15rem;
-}
+.dir-right .fh-label { left: 50px; top: 50%; transform: translateY(-50%); }
+.dir-left .fh-label { right: 50px; top: 50%; transform: translateY(-50%); text-align: right; }
+.dir-up .fh-label { bottom: 44px; left: 50%; transform: translateX(-50%); text-align: center; }
+.dir-down .fh-label { top: 44px; left: 50%; transform: translateX(-50%); text-align: center; }
 
-/* focus mode: engaging one plate quiets its neighbours */
-.gate.is-focusing .codex-plate:not(:hover):not(:focus-visible) { opacity: 0.55; }
+.figure-hotspot:hover .fh-dot,
+.figure-hotspot:focus-visible .fh-dot { transform: translate(-50%, -50%) scale(1.5); }
+.figure-hotspot:hover .fh-leader,
+.figure-hotspot:focus-visible .fh-leader { opacity: 1; }
+.figure-hotspot:hover .fh-label,
+.figure-hotspot:focus-visible .fh-label { color: var(--accent); }
+
+.gate.is-focusing .figure-hotspot:not(:hover):not(:focus-visible) .fh-label { opacity: 0.5; }
+.gate.is-focusing .figure-hotspot:not(:hover):not(:focus-visible) .fh-dot { opacity: 0.55; }
 
 @media (max-width: 900px) {
-  .gate { padding: 1.2rem 0.8rem 2.4rem; }
-  .codex-page { transform: rotateX(3deg); padding: 1.3rem 1.1rem 1.5rem; }
-  .codex-plates { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
-  .codex-construction { display: none; }
-  .plate-icon { width: 30px; height: 30px; }
+  .gate { padding: 0.8rem 0.8rem 2.2rem; }
+  .figure-wrap { width: min(70vh, 88vw); }
+  .fh-label { font-size: 0.6rem; }
+  .dir-right .fh-leader, .dir-left .fh-leader { width: 30px; }
+  .dir-right .fh-label { left: 34px; }
+  .dir-left .fh-label { right: 34px; }
+  .dir-up .fh-leader, .dir-down .fh-leader { height: 26px; }
+  .dir-up .fh-label { bottom: 30px; }
+  .dir-down .fh-label { top: 30px; }
+  .fh-dot::before { width: 30px; height: 30px; }
 }
 
-@media (max-width: 520px) {
-  .codex-plates { grid-template-columns: repeat(2, 1fr); gap: 0.55rem; }
-  .codex-plate { padding: 1rem 0.5rem 0.85rem; }
-  .codex-margin-note { display: none; }
-}
-
-/* short viewports (older/smaller phones): shave every bit of vertical padding so nothing scrolls */
 @media (max-height: 720px) {
-  .gate { padding-top: 0.8rem; padding-bottom: 1.6rem; }
-  .codex-page { padding-top: 1rem; padding-bottom: 1rem; }
-  .codex-header { margin-bottom: 0.8rem; }
-  .codex-header .codex-title { font-size: clamp(1.5rem, 6vw, 2rem); margin-bottom: 0.35rem; }
-  .codex-byline { font-size: 0.66rem; }
-  .codex-plates { gap: 0.5rem; }
-  .codex-plate { padding: 0.8rem 0.4rem 0.65rem; gap: 0.35rem; }
-  .plate-icon { width: 26px; height: 26px; }
-  .plate-label { font-size: 0.82rem; }
-  .plate-label em { font-size: 0.7rem; }
+  .folio-header .folio-title { font-size: clamp(1.3rem, 5vw, 1.7rem); margin-bottom: 0.2rem; }
+  .folio-byline { display: none; }
+  .figure-wrap { width: min(62vh, 82vw); }
 }
 /* ---------- card overlay system ---------- */
 .card {

@@ -35,7 +35,7 @@ function openCard(name) {
   navLinks.forEach((l) => l.classList.toggle("active", l.dataset.card === name));
 }
 
-document.querySelectorAll(".hotspot[data-card], .codex-plate[data-card], [data-nav][data-card]").forEach((el) => {
+document.querySelectorAll(".hotspot[data-card], .figure-hotspot[data-card], [data-nav][data-card]").forEach((el) => {
   el.addEventListener("click", (e) => {
     e.preventDefault();
     openCard(el.dataset.card);
@@ -155,7 +155,7 @@ sectionHeadings.forEach((el) => headingObserver.observe(el));
     engaged = Math.max(0, engaged - 1);
     if (engaged === 0) gateEl.classList.remove("is-focusing");
   };
-  document.querySelectorAll(".codex-plate[data-card]").forEach((el) => {
+  document.querySelectorAll(".figure-hotspot[data-card]").forEach((el) => {
     el.addEventListener("mouseenter", focusOn);
     el.addEventListener("mouseleave", focusOff);
     el.addEventListener("focus", focusOn);
@@ -163,24 +163,22 @@ sectionHeadings.forEach((el) => headingObserver.observe(el));
   });
 })();
 
-// ---------- the desk lamp follows the cursor, and the page tilts with it (desktop, motion-safe) ----------
+// ---------- the figure tilts gently toward the cursor (desktop, motion-safe) ----------
 (function () {
   const gateEl = document.getElementById("gate");
-  const page = document.getElementById("codexPage");
-  if (!gateEl || !page) return;
+  const wrap = document.getElementById("figureWrap");
+  if (!gateEl || !wrap) return;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   if (reduceMotion || !isFinePointer) return;
 
   gateEl.addEventListener("mousemove", (e) => {
     const rect = gateEl.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    gateEl.style.setProperty("--mx", px * 100 + "%");
-    gateEl.style.setProperty("--my", py * 100 + "%");
-    page.style.transform = `rotateX(${6 - (py - 0.5) * 6}deg) rotateY(${(px - 0.5) * 5}deg)`;
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    wrap.querySelector(".vitruvian").style.transform = `rotateY(${px * 5}deg) rotateX(${py * -5}deg)`;
   });
   gateEl.addEventListener("mouseleave", () => {
-    page.style.transform = "rotateX(6deg) rotateY(0deg)";
+    wrap.querySelector(".vitruvian").style.transform = "rotateY(0deg) rotateX(0deg)";
   });
 })();
