@@ -305,10 +305,11 @@ html, body { height: 100%; overflow: hidden; }
   pointer-events: none;
   font-family: var(--font-hand);
   font-weight: 400;
-  font-size: 0.92rem;
+  font-size: 1rem;
   line-height: 1.5;
-  color: var(--text-faint);
-  opacity: 0.72;
+  color: var(--text);
+  opacity: 0.92;
+  text-shadow: 0 0 2px var(--bg), 0 0 4px var(--bg);
   padding: 0.5rem 0;
 }
 .margin-text.left { left: 1in; text-align: right; }
