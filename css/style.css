@@ -174,7 +174,7 @@ html, body { height: 100%; overflow: hidden; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem 1.2rem 2.6rem;
+  padding: 0.6rem 1.2rem 2.4rem;
   overflow: hidden;
   color: var(--text);
   background-color: #d9c088;
@@ -248,13 +248,13 @@ html, body { height: 100%; overflow: hidden; }
 .s3 { width: 108px; top: 5.6rem; left: 2%; transform: rotate(-2deg); opacity: 0.3; }
 .s4 { width: 56px; top: 4.4rem; right: 3%; transform: rotate(10deg); opacity: 0.32; }
 
-.folio-header { text-align: center; position: relative; z-index: 2; margin-bottom: 0.15rem; }
+.folio-header { text-align: center; position: relative; z-index: 2; margin-bottom: 0.1rem; }
 .folio-header .folio-title {
   font-family: var(--font-head);
   font-weight: 560;
-  font-size: clamp(1.6rem, 3.4vw, 2.5rem);
+  font-size: clamp(1.35rem, 2.6vw, 2rem);
   line-height: 1.05;
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.2rem;
   color: var(--text);
   letter-spacing: -0.01em;
 }
@@ -272,8 +272,8 @@ html, body { height: 100%; overflow: hidden; }
   z-index: 2;
   flex: 1 1 auto;
   min-height: 0;
-  width: min(96vh, 98vw);
-  max-width: 1080px;
+  width: min(105vh, 99vw);
+  max-width: 1320px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -391,7 +391,7 @@ html, body { height: 100%; overflow: hidden; }
 
 @media (max-width: 900px) {
   .gate { padding: 0.7rem 0.8rem 2.2rem; }
-  .figure-wrap { width: min(74vh, 94vw); }
+  .figure-wrap { width: min(80vh, 96vw); }
   .fh-label { font-size: 0.58rem; }
   .dir-right .fh-leader, .dir-left .fh-leader { width: 26px; }
   .dir-right .fh-label { left: 30px; }
@@ -406,7 +406,7 @@ html, body { height: 100%; overflow: hidden; }
 @media (max-height: 720px) {
   .folio-header .folio-title { font-size: clamp(1.2rem, 4.6vw, 1.6rem); margin-bottom: 0.15rem; }
   .folio-byline { font-size: 0.58rem; }
-  .figure-wrap { width: min(68vh, 88vw); }
+  .figure-wrap { width: min(74vh, 92vw); }
   .scribble, .marginalia { display: none; }
 }
 /* ---------- card overlay system ---------- */
