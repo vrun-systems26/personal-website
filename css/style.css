@@ -254,7 +254,7 @@ html, body { height: 100%; overflow: hidden; }
 .s7 { width: 150px; bottom: 4.5rem; left: 30%; transform: rotate(2deg); }
 .s8 { width: 100px; top: 10%; right: 8%; transform: rotate(8deg); }
 
-.folio-header { text-align: center; position: relative; z-index: 2; margin-bottom: 0.1rem; padding: 0 1.4rem; }
+.folio-header { text-align: center; position: relative; z-index: 3; margin-bottom: 0.1rem; padding: 0 1.4rem; }
 .folio-header .folio-title {
   font-family: var(--font-head);
   font-weight: 560;
@@ -289,6 +289,31 @@ html, body { height: 100%; overflow: hidden; }
   text-shadow: 0 0 6px var(--bg), 0 0 10px var(--bg);
 }
 
+.folio-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+.margin-text {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 13%;
+  min-width: 6.5rem;
+  overflow: hidden;
+  pointer-events: none;
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-faint);
+  opacity: 0.72;
+  padding: 0.5rem 0;
+}
+.margin-text.left { left: 1in; text-align: right; }
+.margin-text.right { right: 1in; text-align: left; }
+
 .figure-wrap {
   position: absolute;
   inset: 0;
@@ -305,9 +330,14 @@ html, body { height: 100%; overflow: hidden; }
   transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* portrait / narrow-aspect screens: cover-fit would crop the hands right off - fall back to contain */
+@media (max-aspect-ratio: 4/3) {
+  .vitruvian-img { object-fit: contain; }
+}
+
 .folio-hint {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   font-family: var(--font-mono);
   font-size: 0.74rem;
   letter-spacing: 0.1em;
@@ -420,11 +450,6 @@ html, body { height: 100%; overflow: hidden; }
 .gate.is-focusing .figure-hotspot:not(:hover):not(:focus-visible) .fh-label { opacity: 0.5; }
 .gate.is-focusing .figure-hotspot:not(:hover):not(:focus-visible) .fh-dot { opacity: 0.55; }
 
-/* portrait / narrow-aspect screens: cover-fit would crop the hands right off - fall back to contain */
-@media (max-aspect-ratio: 4/3) {
-  .vitruvian-img { object-fit: contain; }
-}
-
 @media (max-width: 900px) {
   .gate { padding: 1.1rem 0 1.9rem; }
   .fh-label { font-size: 0.78rem; }
@@ -435,13 +460,13 @@ html, body { height: 100%; overflow: hidden; }
   .dir-up .fh-label { bottom: 28px; }
   .dir-down .fh-label { top: 28px; }
   .fh-dot::before { width: 28px; height: 28px; }
-  .scribble, .marginalia, .folio-signature { display: none; }
+  .scribble, .marginalia, .folio-signature, .margin-text { display: none; }
 }
 
 @media (max-height: 720px) {
   .folio-header .folio-title { font-size: clamp(1.2rem, 4.6vw, 1.6rem); margin-bottom: 0.3rem; }
   .folio-byline { font-size: 0.66rem; }
-  .scribble, .marginalia, .folio-signature { display: none; }
+  .scribble, .marginalia, .folio-signature, .margin-text { display: none; }
 }
 /* ---------- card overlay system ---------- */
 .card {
