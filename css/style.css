@@ -173,8 +173,8 @@ html, body { height: 100%; overflow: hidden; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 0.3rem 1.2rem 2.1rem;
+  justify-content: space-between;
+  padding: 1.6rem 0 1.4rem;
   overflow: hidden;
   color: var(--text);
   background-color: #e7d5ab;
@@ -254,13 +254,13 @@ html, body { height: 100%; overflow: hidden; }
 .s7 { width: 150px; bottom: 4.5rem; left: 30%; transform: rotate(2deg); }
 .s8 { width: 100px; top: 10%; right: 8%; transform: rotate(8deg); }
 
-.folio-header { text-align: center; position: relative; z-index: 2; margin-bottom: 0.1rem; }
+.folio-header { text-align: center; position: relative; z-index: 2; margin-bottom: 0.1rem; padding: 0 1.4rem; }
 .folio-header .folio-title {
   font-family: var(--font-head);
   font-weight: 560;
-  font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
   line-height: 1.05;
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.6rem;
   color: var(--text);
   letter-spacing: -0.01em;
   text-shadow: 0 0 6px var(--bg), 0 0 10px var(--bg);
@@ -290,22 +290,18 @@ html, body { height: 100%; overflow: hidden; }
 }
 
 .figure-wrap {
-  position: relative;
-  z-index: 2;
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   perspective: 1400px;
 }
 .vitruvian-img {
-  width: auto;
+  position: absolute;
+  inset: 0;
+  width: 100%;
   height: 100%;
-  max-width: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -317,7 +313,8 @@ html, body { height: 100%; overflow: hidden; }
   letter-spacing: 0.1em;
   color: var(--text-faint);
   text-align: center;
-  margin: 0.3rem 0 0;
+  margin: 0;
+  padding: 0 1.4rem;
   text-shadow: 0 0 5px var(--bg), 0 0 9px var(--bg);
 }
 
@@ -423,8 +420,13 @@ html, body { height: 100%; overflow: hidden; }
 .gate.is-focusing .figure-hotspot:not(:hover):not(:focus-visible) .fh-label { opacity: 0.5; }
 .gate.is-focusing .figure-hotspot:not(:hover):not(:focus-visible) .fh-dot { opacity: 0.55; }
 
+/* portrait / narrow-aspect screens: cover-fit would crop the hands right off - fall back to contain */
+@media (max-aspect-ratio: 4/3) {
+  .vitruvian-img { object-fit: contain; }
+}
+
 @media (max-width: 900px) {
-  .gate { padding: 0.7rem 0.8rem 2.2rem; }
+  .gate { padding: 1.1rem 0 1.9rem; }
   .fh-label { font-size: 0.78rem; }
   .dir-right .fh-leader, .dir-left .fh-leader { width: 26px; }
   .dir-right .fh-label { left: 30px; }
