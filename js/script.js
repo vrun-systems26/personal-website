@@ -42,6 +42,16 @@ document.querySelectorAll(".hotspot[data-card], .figure-hotspot[data-card], [dat
   });
 });
 
+// ---------- hovering a label glows the matching part of the figure, and vice versa ----------
+document.querySelectorAll(".figure-hotspot[data-card]").forEach((el) => {
+  const highlight = document.querySelector(`.figure-highlight[data-for="${el.dataset.card}"]`);
+  if (!highlight) return;
+  el.addEventListener("mouseenter", () => highlight.classList.add("is-active"));
+  el.addEventListener("mouseleave", () => highlight.classList.remove("is-active"));
+  el.addEventListener("focus", () => highlight.classList.add("is-active"));
+  el.addEventListener("blur", () => highlight.classList.remove("is-active"));
+});
+
 document.querySelectorAll("[data-close]").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -176,9 +186,9 @@ sectionHeadings.forEach((el) => headingObserver.observe(el));
     const rect = gateEl.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
-    wrap.querySelector(".vitruvian").style.transform = `rotateY(${px * 5}deg) rotateX(${py * -5}deg)`;
+    wrap.querySelector(".vitruvian-img").style.transform = `rotateY(${px * 5}deg) rotateX(${py * -5}deg)`;
   });
   gateEl.addEventListener("mouseleave", () => {
-    wrap.querySelector(".vitruvian").style.transform = "rotateY(0deg) rotateX(0deg)";
+    wrap.querySelector(".vitruvian-img").style.transform = "rotateY(0deg) rotateX(0deg)";
   });
 })();
