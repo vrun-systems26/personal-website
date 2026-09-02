@@ -23,8 +23,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=99">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,380;0,460;0,560;0,680;1,460;1,560&family=Literata:ital,opsz,wght@0,18..144,400;0,18..144,500;0,18..144,600;1,18..144,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=104">
 
 <script type="application/ld+json">
 {
@@ -57,177 +57,79 @@
 
 <div class="boot-overlay" aria-hidden="true">
   <div class="boot-lines">
-    <p class="boot-line boot-green">SYSTEM: ONLINE</p>
-    <p class="boot-line boot-blue">ENGINEER: VARUN CHILUKURI</p>
-    <p class="boot-line boot-purple">STATUS: BUILDING</p>
+    <p class="boot-line boot-green">ARCHIVE: UNSEALED</p>
+    <p class="boot-line boot-blue">AUTHOR: VARUN CHILUKURI</p>
+    <p class="boot-line boot-purple">AT THE BENCH, STILL BUILDING</p>
   </div>
 </div>
 
 <div class="grain-overlay"></div>
 
-<!-- ============ FIXED GATE: BLUEPRINT ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="sketchy" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.045 0.05" numOctaves="2" seed="7" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- ============ FIXED GATE: THE WORKSHOP DESK ============ -->
 <div class="gate" id="gate">
-  <div class="blueprint-titleblock">
-    <h1 class="hero-title tb-title"><span class="accent-underline">engineering</span> in the bay</h1>
-    <div class="tb-name">VARUN CHILUKURI</div>
-    <p class="tb-overline"><span class="dot"></span> STUDENT @ LELAND HIGH SCHOOL · 2× BAY AREA HACKATHON AWARD RECIPIENT</p>
+  <div class="codex-page" id="codexPage">
+    <span class="codex-margin-note note-1">est. at the bench</span>
+    <header class="codex-header">
+      <svg class="codex-construction" viewBox="0 0 300 160" aria-hidden="true"><circle cx="150" cy="80" r="76"/><rect x="86" y="12" width="128" height="136"/><line x1="150" y1="4" x2="150" y2="156"/><line x1="12" y1="80" x2="288" y2="80"/></svg>
+      <h1 class="hero-title codex-title"><span class="accent-underline">engineering</span> in the bay</h1>
+      <p class="codex-byline">Student Engineer &middot; Robotics, Mechatronics &amp; Embedded Systems &middot; Leland High School</p>
+    </header>
+
+    <div class="codex-plates">
+      <button type="button" class="codex-plate" data-card="about" style="--r:-2.2deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="28" cy="12" r="2.6" stroke-width="2"/><line x1="28" y1="14" x2="16" y2="48" stroke-width="2.2" stroke-linecap="round"/><line x1="28" y1="14" x2="40" y2="48" stroke-width="2.2" stroke-linecap="round"/><circle cx="16" cy="48" r="1.6" fill="currentColor" stroke="none"/><circle cx="40" cy="48" r="1.6" fill="currentColor" stroke="none"/><line x1="19" y1="36" x2="37" y2="36" stroke-width="1.3" opacity="0.6"/><line x1="30" y1="20" x2="34" y2="19" stroke-width="0.9" opacity="0.55"/><line x1="31" y1="26" x2="35.5" y2="25" stroke-width="0.9" opacity="0.55"/><line x1="32" y1="32" x2="37" y2="31" stroke-width="0.9" opacity="0.55"/><line x1="33" y1="38" x2="38.5" y2="37" stroke-width="0.9" opacity="0.55"/></svg>
+        <span class="plate-label">About</span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="fetch" style="--r:1.6deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="28" cy="28" r="11" stroke-width="2"/><circle cx="28" cy="28" r="4" stroke-width="1.8"/><g stroke-width="2.4"><line x1="28" y1="5" x2="28" y2="12"/><line x1="28" y1="44" x2="28" y2="51"/><line x1="5" y1="28" x2="12" y2="28"/><line x1="44" y1="28" x2="51" y2="28"/><line x1="11.9" y1="11.9" x2="16.3" y2="16.3"/><line x1="39.7" y1="39.7" x2="44.1" y2="44.1"/><line x1="11.9" y1="44.1" x2="16.3" y2="39.7"/><line x1="39.7" y1="16.3" x2="44.1" y2="11.9"/></g><path d="M34 24 A 11 11 0 0 1 34 32" stroke-width="1" opacity="0.5"/><path d="M36 22 A 14 14 0 0 1 36 34" stroke-width="0.8" opacity="0.4"/></svg>
+        <span class="plate-label">Fetch</span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="street-sweeper" style="--r:-1deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><path d="M10 46 L10 10 L46 46 Z" stroke-width="2.2" stroke-linejoin="round"/><line x1="10" y1="18" x2="15" y2="18" stroke-width="1.2" opacity="0.6"/><line x1="10" y1="25" x2="15" y2="25" stroke-width="1.2" opacity="0.6"/><line x1="10" y1="32" x2="15" y2="32" stroke-width="1.2" opacity="0.6"/><line x1="10" y1="39" x2="15" y2="39" stroke-width="1.2" opacity="0.6"/><line x1="24" y1="30" x2="30" y2="36" stroke-width="0.8" opacity="0.45"/><line x1="28" y1="26" x2="34" y2="32" stroke-width="0.8" opacity="0.45"/><line x1="32" y1="22" x2="38" y2="28" stroke-width="0.8" opacity="0.45"/></svg>
+        <span class="plate-label">Street Sweeper</span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="hope" style="--r:2.4deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><path d="M44 7 C 34 12, 19 25, 12 46" stroke-width="2.2" stroke-linecap="round"/><path d="M44 7 C 39 16, 28 21, 19 30" stroke-width="1.1" opacity="0.6"/><path d="M40 12 C 35 18, 27 22, 20 28" stroke-width="0.9" opacity="0.45"/><path d="M36 17 C 32 21, 26 24, 21 27" stroke-width="0.8" opacity="0.4"/><path d="M12 46 L7 51" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="plate-label">Hope</span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="arm" style="--r:-1.8deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><rect x="6" y="21" width="21" height="11" rx="2" transform="rotate(-18 16.5 26.5)" stroke-width="2"/><rect x="29" y="21" width="21" height="11" rx="2" transform="rotate(18 39.5 26.5)" stroke-width="2"/><circle cx="28" cy="27" r="4" stroke-width="1.8"/><line x1="10" y1="24" x2="14" y2="23" stroke-width="0.9" opacity="0.5"/><line x1="11" y1="28" x2="15" y2="27" stroke-width="0.9" opacity="0.5"/><line x1="42" y1="24" x2="46" y2="23" stroke-width="0.9" opacity="0.5"/><line x1="41" y1="28" x2="45" y2="27" stroke-width="0.9" opacity="0.5"/></svg>
+        <span class="plate-label">Robotic Arm<em>HocDiuTempusSumpsit</em></span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="morebuilds" style="--r:1.2deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><polygon points="28,6 44,16 44,36 28,46 12,36 12,16" stroke-width="2.2" stroke-linejoin="round"/><circle cx="28" cy="26" r="7" stroke-width="1.8"/><line x1="33" y1="14" x2="38" y2="17" stroke-width="0.9" opacity="0.5"/><line x1="33" y1="20" x2="39" y2="23" stroke-width="0.9" opacity="0.5"/><line x1="33" y1="26" x2="40" y2="29" stroke-width="0.9" opacity="0.5"/></svg>
+        <span class="plate-label">More Builds</span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="skills" style="--r:-2.6deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><path d="M28 9 C 16 16, 11 28, 16 45" stroke-width="2.2" stroke-linecap="round"/><path d="M28 9 C 40 16, 45 28, 40 45" stroke-width="2.2" stroke-linecap="round"/><circle cx="28" cy="9" r="2.4" stroke-width="1.8"/><line x1="22" y1="18" x2="26" y2="17" stroke-width="0.9" opacity="0.5"/><line x1="20" y1="26" x2="24.5" y2="25" stroke-width="0.9" opacity="0.5"/><line x1="19" y1="34" x2="24" y2="33" stroke-width="0.9" opacity="0.5"/></svg>
+        <span class="plate-label">Skills</span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="awards" style="--r:1.8deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="28" cy="21" r="11.5" stroke-width="2.2"/><path d="M19 30 L13 49 L28 41 L43 49 L37 30" stroke-width="2" stroke-linejoin="round"/><path d="M23 15 A 8 8 0 0 1 23 27" stroke-width="0.9" opacity="0.5"/><path d="M26 12 A 11 11 0 0 1 26 30" stroke-width="0.75" opacity="0.4"/></svg>
+        <span class="plate-label">Awards</span>
+      </button>
+
+      <button type="button" class="codex-plate" data-card="contact" style="--r:-1.4deg;">
+        <svg class="plate-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" aria-hidden="true"><rect x="7" y="14" width="42" height="30" rx="2" stroke-width="2.2"/><path d="M7 16 L28 33 L49 16" stroke-width="2" stroke-linejoin="round"/><line x1="12" y1="40" x2="20" y2="40" stroke-width="1" opacity="0.5"/><line x1="36" y1="40" x2="44" y2="40" stroke-width="1" opacity="0.5"/></svg>
+        <span class="plate-label">Contact</span>
+      </button>
+    </div>
+    <span class="codex-margin-note note-2">select a plate &raquo;</span>
   </div>
-
-  <p class="blueprint-hint">SELECT A PART TO EXPLORE <span class="hint-arrow">↓</span></p>
-
-  <div class="blueprint-arm-outer">
-  <div class="blueprint-arm-wrap">
-    <img class="blueprint-arm-img" src="images/arm-blueprint.webp" alt="Blueprint-style render of a robotic arm, shown from a diagonal side angle. Select a labeled axis to open that part of the portfolio.">
-
-    <span class="bp-fact-html title">MECHANICAL ARM ASSEMBLY</span>
-    <span class="bp-fact-html corner tr">PAYLOAD: 250g MAX</span>
-    <span class="bp-fact-html corner tr2">REPEATABILITY: &plusmn;0.5mm</span>
-    <span class="bp-fact-html corner br">MATERIAL: 6061-T6 AL</span>
-    <span class="bp-fact-html corner br2">FINISH: ANODIZED</span>
-
-    <div class="bp-dim-html" style="left:39%; width:24%; top:95%;">
-      <span class="bp-dim-line"></span>
-      <span class="bp-dim-text">220mm</span>
-    </div>
-    <span class="bp-angle-html" style="left:47%; top:47%;">97&deg;</span>
-    <span class="bp-angle-html" style="left:57%; top:66%;">112&deg;</span>
-    <span class="bp-angle-html" style="left:50%; top:44%;">76&deg;</span>
-    <span class="bp-angle-html" style="left:63%; top:33%;">58&deg;</span>
-    <span class="bp-angle-html" style="left:62%; top:78%;">180&deg;</span>
-
-    <div class="bp-dim-html" style="left:59%; width:1px; top:44%;" data-orient="v">
-      <span class="bp-dim-line bp-dim-line-v" style="height:80px;"></span>
-      <span class="bp-dim-text bp-dim-text-v">185mm</span>
-    </div>
-    <div class="bp-dim-html" style="left:30%; width:1px; top:23%;" data-orient="v">
-      <span class="bp-dim-line bp-dim-line-v" style="height:55px;"></span>
-      <span class="bp-dim-text bp-dim-text-v">142mm</span>
-    </div>
-
-    <span class="arm-part-highlight" data-for="about"></span>
-    <span class="arm-part-highlight" data-for="fetch"></span>
-    <span class="arm-part-highlight" data-for="street-sweeper"></span>
-    <span class="arm-part-highlight" data-for="hope"></span>
-    <span class="arm-part-highlight" data-for="arm"></span>
-    <span class="arm-part-highlight" data-for="morebuilds"></span>
-    <span class="arm-part-highlight" data-for="skills"></span>
-    <span class="arm-part-highlight" data-for="awards"></span>
-
-    <a href="#" class="arm-hotspot dir-down-right" data-card="about" aria-label="Open About" style="left:51.2%; top:82%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader-h"></span>
-      <span class="arm-hotspot-leader-v"></span>
-      <span class="arm-hotspot-label"><b>01 BASE</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-left" data-card="fetch" aria-label="Open Fetch" style="left:49.9%; top:69.6%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>02 SHOULDER</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-left" data-card="street-sweeper" aria-label="Open Street Sweeper" style="left:39.2%; top:35.6%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>03 ELBOW</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-left" data-card="hope" aria-label="Open Hope" style="left:43.1%; top:56.3%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>04 FOREARM</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-up" data-card="arm" aria-label="Open HocDiuTempusSumpsit" style="left:46.4%; top:22.3%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>05 WRIST</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-right" data-card="morebuilds" aria-label="Open More Builds" style="left:51.4%; top:8%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>06 KNUCKLE</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-right" data-card="skills" aria-label="Open Skills" style="left:65.2%; top:23.4%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>07 GRIPPER</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-down" data-card="awards" aria-label="Open Awards" style="left:57.7%; top:14.9%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>08 COUPLING</b></span>
-    </a>
-
-    <a href="#" class="arm-hotspot dir-left" data-card="contact" aria-label="Open Contact" style="left:38.3%; top:85.5%;">
-      <span class="arm-hotspot-dot"></span>
-      <span class="arm-hotspot-leader"></span>
-      <span class="arm-hotspot-label"><b>09 CONTACT</b></span>
-    </a>
-    <svg class="bp-tool bp-tool-standalone bp-tool-caliper" viewBox="0 0 240 80" aria-hidden="true">
-      <line x1="12" y1="12" x2="12" y2="34" stroke-width="2.4"/>
-      <line x1="12" y1="46" x2="12" y2="70" stroke-width="2.4"/>
-      <line x1="12" y1="40" x2="220" y2="40" stroke-width="1.6"/>
-      <line x1="20" y1="34" x2="20" y2="46"/><line x1="32" y1="35" x2="32" y2="45"/><line x1="44" y1="34" x2="44" y2="46"/>
-      <line x1="56" y1="35" x2="56" y2="45"/><line x1="68" y1="34" x2="68" y2="46"/><line x1="80" y1="35" x2="80" y2="45"/>
-      <line x1="92" y1="34" x2="92" y2="46"/><line x1="104" y1="35" x2="104" y2="45"/><line x1="116" y1="34" x2="116" y2="46"/>
-      <line x1="128" y1="35" x2="128" y2="45"/>
-      <g class="bp-caliper-slider">
-        <rect x="150" y="18" width="34" height="44" rx="2" stroke-width="1.6"/>
-        <line x1="150" y1="18" x2="120" y2="4" stroke-width="2"/>
-        <line x1="150" y1="62" x2="120" y2="76" stroke-width="2"/>
-        <rect x="156" y="26" width="22" height="14" stroke-width="1.2"/>
-        <text class="bp-caliper-value" x="167" y="36" text-anchor="middle">42.85</text>
-        <circle cx="167" cy="52" r="8" stroke-width="1.4"/>
-        <line x1="167" y1="45" x2="167" y2="48"/><line x1="167" y1="56" x2="167" y2="59"/>
-        <line x1="160" y1="52" x2="163" y2="52"/><line x1="171" y1="52" x2="174" y2="52"/>
-      </g>
-      <line x1="184" y1="40" x2="220" y2="40" stroke-width="2.4"/>
-    </svg>
-
-    <svg class="bp-tool bp-tool-standalone bp-tool-protractor" viewBox="-92 -92 184 140" aria-hidden="true">
-      <path d="M -80 0 A 80 80 0 0 1 80 0" fill="none" stroke-width="1.8"/>
-      <path d="M -66 0 A 66 66 0 0 1 66 0" fill="none" stroke-width="1" opacity="0.55"/>
-      <line x1="-80" y1="0" x2="80" y2="0" stroke-width="1.6"/>
-      <line x1="0" y1="0" x2="0" y2="-80" stroke-width="1"/>
-      <line x1="-69.3" y1="-40" x2="-63" y2="-36.4"/><line x1="69.3" y1="-40" x2="63" y2="-36.4"/>
-      <line x1="-40" y1="-69.3" x2="-36.4" y2="-63"/><line x1="40" y1="-69.3" x2="36.4" y2="-63"/>
-      <line x1="-56.6" y1="-56.6" x2="-51.5" y2="-51.5"/><line x1="56.6" y1="-56.6" x2="51.5" y2="-51.5"/>
-      <line x1="-20.9" y1="-77.7" x2="-19" y2="-70.7"/><line x1="20.9" y1="-77.7" x2="19" y2="-70.7"/>
-      <line x1="-80" y1="0" x2="-70" y2="0"/><line x1="80" y1="0" x2="70" y2="0"/>
-      <text class="bp-protractor-value" x="0" y="35">0&#176;</text>
-      <g class="bp-protractor-needle">
-        <line x1="0" y1="0" x2="72" y2="0" stroke-width="1.8"/>
-        <circle cx="0" cy="0" r="3.2" fill="currentColor"/>
-      </g>
-    </svg>
-
-    <svg class="bp-tool bp-tool-standalone bp-tool-pliers" viewBox="-24 -50 48 92" aria-hidden="true">
-      <g class="bp-pliers-arm-l">
-        <path d="M -5 -46 Q -14 -20 -6 0 L -3 34" fill="none" stroke-width="2"/>
-        <line x1="-9" y1="-40" x2="-1" y2="-38" stroke-width="1.6"/>
-        <line x1="-9" y1="-30" x2="-2" y2="-29" stroke-width="1.6"/>
-      </g>
-      <g class="bp-pliers-arm-r">
-        <path d="M 5 -46 Q 14 -20 6 0 L 3 34" fill="none" stroke-width="2"/>
-        <line x1="9" y1="-40" x2="1" y2="-38" stroke-width="1.6"/>
-        <line x1="9" y1="-30" x2="2" y2="-29" stroke-width="1.6"/>
-      </g>
-      <circle cx="0" cy="0" r="4.5" stroke-width="1.6"/>
-    </svg>
-
-    <div class="gear-mark gear-blueprint-1" aria-hidden="true">
-      <svg viewBox="0 0 100 100" class="spin-slow"><g fill="currentColor"><rect x="47" y="4" width="6" height="10"/><rect x="47" y="4" width="6" height="10" transform="rotate(45 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(90 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(135 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(180 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(225 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(270 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(315 50 50)"/></g><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
-    </div>
-    <div class="gear-mark gear-blueprint-2" aria-hidden="true">
-      <svg viewBox="0 0 100 100" class="spin-reverse-fast"><g fill="currentColor"><rect x="47" y="4" width="6" height="10"/><rect x="47" y="4" width="6" height="10" transform="rotate(45 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(90 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(135 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(180 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(225 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(270 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(315 50 50)"/></g><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
-    </div>
-  </div>
-  </div>
-
 
   <div class="marquee-strip" aria-hidden="true">
     <div class="marquee-track">
@@ -240,7 +142,6 @@
     </div>
   </div>
 </div>
-
 <!-- ============ CARDS ============ -->
 <div class="card" data-card="about">
   <button class="card-close" data-close aria-label="Close">✕</button>
@@ -663,6 +564,6 @@
 </section>
 </div>
 
-<script src="js/script.js?v=20"></script>
+<script src="js/script.js?v=22"></script>
 </body>
 </html>

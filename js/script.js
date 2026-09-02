@@ -35,31 +35,8 @@ function openCard(name) {
   navLinks.forEach((l) => l.classList.toggle("active", l.dataset.card === name));
 }
 
-document.querySelectorAll(".hotspot[data-card], .arm-hotspot[data-card], [data-nav][data-card]").forEach((el) => {
+document.querySelectorAll(".hotspot[data-card], .codex-plate[data-card], [data-nav][data-card]").forEach((el) => {
   el.addEventListener("click", (e) => {
-    e.preventDefault();
-    openCard(el.dataset.card);
-  });
-});
-
-// ---------- hover a blueprint label OR the arm part itself, both light up and both click through ----------
-document.querySelectorAll(".arm-hotspot[data-card]").forEach((el) => {
-  const highlight = document.querySelector(`.arm-part-highlight[data-for="${el.dataset.card}"]`);
-  if (!highlight) return;
-
-  el.addEventListener("mouseenter", () => highlight.classList.add("is-active"));
-  el.addEventListener("mouseleave", () => highlight.classList.remove("is-active"));
-  el.addEventListener("focus", () => highlight.classList.add("is-active"));
-  el.addEventListener("blur", () => highlight.classList.remove("is-active"));
-
-  highlight.setAttribute("tabindex", "0");
-  highlight.setAttribute("role", "button");
-  highlight.setAttribute("aria-label", el.getAttribute("aria-label"));
-  highlight.addEventListener("mouseenter", () => el.classList.add("hover-linked"));
-  highlight.addEventListener("mouseleave", () => el.classList.remove("hover-linked"));
-  highlight.addEventListener("focus", () => el.classList.add("hover-linked"));
-  highlight.addEventListener("blur", () => el.classList.remove("hover-linked"));
-  highlight.addEventListener("click", (e) => {
     e.preventDefault();
     openCard(el.dataset.card);
   });
@@ -165,43 +142,45 @@ const headingObserver = new IntersectionObserver(
 );
 sectionHeadings.forEach((el) => headingObserver.observe(el));
 
-// ---------- live tool readouts, synced to the CSS-driven needle/slider motion ----------
+// ---------- focus mode: engaging one plate quiets its neighbours ----------
 (function () {
-  const needle = document.querySelector(".bp-protractor-needle");
-  const angleText = document.querySelector(".bp-protractor-value");
-  const slider = document.querySelector(".bp-caliper-slider");
-  const sliderText = document.querySelector(".bp-caliper-value");
-  if (!needle && !slider) return;
+  const gateEl = document.getElementById("gate");
+  if (!gateEl) return;
+  let engaged = 0;
+  const focusOn = () => {
+    engaged++;
+    gateEl.classList.add("is-focusing");
+  };
+  const focusOff = () => {
+    engaged = Math.max(0, engaged - 1);
+    if (engaged === 0) gateEl.classList.remove("is-focusing");
+  };
+  document.querySelectorAll(".codex-plate[data-card]").forEach((el) => {
+    el.addEventListener("mouseenter", focusOn);
+    el.addEventListener("mouseleave", focusOff);
+    el.addEventListener("focus", focusOn);
+    el.addEventListener("blur", focusOff);
+  });
+})();
 
-  function matrixParts(el) {
-    const t = getComputedStyle(el).transform;
-    if (t === "none") return null;
-    const m = t.match(/matrix\(([^)]+)\)/);
-    if (!m) return null;
-    return m[1].split(",").map(Number);
-  }
+// ---------- the desk lamp follows the cursor, and the page tilts with it (desktop, motion-safe) ----------
+(function () {
+  const gateEl = document.getElementById("gate");
+  const page = document.getElementById("codexPage");
+  if (!gateEl || !page) return;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (reduceMotion || !isFinePointer) return;
 
-  const SLIDE_RANGE = 72;
-  const READING_OPEN = 68.4;
-  const READING_CLOSED = 12.15;
-
-  function tick() {
-    if (needle && angleText) {
-      const parts = matrixParts(needle);
-      if (parts) {
-        const deg = Math.round(Math.abs(Math.atan2(parts[1], parts[0]) * (180 / Math.PI)));
-        angleText.textContent = deg + "°";
-      }
-    }
-    if (slider && sliderText) {
-      const parts = matrixParts(slider);
-      if (parts) {
-        const progress = Math.min(1, Math.max(0, -parts[4] / SLIDE_RANGE));
-        const reading = READING_OPEN - progress * (READING_OPEN - READING_CLOSED);
-        sliderText.textContent = reading.toFixed(2);
-      }
-    }
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+  gateEl.addEventListener("mousemove", (e) => {
+    const rect = gateEl.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    gateEl.style.setProperty("--mx", px * 100 + "%");
+    gateEl.style.setProperty("--my", py * 100 + "%");
+    page.style.transform = `rotateX(${6 - (py - 0.5) * 6}deg) rotateY(${(px - 0.5) * 5}deg)`;
+  });
+  gateEl.addEventListener("mouseleave", () => {
+    page.style.transform = "rotateX(6deg) rotateY(0deg)";
+  });
 })();
