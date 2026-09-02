@@ -295,21 +295,23 @@ html, body { height: 100%; overflow: hidden; }
   width: 100%;
 }
 .margin-text {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  z-index: 2;
-  width: 13%;
-  min-width: 6.5rem;
-  overflow: hidden;
-  pointer-events: none;
-  font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: 1.4rem;
-  line-height: 1.5;
-  color: red;
-  opacity: 1;
-  background: yellow;
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  z-index: 999 !important;
+  width: 200px !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+  display: block !important;
+  visibility: visible !important;
+  font-family: sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.4rem !important;
+  line-height: 1.5 !important;
+  color: red !important;
+  opacity: 1 !important;
+  background: yellow !important;
+  border: 10px solid blue !important;
   padding: 0.5rem 0;
 }
 .margin-text.left { left: 1in; text-align: right; }
