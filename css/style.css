@@ -182,27 +182,35 @@ html, body { height: 100%; overflow: hidden; }
     /* fine woven-paper fiber, two crossing directions */
     repeating-linear-gradient(11deg, rgba(58, 40, 16, 0.06) 0 1px, transparent 1px 3px),
     repeating-linear-gradient(-76deg, rgba(58, 40, 16, 0.05) 0 1px, transparent 1px 4px),
-    /* a scatter of hard-edged, irregularly-sized blotches - not a smooth gradient wash */
-    radial-gradient(circle 60px at 4% 8%, rgba(90, 58, 20, 0.4), rgba(90, 58, 20, 0.4) 60%, transparent 62%),
-    radial-gradient(circle 34px at 9% 5%, rgba(70, 44, 14, 0.32), rgba(70, 44, 14, 0.32) 55%, transparent 58%),
-    radial-gradient(circle 90px at 95% 6%, rgba(94, 62, 24, 0.35), rgba(94, 62, 24, 0.35) 58%, transparent 61%),
-    radial-gradient(circle 46px at 88% 14%, rgba(66, 42, 14, 0.3), rgba(66, 42, 14, 0.3) 55%, transparent 58%),
-    radial-gradient(circle 120px at 2% 55%, rgba(90, 58, 20, 0.32), rgba(90, 58, 20, 0.32) 55%, transparent 60%),
-    radial-gradient(circle 70px at 97% 62%, rgba(78, 50, 18, 0.34), rgba(78, 50, 18, 0.34) 55%, transparent 60%),
-    radial-gradient(circle 55px at 92% 90%, rgba(94, 62, 24, 0.36), rgba(94, 62, 24, 0.36) 58%, transparent 62%),
-    radial-gradient(circle 100px at 96% 86%, rgba(66, 42, 14, 0.22), rgba(66, 42, 14, 0.22) 56%, transparent 60%),
-    radial-gradient(circle 130px at 6% 94%, rgba(90, 58, 20, 0.3), rgba(90, 58, 20, 0.3) 56%, transparent 60%),
-    radial-gradient(circle 40px at 14% 88%, rgba(70, 44, 14, 0.3), rgba(70, 44, 14, 0.3) 55%, transparent 58%),
-    radial-gradient(circle 50px at 48% 2%, rgba(120, 90, 45, 0.24), rgba(120, 90, 45, 0.24) 55%, transparent 60%),
-    radial-gradient(circle 65px at 30% 96%, rgba(120, 90, 45, 0.22), rgba(120, 90, 45, 0.22) 55%, transparent 60%),
-    radial-gradient(circle at 22% 30%, rgba(70, 48, 20, 0.55), rgba(70,48,20,0.55) 1.4%, transparent 2.4%),
-    radial-gradient(circle at 78% 40%, rgba(70, 48, 20, 0.45), rgba(70,48,20,0.45) 1.1%, transparent 2%),
-    radial-gradient(circle at 15% 70%, rgba(70, 48, 20, 0.5), rgba(70,48,20,0.5) 1.2%, transparent 2.1%),
-    radial-gradient(circle at 85% 75%, rgba(70, 48, 20, 0.4), rgba(70,48,20,0.4) 1%, transparent 1.8%),
-    radial-gradient(circle at 60% 12%, rgba(70, 48, 20, 0.4), rgba(70,48,20,0.4) 0.9%, transparent 1.6%),
-    linear-gradient(135deg, #d8bd8a 0%, #e7d3a3 28%, #efe0b9 50%, #ddc593 74%, #c9a874 100%),
+    /* ragged, hand-shaped ink stains, softly blurred so they read as barely-there age rather than decoration */
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 85.7 49.5 L 75.3 71.2 L 65.1 83.2 L 48.3 84.3 L 21.0 80.9 L 23.9 61.2 L 7.7 43.1 L 37.2 33.4 L 50.1 2.7 L 67.0 16.8 L 65.7 37.4 Z' fill='%236b4a20' fill-opacity='0.14' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 73.5 53.3 L 91.0 75.4 L 56.2 72.3 L 34.1 74.9 L 24.4 56.1 L 24.5 36.5 L 28.1 9.2 L 60.5 5.1 L 67.0 37.5 Z' fill='%235c3e1a' fill-opacity='0.11' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 87.8 50.8 L 72.5 66.0 L 70.8 90.1 L 46.9 74.9 L 29.9 81.5 L 9.0 73.6 L 17.6 49.7 L 20.0 26.9 L 34.3 26.2 L 50.0 28.8 L 71.5 15.4 L 87.5 27.2 Z' fill='%2370502a' fill-opacity='0.16' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 85.2 49.0 L 69.3 65.6 L 60.0 67.9 L 49.4 70.0 L 30.3 78.2 L 10.9 55.5 L 19.7 42.3 L 32.3 27.0 L 38.3 7.8 L 60.2 29.5 L 67.1 35.6 Z' fill='%235a3c18' fill-opacity='0.1' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 96.5 44.3 L 81.7 75.7 L 45.8 90.8 L 30.2 72.3 L 2.8 46.9 L 26.4 24.0 L 48.9 18.7 L 74.0 28.9 Z' fill='%23654418' fill-opacity='0.13' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 81.9 45.9 L 74.6 71.1 L 53.2 94.2 L 20.5 78.4 L 16.4 45.7 L 33.3 33.6 L 51.8 28.4 L 66.6 32.0 Z' fill='%23604020' fill-opacity='0.15' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 78.9 52.6 L 86.8 72.6 L 63.9 80.3 L 37.9 85.2 L 22.0 75.3 L 6.0 50.0 L 8.4 28.0 L 32.8 10.7 L 63.6 8.6 L 71.7 30.9 Z' fill='%2354381a' fill-opacity='0.1' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 85.7 49.5 L 75.3 71.2 L 65.1 83.2 L 48.3 84.3 L 21.0 80.9 L 23.9 61.2 L 7.7 43.1 L 37.2 33.4 L 50.1 2.7 L 67.0 16.8 L 65.7 37.4 Z' fill='%236b4a20' fill-opacity='0.12' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 87.8 50.8 L 72.5 66.0 L 70.8 90.1 L 46.9 74.9 L 29.9 81.5 L 9.0 73.6 L 17.6 49.7 L 20.0 26.9 L 34.3 26.2 L 50.0 28.8 L 71.5 15.4 L 87.5 27.2 Z' fill='%2370502a' fill-opacity='0.12' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 96.5 44.3 L 81.7 75.7 L 45.8 90.8 L 30.2 72.3 L 2.8 46.9 L 26.4 24.0 L 48.9 18.7 L 74.0 28.9 Z' fill='%23654418' fill-opacity='0.1' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-15 -15 130 130'><filter id='b'><feGaussianBlur stdDeviation='5'/></filter><path d='M 73.5 53.3 L 91.0 75.4 L 56.2 72.3 L 34.1 74.9 L 24.4 56.1 L 24.5 36.5 L 28.1 9.2 L 60.5 5.1 L 67.0 37.5 Z' fill='%235c3e1a' fill-opacity='0.1' filter='url(%23b)'/></svg>"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, overlay;
+  background-position:
+    0 0, 0 0,
+    6% 10%, 92% 8%, 88% 85%, 8% 90%, 50% 4%, 25% 95%, 4% 55%,
+    78% 45%, 20% 30%, 65% 70%, 40% 92%,
+    0 0;
+  background-size:
+    auto, auto,
+    190px, 130px, 200px, 150px, 80px, 100px, 160px,
+    55px, 40px, 50px, 38px,
+    auto;
+  background-repeat:
+    repeat, repeat,
+    no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat;
+  background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, normal, overlay;
 }
 .gate::after {
   content: "";
@@ -296,18 +304,26 @@ html, body { height: 100%; overflow: hidden; }
 
 .figure-highlight {
   position: absolute;
-  border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(ellipse, rgba(var(--accent-rgb), 0.55) 0%, rgba(var(--accent-rgb), 0.4) 60%, rgba(var(--accent-rgb), 0.12) 100%);
-  filter: blur(2px);
+  background: radial-gradient(ellipse, rgba(var(--accent-rgb), 0.6) 0%, rgba(var(--accent-rgb), 0.42) 55%, rgba(var(--accent-rgb), 0.15) 100%);
+  filter: blur(1.5px);
   mix-blend-mode: multiply;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
   z-index: 2;
 }
-.fh-oval { border-radius: 44%; }
 .figure-highlight.is-active { opacity: 1; }
+/* each glow a ragged ink-blot shape, not a perfect circle */
+.figure-highlight[data-for="about"] { clip-path: polygon(94.1% 43.7%, 78.2% 94.4%, 36.3% 91.7%, 5.5% 65.2%, 7.2% 37.6%, 26.4% 0%, 80.6% 23.2%); }
+.figure-highlight[data-for="fetch"] { clip-path: polygon(98.4% 45.1%, 73.8% 95.2%, 41.4% 88.9%, 0% 84.7%, 17.7% 30.1%, 40.2% 0%, 78.9% 23.9%); }
+.figure-highlight[data-for="street-sweeper"] { clip-path: polygon(82.9% 46.6%, 71.5% 81.0%, 40.6% 83.5%, 0.1% 63.1%, 20.2% 38.6%, 44.7% 0%, 69.0% 22.7%); }
+.figure-highlight[data-for="hope"] { clip-path: polygon(98.0% 42.0%, 88.9% 94.9%, 37.5% 95.0%, 12.4% 60.6%, 13.8% 25.9%, 40.6% 0%, 85.3% 15.5%); }
+.figure-highlight[data-for="arm"] { clip-path: polygon(86.9% 56.6%, 71.2% 76.8%, 48.7% 84.8%, 14.9% 64.6%, 4.0% 23.9%, 43.6% 18.6%, 69.4% 15.9%); }
+.figure-highlight[data-for="morebuilds"] { clip-path: polygon(99.9% 53.4%, 83.9% 80.5%, 51.6% 83.7%, 29.3% 94.4%, 5.5% 73.6%, 0% 33.5%, 17.2% 3.5%, 63.3% 13.4%, 71.6% 27.9%); }
+.figure-highlight[data-for="skills"] { clip-path: polygon(100% 51.7%, 85.0% 79.1%, 63.3% 100%, 36.3% 80.1%, 7.6% 72.1%, 8.5% 27.5%, 25.3% 21.2%, 50.6% 10.0%, 92.6% 9.0%); }
+.figure-highlight[data-for="awards"] { clip-path: polygon(87.4% 43.5%, 73.1% 71.7%, 33.6% 95.6%, 21.9% 65.0%, 19.8% 30.6%, 34.7% 10.5%, 71.9% 13.1%); }
+.figure-highlight[data-for="contact"] { clip-path: polygon(100% 49.7%, 82.1% 76.2%, 53.9% 84.8%, 22.1% 69.9%, 8.0% 49.0%, 31.2% 23.3%, 43.6% 6.5%, 74.0% 14.8%); }
 
 .figure-hotspot {
   position: absolute;
@@ -344,10 +360,10 @@ html, body { height: 100%; overflow: hidden; }
   height: 40px;
 }
 .fh-leader { position: absolute; background: var(--accent); opacity: 0.7; box-shadow: 0 0 3px rgba(var(--accent-rgb), 0.5); transition: opacity 0.2s ease; }
-.dir-right .fh-leader { left: 0; top: 0; width: 40px; height: 1.4px; }
-.dir-left .fh-leader { right: 0; top: 0; width: 40px; height: 1.4px; }
-.dir-up .fh-leader { bottom: 0; left: 0; width: 1.4px; height: 36px; }
-.dir-down .fh-leader { top: 0; left: 0; width: 1.4px; height: 36px; }
+.dir-right .fh-leader { left: 0; top: 0; width: 22px; height: 1.4px; }
+.dir-left .fh-leader { right: 0; top: 0; width: 22px; height: 1.4px; }
+.dir-up .fh-leader { bottom: 0; left: 0; width: 1.4px; height: 20px; }
+.dir-down .fh-leader { top: 0; left: 0; width: 1.4px; height: 20px; }
 .fh-label {
   position: absolute;
   font-family: var(--font-mono);
