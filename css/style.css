@@ -483,6 +483,13 @@ html, body { height: 100%; overflow: hidden; }
 @media (max-height: 720px) {
   .folio-header .folio-title { font-size: clamp(1.2rem, 4.6vw, 1.6rem); margin-bottom: 0.3rem; }
   .folio-byline { font-size: 0.66rem; }
+  .scribble, .marginalia { display: none; }
+  .margin-text { font-size: 0.72rem; width: 10%; min-width: 5.2rem; }
+  .folio-signature { font-size: clamp(1.2rem, 2.6vw, 1.8rem); bottom: 1.6rem; right: 1.4rem; }
+}
+
+/* only genuinely short windows lose the margin writing and signature entirely */
+@media (max-height: 520px) {
   .scribble, .marginalia, .folio-signature, .margin-text { display: none; }
 }
 /* ---------- card overlay system ---------- */
