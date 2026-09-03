@@ -244,15 +244,21 @@ html, body { height: 100%; overflow: hidden; }
   opacity: 0.4;
   pointer-events: none;
 }
-.s1 { width: 74px; top: 1.4rem; right: 5%; transform: rotate(6deg); }
-.s2 { width: 54px; bottom: 5.2rem; left: 4%; transform: rotate(-8deg); }
-.s3 { width: 108px; top: 5.6rem; left: 2%; transform: rotate(-2deg); opacity: 0.3; }
-.s4 { width: 56px; top: 4.4rem; right: 3%; transform: rotate(10deg); opacity: 0.32; }
+.s3 { width: 90px; left: 21rem; top: 3%; transform: rotate(-2deg); opacity: 0.3; }
+.s5 { width: 110px; left: 21rem; top: 12%; transform: rotate(-3deg); }
+.s9 { width: 50px; left: 23.5rem; top: 17%; transform: rotate(-6deg); }
+.s2 { width: 54px; left: 21.5rem; top: 40%; transform: rotate(-8deg); }
+.s10 { width: 100px; left: 24rem; top: 51%; transform: rotate(4deg); }
+.s11 { width: 56px; left: 22.5rem; top: 63%; transform: rotate(8deg); }
+.s7 { width: 120px; left: 22rem; top: 84%; transform: rotate(2deg); }
 .pencil { stroke-width: 0.6; opacity: 0.22; }
-.s5 { width: 190px; top: 8%; left: 1%; transform: rotate(-3deg); }
-.s6 { width: 44px; bottom: 8rem; right: 1.5%; transform: rotate(4deg); }
-.s7 { width: 150px; bottom: 4.5rem; left: 30%; transform: rotate(2deg); }
-.s8 { width: 100px; top: 10%; right: 8%; transform: rotate(8deg); }
+.s4 { width: 50px; right: 21.8rem; top: 3%; transform: rotate(10deg); opacity: 0.32; }
+.s8 { width: 90px; right: 21.5rem; top: 12%; transform: rotate(8deg); }
+.s12 { width: 80px; right: 24rem; top: 74%; transform: rotate(-5deg); }
+.s1 { width: 66px; right: 21.5rem; top: 42%; transform: rotate(6deg); }
+.s13 { width: 54px; right: 24.5rem; top: 56%; transform: rotate(10deg); }
+.s14 { width: 80px; right: 22.5rem; top: 66%; transform: rotate(-8deg); }
+.s6 { width: 24px; right: 23rem; top: 84%; transform: rotate(4deg); }
 
 .folio-header { text-align: center; position: relative; z-index: 3; margin-bottom: 0.1rem; padding: 0 1.4rem; }
 .folio-header .folio-title {
@@ -483,7 +489,6 @@ html, body { height: 100%; overflow: hidden; }
 @media (max-height: 720px) {
   .folio-header .folio-title { font-size: clamp(1.2rem, 4.6vw, 1.6rem); margin-bottom: 0.3rem; }
   .folio-byline { font-size: 0.66rem; }
-  .scribble, .marginalia { display: none; }
   .margin-text { font-size: 0.72rem; width: 10%; min-width: 5.2rem; }
   .folio-signature { font-size: clamp(1.2rem, 2.6vw, 1.8rem); bottom: 1.6rem; right: 1.4rem; }
 }
