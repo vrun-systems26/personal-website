@@ -299,9 +299,9 @@ html, body { height: 100%; overflow: hidden; }
   top: 0;
   bottom: 0;
   z-index: 2;
-  width: 13%;
-  min-width: 6.2rem;
-  max-width: 9.5rem;
+  width: 16%;
+  min-width: 6.5rem;
+  max-width: 11.5rem;
   overflow: hidden;
   pointer-events: none;
   font-family: var(--font-hand);
@@ -317,8 +317,8 @@ html, body { height: 100%; overflow: hidden; }
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 24px, black calc(100% - 150px), transparent calc(100% - 40px));
   mask-image: linear-gradient(to bottom, transparent 0, black 24px, black calc(100% - 150px), transparent calc(100% - 40px));
 }
-.margin-text.left { left: 1in; text-align: right; }
-.margin-text.right { right: 1in; text-align: left; }
+.margin-text.left { left: 0.3in; text-align: right; }
+.margin-text.right { right: 0.3in; text-align: left; }
 .margin-text strong {
   display: inline-block;
   font-family: var(--font-mono);
