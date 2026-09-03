@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,380;0,460;0,560;0,680;1,460;1,560&family=Literata:ital,opsz,wght@0,18..144,400;0,18..144,500;0,18..144,600;1,18..144,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=138">
+<link rel="stylesheet" href="css/style.css?v=139">
 
 <script type="application/ld+json">
 {
@@ -103,6 +103,7 @@
     <span class="figure-highlight" data-for="street-sweeper" style="left:53.5%; top:32.4%; width:9%; height:5%; transform-origin:center; transform:translate(-50%,-50%) rotate(-10deg);"></span>
     <span class="figure-highlight" data-for="hope" style="left:52.0%; top:52.1%; width:7%; height:6%; transform-origin:center; transform:translate(-50%,-50%) rotate(30deg);"></span>
     <span class="figure-highlight" data-for="arm" style="left:61.9%; top:29.5%; width:6%; height:5%;"></span>
+    <span class="figure-highlight" data-for="ceres" style="left:42.0%; top:66.0%; width:7%; height:6%; transform-origin:center; transform:translate(-50%,-50%) rotate(20deg);"></span>
     <span class="figure-highlight" data-for="morebuilds" style="left:45.5%; top:57.9%; width:8%; height:8%; transform-origin:center; transform:translate(-50%,-50%) rotate(35deg);"></span>
     <span class="figure-highlight" data-for="skills" style="left:39.2%; top:74.4%; width:6%; height:5%;"></span>
     <span class="figure-highlight" data-for="awards" style="left:53.5%; top:57.9%; width:8%; height:8%; transform-origin:center; transform:translate(-50%,-50%) rotate(-35deg);"></span>
@@ -122,6 +123,9 @@
     </button>
     <button type="button" class="figure-hotspot dir-right" data-card="arm" style="left:61.9%; top:29.5%;">
       <span class="fh-dot"></span><span class="fh-leader"></span><span class="fh-label">Robotic Arm<em>Hand</em></span>
+    </button>
+    <button type="button" class="figure-hotspot dir-right" data-card="ceres" style="left:42.0%; top:66.0%;">
+      <span class="fh-dot"></span><span class="fh-leader"></span><span class="fh-label">Ceres<em>Leg</em></span>
     </button>
     <button type="button" class="figure-hotspot dir-left" data-card="morebuilds" style="left:45.5%; top:57.9%;">
       <span class="fh-dot"></span><span class="fh-leader"></span><span class="fh-label">More Builds<em>Leg</em></span>
@@ -382,6 +386,57 @@
 </section>
 </div>
 
+<!-- ============ CERES ============ -->
+<div class="card" data-card="ceres">
+  <button class="card-close" data-close aria-label="Close">✕</button>
+<section class="section projects">
+  <div class="gear-mark gear-tiny gear-ceres-1" aria-hidden="true">
+    <svg viewBox="0 0 100 100" class="spin-slow"><g fill="currentColor"><rect x="47" y="4" width="6" height="10"/><rect x="47" y="4" width="6" height="10" transform="rotate(45 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(90 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(135 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(180 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(225 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(270 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(315 50 50)"/></g><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
+  </div>
+  <div class="section-head">
+    <span class="section-num">PART 06</span>
+    <h2>Hip Axis</h2>
+  </div>
+  <p class="section-intro">Ceres</p>
+
+  <article class="project-card flagship">
+    <div class="project-media gallery-3">
+      <img src="images/ceres-1.jpg" alt="Ceres agriculture robot, full four-wheel chassis with pan-tilt camera mount">
+      <img src="images/ceres-2.jpg" alt="Ceres electronics close-up, servo turret, wiring, and motor driver board">
+      <img src="images/ceres-3.jpg" alt="Ceres VLM leaf-detection screen, bounding box drawn around a diseased leaf">
+    </div>
+    <div class="project-body">
+      <div class="project-kicker">
+        <span class="badge badge-win">2ND PLACE · OPEN HARDWARE TRACK · BERKELEY ROBOTICS HACKATHON · 80+ TEAMS</span>
+      </div>
+      <h3>Ceres</h3>
+      <p class="project-role">Co-Founder &amp; Hardware Lead; Rishith led the software</p>
+      <p>Ceres is an agriculture robot built to make crop monitoring affordable, since most agriculture robots are expensive and complicated to run. It drives itself through rows of plants and points a pan-tilt camera at the leaves, running a VLM we trained ourselves to spot parasites and diseased leaves and report them back. A rack-and-pinion arm lowers an Adafruit STEMMA soil sensor into the ground at each stop to read moisture, temperature, and soil quality. Built this with my co-founder Rishith in about seven hours: I did the hardware, he did the software, and when our SD card corrupted mid-build we kept the whole thing alive by flashing a USB stick with Pi Imager and running off that instead.</p>
+      <ul class="spec-list">
+        <li><span>Compute</span> Raspberry Pi 4 + Arduino Mega</li>
+        <li><span>Drive</span> 4× DC motors, 4-wheel drivetrain, dual L298N drivers</li>
+        <li><span>Vision</span> Custom-trained VLM for leaf disease &amp; parasite detection</li>
+        <li><span>Soil</span> Adafruit STEMMA soil sensor on a rack-and-pinion (MG90S) insertion arm</li>
+        <li><span>Camera turret</span> 2× MG996R pan-tilt</li>
+      </ul>
+      <div class="skill-tags">
+        <span class="skill-tag">Custom-Trained VLM</span>
+        <span class="skill-tag">Soil Sensor Integration</span>
+        <span class="skill-tag">Rack &amp; Pinion Mechanism</span>
+        <span class="skill-tag">Pan-Tilt Camera Control</span>
+        <span class="skill-tag">DC Motor Drivetrain</span>
+        <span class="skill-tag">Raspberry Pi 4</span>
+        <span class="skill-tag">Arduino Mega</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/vrun-systems26/Ceres/tree/master" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://www.youtube.com/watch?v=oX8thTSngGY" target="_blank" rel="noopener">Demo ↗</a>
+      </div>
+    </div>
+  </article>
+</section>
+</div>
+
 <!-- ============ MORE BUILDS ============ -->
 <div class="card" data-card="morebuilds">
   <button class="card-close" data-close aria-label="Close">✕</button>
@@ -390,7 +445,7 @@
     <svg viewBox="0 0 100 100" class="spin-fast"><g fill="currentColor"><rect x="47" y="4" width="6" height="10"/><rect x="47" y="4" width="6" height="10" transform="rotate(45 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(90 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(135 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(180 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(225 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(270 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(315 50 50)"/></g><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
   </div>
   <div class="section-head">
-    <span class="section-num">PART 06</span>
+    <span class="section-num">PART 07</span>
     <h2>Knuckle Axis</h2>
   </div>
   <p class="section-intro small">More of my projects.</p>
@@ -485,7 +540,7 @@
     <svg viewBox="0 0 100 100" class="spin-fast"><g fill="currentColor"><rect x="47" y="4" width="6" height="10"/><rect x="47" y="4" width="6" height="10" transform="rotate(45 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(90 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(135 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(180 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(225 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(270 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(315 50 50)"/></g><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
   </div>
   <div class="section-head">
-    <span class="section-num">PART 07</span>
+    <span class="section-num">PART 08</span>
     <h2>Skills</h2>
   </div>
   <p class="section-intro">A few things I've worked with.</p>
@@ -518,7 +573,7 @@
     <svg viewBox="0 0 100 100" class="spin-reverse-fast"><g fill="currentColor"><rect x="47" y="4" width="6" height="10"/><rect x="47" y="4" width="6" height="10" transform="rotate(45 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(90 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(135 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(180 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(225 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(270 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(315 50 50)"/></g><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
   </div>
   <div class="section-head">
-    <span class="section-num">PART 08</span>
+    <span class="section-num">PART 09</span>
     <h2>Awards &amp; Recognition</h2>
   </div>
   <p class="section-intro">The ones I'm most proud of.</p>
@@ -564,7 +619,7 @@
     <svg viewBox="0 0 100 100" class="spin-slow"><g fill="currentColor"><rect x="47" y="4" width="6" height="10"/><rect x="47" y="4" width="6" height="10" transform="rotate(45 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(90 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(135 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(180 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(225 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(270 50 50)"/><rect x="47" y="4" width="6" height="10" transform="rotate(315 50 50)"/></g><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
   </div>
   <div class="contact-inner">
-    <span class="section-num">PART 09</span>
+    <span class="section-num">PART 10</span>
     <h2>Let's build something.</h2>
     <p class="contact-subtitle">Reach out, or check out what I've been working on.</p>
     <a href="mailto:varunchilukuri7@gmail.com" class="contact-email">varunchilukuri7@gmail.com</a>
