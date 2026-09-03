@@ -300,20 +300,36 @@ html, body { height: 100%; overflow: hidden; }
   bottom: 0;
   z-index: 2;
   width: 13%;
-  min-width: 6.5rem;
+  min-width: 6.2rem;
+  max-width: 9.5rem;
   overflow: hidden;
   pointer-events: none;
   font-family: var(--font-hand);
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--text);
-  opacity: 0.92;
+  font-weight: 600;
+  font-size: 0.86rem;
+  line-height: 1.16;
+  letter-spacing: 0.01em;
+  word-spacing: -0.08em;
+  color: var(--text-dim);
+  opacity: 0.82;
   text-shadow: 0 0 2px var(--bg), 0 0 4px var(--bg);
-  padding: 0.5rem 0;
+  padding: 0.4rem 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 24px, black calc(100% - 150px), transparent calc(100% - 40px));
+  mask-image: linear-gradient(to bottom, transparent 0, black 24px, black calc(100% - 150px), transparent calc(100% - 40px));
 }
 .margin-text.left { left: 1in; text-align: right; }
 .margin-text.right { right: 1in; text-align: left; }
+.margin-text strong {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  opacity: 1;
+  text-shadow: 0 0 3px var(--bg), 0 0 5px var(--bg);
+  margin: 0 0.05em;
+}
 
 .figure-wrap {
   position: absolute;
