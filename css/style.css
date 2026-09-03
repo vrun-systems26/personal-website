@@ -409,10 +409,10 @@ html, body { height: 100%; overflow: hidden; }
   height: 40px;
 }
 .fh-leader { position: absolute; background: var(--accent); opacity: 0.7; box-shadow: 0 0 3px rgba(var(--accent-rgb), 0.5); transition: opacity 0.2s ease; }
-.dir-right .fh-leader { left: 0; top: 0; width: 22px; height: 1.4px; }
-.dir-left .fh-leader { right: 0; top: 0; width: 22px; height: 1.4px; }
-.dir-up .fh-leader { bottom: 0; left: 0; width: 1.4px; height: 20px; }
-.dir-down .fh-leader { top: 0; left: 0; width: 1.4px; height: 20px; }
+.dir-right .fh-leader { left: 0; top: 0; width: 14px; height: 1.4px; }
+.dir-left .fh-leader { right: 0; top: 0; width: 14px; height: 1.4px; }
+.dir-up .fh-leader { bottom: 0; left: 0; width: 1.4px; height: 13px; }
+.dir-down .fh-leader { top: 0; left: 0; width: 1.4px; height: 13px; }
 .fh-label {
   position: absolute;
   display: flex;
@@ -436,10 +436,10 @@ html, body { height: 100%; overflow: hidden; }
   color: var(--text-faint);
   margin-top: 0.1em;
 }
-.dir-right .fh-label { left: 28px; top: 50%; transform: translateY(-50%); align-items: flex-start; }
-.dir-left .fh-label { right: 28px; top: 50%; transform: translateY(-50%); text-align: right; align-items: flex-end; }
-.dir-up .fh-label { bottom: 26px; left: 50%; transform: translateX(-50%); text-align: center; align-items: center; }
-.dir-down .fh-label { top: 26px; left: 50%; transform: translateX(-50%); text-align: center; align-items: center; }
+.dir-right .fh-label { left: 18px; top: 50%; transform: translateY(-50%); align-items: flex-start; }
+.dir-left .fh-label { right: 18px; top: 50%; transform: translateY(-50%); text-align: right; align-items: flex-end; }
+.dir-up .fh-label { bottom: 17px; left: 50%; transform: translateX(-50%); text-align: center; align-items: center; }
+.dir-down .fh-label { top: 17px; left: 50%; transform: translateX(-50%); text-align: center; align-items: center; }
 
 .figure-hotspot:hover .fh-dot,
 .figure-hotspot:focus-visible .fh-dot { transform: translate(-50%, -50%) scale(1.5); }
@@ -869,4 +869,9 @@ html, body { height: 100%; overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
+  /* disabling the animation shorthand also cancels whatever end-state it was meant to
+     reach - without these, the boot overlay and any char-split text would be stranded
+     in their pre-animation (hidden/blocking) state forever instead of just skipping the motion */
+  .boot-overlay { opacity: 0 !important; visibility: hidden !important; }
+  .boot-line, .char-split .char { opacity: 1 !important; transform: none !important; }
 }

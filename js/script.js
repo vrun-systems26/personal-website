@@ -1,3 +1,13 @@
+// ---------- boot overlay: guaranteed removal, independent of its CSS animation ----------
+// the CSS animation alone has been observed getting stuck mid-timeline (backgrounded/
+// throttled tabs, reduced-motion, etc.), permanently blocking the page - this fallback
+// removes the overlay outright a moment after load no matter what the animation does.
+(function () {
+  const boot = document.querySelector(".boot-overlay");
+  if (!boot) return;
+  setTimeout(() => boot.remove(), 1500);
+})();
+
 // ---------- year ----------
 document.querySelectorAll(".js-year").forEach((el) => {
   el.textContent = new Date().getFullYear();
@@ -133,8 +143,8 @@ function animateHeading(el) {
   Array.from(el.childNodes).forEach((child) => splitCharsRecursive(child, delayRef));
 }
 
-const heroHeading = document.querySelector(".hero-title");
-if (heroHeading) setTimeout(() => animateHeading(heroHeading), 950);
+// the hero title is the very first thing a visitor sees - it renders plainly,
+// immediately, with no JS-driven reveal, so there's nothing for it to get stuck mid-way through
 
 const sectionHeadings = document.querySelectorAll(
   ".section-head h2, .contact-inner h2, .project-body h3, .mini-body h4, .award-row h4, .bin h4, .lede, .about-copy strong, .award-row strong"
