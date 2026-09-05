@@ -1,11 +1,37 @@
-// ---------- boot overlay: guaranteed removal, independent of its CSS animation ----------
-// the CSS animation alone has been observed getting stuck mid-timeline (backgrounded/
-// throttled tabs, reduced-motion, etc.), permanently blocking the page - this fallback
-// removes the overlay outright a moment after load no matter what the animation does.
+// ---------- boot / connect sequence ----------
 (function () {
-  const boot = document.querySelector(".boot-overlay");
+  const boot = document.getElementById("bootScreen");
+  const phase1 = document.getElementById("bootPhase1");
+  const phase2 = document.getElementById("bootPhase2");
   if (!boot) return;
-  setTimeout(() => boot.remove(), 1500);
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const waitMs = reduceMotion ? 200 : 1900;
+  const motdMs = reduceMotion ? 200 : 2100;
+
+  setTimeout(() => {
+    if (phase1) phase1.hidden = true;
+    if (phase2) phase2.hidden = false;
+  }, waitMs);
+
+  setTimeout(() => {
+    boot.classList.add("is-hidden");
+    setTimeout(() => boot.remove(), 700);
+  }, waitMs + motdMs);
+})();
+
+// ---------- live clock ----------
+(function () {
+  const clockEl = document.getElementById("trayClock");
+  if (!clockEl) return;
+  function tick() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, "0");
+    const m = String(now.getMinutes()).padStart(2, "0");
+    clockEl.textContent = `${h}:${m}`;
+  }
+  tick();
+  setInterval(tick, 10000);
 })();
 
 // ---------- year ----------
@@ -13,25 +39,16 @@ document.querySelectorAll(".js-year").forEach((el) => {
   el.textContent = new Date().getFullYear();
 });
 
-// ---------- mobile nav ----------
-const navToggle = document.getElementById("navToggle");
-const mainNav = document.getElementById("mainNav");
-navToggle?.addEventListener("click", () => {
-  mainNav.classList.toggle("open");
-});
-mainNav?.querySelectorAll("a").forEach((a) => {
-  a.addEventListener("click", () => mainNav.classList.remove("open"));
-});
-
-// ---------- card system: the blueprint gate opens one card at a time ----------
-const gate = document.getElementById("gate");
+// ---------- window system: desktop icons open one window at a time ----------
 const cards = document.querySelectorAll(".card");
-const navLinks = document.querySelectorAll("[data-nav]");
+const tbTitle = document.getElementById("tbWindowTitle");
 
 function closeAllCards() {
-  cards.forEach((c) => c.classList.remove("is-open"));
-  navLinks.forEach((l) => l.classList.remove("active"));
-  gate.setAttribute("aria-hidden", "false");
+  cards.forEach((c) => {
+    c.classList.remove("is-open");
+    c.classList.remove("is-max");
+  });
+  if (tbTitle) tbTitle.textContent = "desktop";
 }
 
 function openCard(name) {
@@ -40,26 +57,17 @@ function openCard(name) {
   if (!target) return;
   cards.forEach((c) => c.classList.remove("is-open"));
   target.classList.add("is-open");
-  target.scrollTop = 0;
-  gate.setAttribute("aria-hidden", "true");
-  navLinks.forEach((l) => l.classList.toggle("active", l.dataset.card === name));
+  const content = target.querySelector(".win-content");
+  if (content) content.scrollTop = 0;
+  const nameEl = target.querySelector(".win-tb-name");
+  if (tbTitle) tbTitle.textContent = nameEl ? nameEl.textContent : name;
 }
 
-document.querySelectorAll(".hotspot[data-card], .figure-hotspot[data-card], [data-nav][data-card]").forEach((el) => {
+document.querySelectorAll(".d-icon[data-card]").forEach((el) => {
   el.addEventListener("click", (e) => {
     e.preventDefault();
     openCard(el.dataset.card);
   });
-});
-
-// ---------- hovering a label glows the matching part of the figure, and vice versa ----------
-document.querySelectorAll(".figure-hotspot[data-card]").forEach((el) => {
-  const highlight = document.querySelector(`.figure-highlight[data-for="${el.dataset.card}"]`);
-  if (!highlight) return;
-  el.addEventListener("mouseenter", () => highlight.classList.add("is-active"));
-  el.addEventListener("mouseleave", () => highlight.classList.remove("is-active"));
-  el.addEventListener("focus", () => highlight.classList.add("is-active"));
-  el.addEventListener("blur", () => highlight.classList.remove("is-active"));
 });
 
 document.querySelectorAll("[data-close]").forEach((btn) => {
@@ -69,16 +77,11 @@ document.querySelectorAll("[data-close]").forEach((btn) => {
   });
 });
 
-document.querySelectorAll("[data-close-all]").forEach((el) => {
-  el.addEventListener("click", (e) => {
+document.querySelectorAll("[data-maximize]").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
     e.preventDefault();
-    closeAllCards();
-  });
-});
-
-cards.forEach((card) => {
-  card.addEventListener("click", (e) => {
-    if (e.target === card) closeAllCards();
+    const win = btn.closest(".card");
+    if (win) win.classList.toggle("is-max");
   });
 });
 
@@ -86,119 +89,13 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeAllCards();
 });
 
-// ---------- scroll reveal ----------
-const revealTargets = document.querySelectorAll(
-  ".project-card, .mini-card, .bin, .award-row, .about-grid, .blueprint-panels"
-);
-revealTargets.forEach((el) => el.setAttribute("data-reveal", ""));
-
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.12 }
-);
-revealTargets.forEach((el) => revealObserver.observe(el));
-
-// ---------- letter-by-letter heading reveal ----------
-const CHAR_STAGGER_MS = 45;
-
-function splitCharsRecursive(node, delayRef) {
-  if (node.nodeType === Node.TEXT_NODE) {
-    const frag = document.createDocumentFragment();
-    const words = node.textContent.split(" ");
-    words.forEach((word, i) => {
-      if (i > 0) frag.appendChild(document.createTextNode(" "));
-      if (word === "") return;
-      // each word's letters are grouped in a nowrap span - adjacent inline-block
-      // letter spans otherwise give the browser a break opportunity mid-word
-      const wordWrap = document.createElement("span");
-      wordWrap.className = "char-word";
-      Array.from(word).forEach((ch) => {
-        const span = document.createElement("span");
-        span.className = "char";
-        span.textContent = ch;
-        span.style.animationDelay = delayRef.i * CHAR_STAGGER_MS + "ms";
-        delayRef.i++;
-        wordWrap.appendChild(span);
-      });
-      frag.appendChild(wordWrap);
-    });
-    node.replaceWith(frag);
-  } else if (node.nodeType === Node.ELEMENT_NODE) {
-    Array.from(node.childNodes).forEach((child) => splitCharsRecursive(child, delayRef));
-  }
-}
-
-function animateHeading(el) {
-  if (el.dataset.charSplit) return;
-  el.dataset.charSplit = "true";
-  el.classList.add("char-split");
-  const delayRef = { i: 0 };
-  Array.from(el.childNodes).forEach((child) => splitCharsRecursive(child, delayRef));
-}
-
-// the hero title is the very first thing a visitor sees - it renders plainly,
-// immediately, with no JS-driven reveal, so there's nothing for it to get stuck mid-way through
-
-const sectionHeadings = document.querySelectorAll(
-  ".section-head h2, .contact-inner h2, .project-body h3, .mini-body h4, .award-row h4, .bin h4, .lede, .about-copy strong, .award-row strong"
-);
-const headingObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        animateHeading(entry.target);
-        headingObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.4 }
-);
-sectionHeadings.forEach((el) => headingObserver.observe(el));
-
-// ---------- focus mode: engaging one plate quiets its neighbours ----------
+// ---------- trash icon: a little easter egg, not a real delete ----------
 (function () {
-  const gateEl = document.getElementById("gate");
-  if (!gateEl) return;
-  let engaged = 0;
-  const focusOn = () => {
-    engaged++;
-    gateEl.classList.add("is-focusing");
-  };
-  const focusOff = () => {
-    engaged = Math.max(0, engaged - 1);
-    if (engaged === 0) gateEl.classList.remove("is-focusing");
-  };
-  document.querySelectorAll(".figure-hotspot[data-card]").forEach((el) => {
-    el.addEventListener("mouseenter", focusOn);
-    el.addEventListener("mouseleave", focusOff);
-    el.addEventListener("focus", focusOn);
-    el.addEventListener("blur", focusOff);
-  });
-})();
-
-// ---------- the figure tilts gently toward the cursor (desktop, motion-safe) ----------
-(function () {
-  const gateEl = document.getElementById("gate");
-  const wrap = document.getElementById("figureWrap");
-  if (!gateEl || !wrap) return;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  if (reduceMotion || !isFinePointer) return;
-
-  gateEl.addEventListener("mousemove", (e) => {
-    const rect = gateEl.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    wrap.querySelector(".vitruvian-img").style.transform = `rotateY(${px * 5}deg) rotateX(${py * -5}deg)`;
-  });
-  gateEl.addEventListener("mouseleave", () => {
-    wrap.querySelector(".vitruvian-img").style.transform = "rotateY(0deg) rotateX(0deg)";
+  const trash = document.querySelector(".d-icon[data-trash]");
+  if (!trash) return;
+  trash.addEventListener("click", (e) => {
+    e.preventDefault();
+    trash.classList.add("d-icon-shake");
+    setTimeout(() => trash.classList.remove("d-icon-shake"), 400);
   });
 })();
