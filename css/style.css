@@ -292,8 +292,7 @@ a { color: var(--link); }
   display: none;
   position: fixed;
   z-index: 100;
-  top: 46px; left: 50%;
-  transform: translateX(-50%);
+  top: 46px; left: calc(50% - 440px);
   width: min(880px, 94vw);
   height: min(78vh, 760px);
   background: var(--win-bg);
@@ -304,7 +303,9 @@ a { color: var(--link); }
   overflow: hidden;
 }
 .card.is-open { display: flex; }
-.card.is-max { top: 27px; left: 0; transform: none; width: 100vw; height: calc(100vh - 27px); border-radius: 0; }
+.card.is-minimized { display: none; }
+.card.is-max { top: 27px !important; left: 0 !important; width: 100vw; height: calc(100vh - 27px); border-radius: 0; }
+.card.is-dragging { user-select: none; box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
 
 .win-titlebar {
   flex: 0 0 auto;
@@ -317,17 +318,41 @@ a { color: var(--link); }
   padding: 0 8px;
   font-size: 0.76rem;
   color: var(--panel-text);
-  cursor: default;
+  cursor: grab;
   user-select: none;
 }
+.win-titlebar:active { cursor: grabbing; }
+.card.is-max .win-titlebar { cursor: default; }
 .win-tb-icon { font-family: var(--font-mono); font-size: 0.72rem; color: var(--panel-text-dim); }
 .win-tb-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.win-titlebar:not(.is-focused) { background: #f2f2f2; }
+.win-titlebar:not(.is-focused) .win-tb-name { color: var(--panel-text-dim); font-weight: 400; }
+.win-titlebar.is-focused { background: linear-gradient(180deg, #f1f2f3 0%, #e2e4e5 100%); }
 .win-tb-btns { margin-left: auto; display: flex; gap: 6px; }
 .win-btn { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); cursor: pointer; padding: 0; }
 .win-min { background: #f4c04a; }
 .win-max { background: #59c94b; }
 .win-close { background: #e0564a; }
 .win-min:hover, .win-max:hover { filter: brightness(1.08); }
+
+/* ---------- taskbar open-window chips ---------- */
+.tb-windows { display: flex; align-items: center; gap: 4px; overflow-x: auto; flex: 1 1 auto; min-width: 0; height: 100%; }
+.tb-win-chip {
+  display: flex; align-items: center; gap: 5px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--panel-text-dim);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tb-win-chip:hover { background: rgba(0,0,0,0.06); }
+.tb-win-chip.is-active { background: #fff; border-color: var(--panel-edge); color: var(--panel-text); font-weight: 600; }
+.tb-win-chip.is-min { opacity: 0.6; font-style: italic; }
 .win-close:hover { filter: brightness(1.1); }
 
 .win-body { flex: 1 1 auto; overflow: hidden; display: flex; min-height: 0; }
