@@ -16,7 +16,12 @@
 
   setTimeout(() => {
     boot.classList.add("is-hidden");
-    setTimeout(() => boot.remove(), 700);
+    setTimeout(() => {
+      boot.remove();
+      // land visitors straight in the About file, so the headline info
+      // is visible immediately without requiring a click
+      if (typeof openCard === "function") openCard("about");
+    }, 700);
   }, waitMs + motdMs);
 })();
 
@@ -151,6 +156,41 @@ document.querySelectorAll(".win-min").forEach((btn) => {
 // click anywhere on a window brings it to front
 cards.forEach((card) => {
   card.addEventListener("mousedown", () => bringToFront(card));
+});
+
+// ---------- prev/next: flip through files without going back to the desktop ----------
+const FILE_ORDER = ["about", "fetch", "street-sweeper", "hope", "arm", "ceres", "morebuilds", "skills", "awards", "contact"];
+
+function navigateCard(currentCard, direction) {
+  const name = currentCard.dataset.card;
+  const idx = FILE_ORDER.indexOf(name);
+  if (idx === -1) return;
+  const nextIdx = (idx + direction + FILE_ORDER.length) % FILE_ORDER.length;
+  const nextName = FILE_ORDER[nextIdx];
+  const nextCard = document.querySelector(`.card[data-card="${nextName}"]`);
+  if (!nextCard) return;
+
+  // hand off this window's spot to the next file, so it feels like paging
+  // through one window rather than opening a new one each time
+  if (window.innerWidth > 760 && !currentCard.classList.contains("is-max")) {
+    nextCard.style.top = currentCard.style.top;
+    nextCard.style.left = currentCard.style.left;
+    nextCard.dataset.positioned = "1";
+  }
+  if (currentCard.classList.contains("is-max")) nextCard.classList.add("is-max");
+
+  closeCard(currentCard);
+  openCard(nextName);
+}
+
+document.querySelectorAll("[data-nav]").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const card = btn.closest(".card");
+    if (!card) return;
+    navigateCard(card, btn.dataset.nav === "next" ? 1 : -1);
+  });
 });
 
 document.addEventListener("keydown", (e) => {

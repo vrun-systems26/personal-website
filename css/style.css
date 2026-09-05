@@ -287,6 +287,49 @@ a { color: var(--link); }
 }
 .status-ticker { display: none; }
 
+/* ---------- desktop widget: always-visible highlight facts ---------- */
+.desktop-widget {
+  position: absolute;
+  right: 16px; bottom: 16px;
+  z-index: 1;
+  width: 240px;
+  background: rgba(10,12,16,0.62);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  pointer-events: none;
+}
+.widget-titlebar {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.widget-body { padding: 10px 12px 12px; }
+.widget-name {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  margin: 0 0 6px;
+}
+.widget-line {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.85);
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+.widget-dim { color: rgba(255,255,255,0.45); margin-top: 6px; }
+
+@media (max-width: 760px) {
+  .desktop-widget { display: none; }
+}
+
 /* ---------- windows ---------- */
 .card {
   display: none;
@@ -328,7 +371,20 @@ a { color: var(--link); }
 .win-titlebar:not(.is-focused) { background: #f2f2f2; }
 .win-titlebar:not(.is-focused) .win-tb-name { color: var(--panel-text-dim); font-weight: 400; }
 .win-titlebar.is-focused { background: linear-gradient(180deg, #f1f2f3 0%, #e2e4e5 100%); }
-.win-tb-btns { margin-left: auto; display: flex; gap: 6px; }
+.win-tb-nav { margin-left: auto; display: flex; gap: 2px; }
+.win-nav-btn {
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--win-chrome-edge);
+  background: #fff;
+  border-radius: 3px;
+  color: var(--panel-text-dim);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.win-nav-btn:hover { background: #f2f3f4; color: var(--panel-text); }
+.win-tb-btns { margin-left: 10px; display: flex; gap: 6px; }
 .win-btn { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); cursor: pointer; padding: 0; }
 .win-min { background: #f4c04a; }
 .win-max { background: #59c94b; }
