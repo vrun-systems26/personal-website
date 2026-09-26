@@ -6,7 +6,8 @@
 <title>Varun Chilukuri, Robotics &amp; Mechatronics Engineer</title>
 <meta name="description" content="Varun Chilukuri is a student engineer at Leland High School and co-founder of Fetch, a 1st-place-winning mecanum robotics platform. Robotic arms, search-and-rescue hardware, and mechatronic systems built from scratch.">
 <meta name="author" content="Varun Chilukuri">
-<meta name="keywords" content="Varun Chilukuri, robotics, mechatronics, embedded systems, Fetch robot, Leland High School, hackathon, CAD, 3D printing">
+<meta name="keywords" content="Varun Chilukuri, robotics, mechatronics, embedded systems, Fetch robot, Ceres, Leland High School, hackathon, CAD, 3D printing">
+<meta name="theme-color" content="#0d0f0c">
 
 <!-- Open Graph / social preview cards -->
 <meta property="og:type" content="profile">
@@ -23,8 +24,9 @@
 <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=205">
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@200;300;400;500&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=303">
+<script>document.documentElement.classList.add("js");</script>
 
 <script type="application/ld+json">
 {
@@ -54,743 +56,451 @@
 </script>
 </head>
 <body>
+<a class="skip" href="#about">Skip to content</a>
 
-<!-- ============ BOOT: SCREEN-SHARE CONNECT SEQUENCE ============ -->
-<div class="boot-screen" id="bootScreen" role="status" aria-live="polite">
-  <div class="boot-chrome">
-    <div class="boot-chrome-row">
-      <span class="boot-traffic"><i class="boot-dot boot-dot-r"></i><i class="boot-dot boot-dot-y"></i><i class="boot-dot boot-dot-g"></i></span>
-      <span class="boot-url"><svg class="boot-url-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="5" fill="none" stroke="#fff" stroke-width="2"></circle></svg>connect.varun-chil.com</span>
-    </div>
-    <div class="boot-chrome-row boot-toolbar">
-      <button type="button" class="boot-pill" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5L3 12l5 7M3 12h13a5 5 0 000-10" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Disconnect</button>
-      <span class="boot-toolbar-spacer"></span>
-      <button type="button" class="boot-pill" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Enter full screen</button>
-      <span class="boot-pill-group">
-        <button type="button" class="boot-pill boot-pill-l" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="12" height="14" rx="1.5" fill="none" stroke-width="1.8"></rect><path d="M9 7V5a1.5 1.5 0 011.5-1.5h3A1.5 1.5 0 0115 5v2" fill="none" stroke-width="1.8"></path></svg>Copy from remote</button>
-        <button type="button" class="boot-pill boot-pill-r" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="12" height="14" rx="1.5" fill="none" stroke-width="1.8"></rect><path d="M9 7V5a1.5 1.5 0 011.5-1.5h3A1.5 1.5 0 0115 5v2" fill="none" stroke-width="1.8"></path></svg>Paste to remote</button>
-      </span>
-    </div>
-  </div>
-  <div class="boot-body">
-    <div class="boot-phase" id="bootPhase1">
-      <p class="boot-waiting">Waiting for response from <span class="boot-host">varunchilukuri</span></p>
-      <div class="boot-spinner" aria-hidden="true"></div>
-    </div>
-    <div class="boot-phase boot-motd" id="bootPhase2" hidden>
-      <p class="motd-line">Connected to <span class="motd-host">varunchilukuri.local</span></p>
-      <p class="motd-line">Welcome to <span class="motd-os">varunOS</span> 26.09 LTS</p>
-      <p class="motd-line motd-gap">&gt; engineering in the bay</p>
-      <p class="motd-line motd-byline">Varun Chilukuri &middot; Student @ Leland High School | Hackathon Enthusiast | Mechatronics &bull; Embedded Systems &bull; Robotics &bull; CAD</p>
-      <p class="motd-line motd-cursor">varun@chilukuri:~$ <span class="motd-caret">&#9608;</span></p>
+<!-- ============ TOP BAR ============ -->
+<header class="topbar" id="topbar">
+  <div class="wrap topbar-inner">
+    <a href="#top" class="mark" aria-label="Varun Chilukuri, back to top">
+      <span class="mark-glyph" aria-hidden="true">VC</span>
+      <span class="mark-name">Varun Chilukuri</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#about" data-spy="about"><i>01</i>About</a>
+      <a href="#work" data-spy="work"><i>02</i>Work</a>
+      <a href="#builds" data-spy="builds"><i>03</i>Builds</a>
+      <a href="#awards" data-spy="awards"><i>04</i>Awards</a>
+      <a href="#stack" data-spy="stack"><i>05</i>Stack</a>
+      <a href="#contact" data-spy="contact"><i>06</i>Contact</a>
+    </nav>
+    <div class="clock" aria-label="Local time in San Jose">
+      <span class="led" aria-hidden="true"></span>
+      <span>San Jose</span>
+      <span class="clock-time" id="clock">--:--</span>
     </div>
   </div>
-  <div class="boot-keybar" aria-hidden="true">
-    <span class="boot-key">Alt</span><span class="boot-key">Esc</span><span class="boot-key">Tab</span>
-  </div>
-</div>
+</header>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <linearGradient id="gradFolder" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffe27a"/>
-      <stop offset="1" stop-color="#f6ac33"/>
-    </linearGradient>
-    <linearGradient id="gradFolderTab" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffce5c"/>
-      <stop offset="1" stop-color="#e8a324"/>
-    </linearGradient>
-    <linearGradient id="gradFile" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#dfe3e7"/>
-    </linearGradient>
-    <linearGradient id="gradTerm" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3a3f47"/>
-      <stop offset="1" stop-color="#181b20"/>
-    </linearGradient>
-    <linearGradient id="gradTrash" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#79c4ff"/>
-      <stop offset="1" stop-color="#2f86d6"/>
-    </linearGradient>
-  </defs>
-</svg>
+<main id="top">
 
-<!-- ============ DESKTOP ============ -->
-<div class="desktop" id="desktop" aria-hidden="true">
-  <div class="wallpaper" aria-hidden="true">
-    <div class="wp-sky"></div>
-    <svg class="wp-skyline" viewBox="0 0 1600 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <polygon points="0,400 0,300 40,300 40,260 70,260 70,310 120,310 120,240 150,240 150,300 200,300 200,220 240,220 240,290 300,290 300,180 260,180 260,140 300,140 300,120 340,120 340,180 380,180 380,300 430,300 430,250 470,250 470,300 520,300 520,200 560,200 560,300 620,300 620,160 650,160 650,120 680,120 680,160 710,160 710,300 760,300 760,270 800,270 800,300 850,300 850,150 880,150 880,110 910,110 910,150 940,150 940,300 1000,300 1000,240 1040,240 1040,300 1090,300 1090,190 1130,190 1130,300 1180,300 1180,260 1220,260 1220,300 1280,300 1280,200 1310,200 1310,140 1340,140 1340,200 1370,200 1370,300 1420,300 1420,270 1460,270 1460,300 1520,300 1520,220 1560,220 1560,300 1600,300 1600,400"></polygon>
-      <circle class="wp-gear-hollow" cx="300" cy="150" r="26" fill="none" stroke-width="10"></circle>
-      <circle class="wp-gear-hollow" cx="910" cy="130" r="18" fill="none" stroke-width="8"></circle>
-    </svg>
-    <div class="wp-sun"></div>
-    <div class="wp-scanlines" aria-hidden="true"></div>
-  </div>
-
-  <div class="topbar">
-    <button class="tb-start" type="button" aria-label="Menu">
-      <svg viewBox="0 0 24 24" class="tb-start-icon" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke-width="2"></circle><circle cx="12" cy="12" r="3.2" fill="currentColor"></circle><line x1="12" y1="1" x2="12" y2="4.6"></line><line x1="12" y1="19.4" x2="12" y2="23"></line><line x1="1" y1="12" x2="4.6" y2="12"></line><line x1="19.4" y1="12" x2="23" y2="12"></line></svg>
-      <span>varunOS</span>
-    </button>
-    <div class="tb-sep" aria-hidden="true"></div>
-    <div class="tb-windows" id="tbWindows"></div>
-    <div class="tb-tray">
-      <span class="tray-vnc">VNC</span>
-      <svg class="tray-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20a1.6 1.6 0 100-3.2 1.6 1.6 0 000 3.2zM6.5 14a8 8 0 0111 0M3 10.2a13 13 0 0118 0" fill="none" stroke-width="1.8" stroke-linecap="round"></path></svg>
-      <svg class="tray-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15V9a6 6 0 0112 0v6M4 15h16l-1.4 5H5.4z" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-      <span class="tray-clock" id="trayClock">00:00</span>
+  <!-- ============ HERO ============ -->
+  <section class="hero wrap" aria-labelledby="hero-h">
+    <div class="hero-top reveal-load" style="--d:0">
+      <p class="hello"><span class="led" aria-hidden="true"></span>Hi, I'm Varun Chilukuri</p>
+      <p class="hero-meta">Leland High School &middot; San Jose, CA</p>
     </div>
-  </div>
 
-  <div class="desktop-icons">
-    <button type="button" class="d-icon" data-trash>
-      <span class="d-icon-glyph d-icon-trash" aria-hidden="true"><svg viewBox="0 0 40 40">
-        <path d="M10 14h20l-1.6 20a2 2 0 01-2 1.8H13.6a2 2 0 01-2-1.8z" fill="url(#gradTrash)" stroke="#256bb0" stroke-width="1"></path>
-        <path d="M8 10h24v3.2a1 1 0 01-1 1H9a1 1 0 01-1-1z" fill="#4fa3ea"></path>
-        <path d="M16 8a2 2 0 012-2h4a2 2 0 012 2v2h-8z" fill="#4fa3ea"></path>
-        <line x1="16" y1="19" x2="16" y2="30" stroke="#dff0ff" stroke-width="1.6" stroke-linecap="round"></line>
-        <line x1="20" y1="19" x2="20" y2="30" stroke="#dff0ff" stroke-width="1.6" stroke-linecap="round"></line>
-        <line x1="24" y1="19" x2="24" y2="30" stroke="#dff0ff" stroke-width="1.6" stroke-linecap="round"></line>
-      </svg></span>
-      <span class="d-icon-label">Trash</span>
-    </button>
-    <button type="button" class="d-icon" data-card="about">
-      <span class="d-icon-glyph d-icon-file" aria-hidden="true"><svg viewBox="0 0 40 40">
-        <path d="M8 2h16l8 8v26a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2z" fill="url(#gradFile)" stroke="#b7bcc2" stroke-width="1"></path>
-        <path d="M24 2v7a1 1 0 001 1h7" fill="none" stroke="#b7bcc2" stroke-width="1"></path>
-        <line x1="12" y1="19" x2="28" y2="19" stroke="#9aa1a8" stroke-width="1.4"></line>
-        <line x1="12" y1="24" x2="28" y2="24" stroke="#9aa1a8" stroke-width="1.4"></line>
-        <line x1="12" y1="29" x2="22" y2="29" stroke="#9aa1a8" stroke-width="1.4"></line>
-      </svg></span>
-      <span class="d-icon-label">about.txt</span>
-    </button>
-    <button type="button" class="d-icon" data-card="fetch">
-      <span class="d-icon-glyph d-icon-folder" aria-hidden="true"><svg viewBox="0 0 48 40">
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H44c1.1 0 2 .9 2 2v23c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2z" fill="url(#gradFolder)" stroke="#d99a1e" stroke-width="1"></path>
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H2z" fill="url(#gradFolderTab)"></path>
-        <path d="M4 13h40v5H4z" fill="#fff" opacity="0.22"></path>
-      </svg></span>
-      <span class="d-icon-label">Fetch</span>
-    </button>
-    <button type="button" class="d-icon" data-card="street-sweeper">
-      <span class="d-icon-glyph d-icon-folder" aria-hidden="true"><svg viewBox="0 0 48 40">
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H44c1.1 0 2 .9 2 2v23c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2z" fill="url(#gradFolder)" stroke="#d99a1e" stroke-width="1"></path>
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H2z" fill="url(#gradFolderTab)"></path>
-        <path d="M4 13h40v5H4z" fill="#fff" opacity="0.22"></path>
-      </svg></span>
-      <span class="d-icon-label">Street_Sweeper</span>
-    </button>
-    <button type="button" class="d-icon" data-card="hope">
-      <span class="d-icon-glyph d-icon-folder" aria-hidden="true"><svg viewBox="0 0 48 40">
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H44c1.1 0 2 .9 2 2v23c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2z" fill="url(#gradFolder)" stroke="#d99a1e" stroke-width="1"></path>
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H2z" fill="url(#gradFolderTab)"></path>
-        <path d="M4 13h40v5H4z" fill="#fff" opacity="0.22"></path>
-      </svg></span>
-      <span class="d-icon-label">Hope</span>
-    </button>
-    <button type="button" class="d-icon" data-card="arm">
-      <span class="d-icon-glyph d-icon-folder" aria-hidden="true"><svg viewBox="0 0 48 40">
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H44c1.1 0 2 .9 2 2v23c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2z" fill="url(#gradFolder)" stroke="#d99a1e" stroke-width="1"></path>
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H2z" fill="url(#gradFolderTab)"></path>
-        <path d="M4 13h40v5H4z" fill="#fff" opacity="0.22"></path>
-      </svg></span>
-      <span class="d-icon-label">HocDiuTempusSumpsit</span>
-    </button>
-    <button type="button" class="d-icon" data-card="ceres">
-      <span class="d-icon-glyph d-icon-folder" aria-hidden="true"><svg viewBox="0 0 48 40">
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H44c1.1 0 2 .9 2 2v23c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2z" fill="url(#gradFolder)" stroke="#d99a1e" stroke-width="1"></path>
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H2z" fill="url(#gradFolderTab)"></path>
-        <path d="M4 13h40v5H4z" fill="#fff" opacity="0.22"></path>
-      </svg></span>
-      <span class="d-icon-label">Ceres</span>
-    </button>
-    <button type="button" class="d-icon" data-card="morebuilds">
-      <span class="d-icon-glyph d-icon-folder" aria-hidden="true"><svg viewBox="0 0 48 40">
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H44c1.1 0 2 .9 2 2v23c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2z" fill="url(#gradFolder)" stroke="#d99a1e" stroke-width="1"></path>
-        <path d="M2 10c0-1.1.9-2 2-2h11l3.2 3H2z" fill="url(#gradFolderTab)"></path>
-        <path d="M4 13h40v5H4z" fill="#fff" opacity="0.22"></path>
-      </svg></span>
-      <span class="d-icon-label">more_builds</span>
-    </button>
-    <button type="button" class="d-icon" data-card="skills">
-      <span class="d-icon-glyph d-icon-cfg" aria-hidden="true"><svg viewBox="0 0 40 40">
-        <path d="M8 2h16l8 8v26a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2z" fill="url(#gradFile)" stroke="#b7bcc2" stroke-width="1"></path>
-        <path d="M24 2v7a1 1 0 001 1h7" fill="none" stroke="#b7bcc2" stroke-width="1"></path>
-        <circle cx="20" cy="24" r="6" fill="none" stroke="#2fa7e0" stroke-width="1.6"></circle>
-        <circle cx="20" cy="24" r="2" fill="#2fa7e0"></circle>
-        <path d="M20 15.5v2M20 30.5v2M11.5 24h2M26.5 24h2M14.4 17.9l1.4 1.4M24.2 27.7l1.4 1.4M14.4 30.1l1.4-1.4M24.2 20.3l1.4-1.4" stroke="#2fa7e0" stroke-width="1.4" stroke-linecap="round"></path>
-      </svg></span>
-      <span class="d-icon-label">skills.cfg</span>
-    </button>
-    <button type="button" class="d-icon" data-card="awards">
-      <span class="d-icon-glyph d-icon-log" aria-hidden="true"><svg viewBox="0 0 40 40">
-        <path d="M8 2h16l8 8v26a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2z" fill="url(#gradFile)" stroke="#b7bcc2" stroke-width="1"></path>
-        <path d="M24 2v7a1 1 0 001 1h7" fill="none" stroke="#b7bcc2" stroke-width="1"></path>
-        <line x1="12" y1="17" x2="26" y2="17" stroke="#9aa1a8" stroke-width="1.3"></line>
-        <path d="M12 24l3 3 6-7" fill="none" stroke="#2fb573" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-        <line x1="12" y1="32" x2="24" y2="32" stroke="#9aa1a8" stroke-width="1.3"></line>
-      </svg></span>
-      <span class="d-icon-label">awards.log</span>
-    </button>
-    <button type="button" class="d-icon" data-card="contact">
-      <span class="d-icon-glyph d-icon-term" aria-hidden="true"><svg viewBox="0 0 40 40">
-        <rect x="2" y="4" width="36" height="30" rx="3" fill="url(#gradTerm)" stroke="#0c0e11" stroke-width="1"></rect>
-        <path d="M8 14l6 5-6 5" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <line x1="18" y1="24" x2="28" y2="24" stroke="#d6dbe0" stroke-width="2" stroke-linecap="round"></line>
-        <rect x="2" y="4" width="36" height="7" rx="3" fill="#fff" opacity="0.08"></rect>
-      </svg></span>
-      <span class="d-icon-label">contact.sh</span>
-    </button>
-  </div>
-
-  <div class="desktop-widget" aria-hidden="true">
-    <div class="widget-titlebar">quick_facts.txt</div>
-    <div class="widget-body">
-      <p class="widget-name">Varun Chilukuri</p>
-      <p class="widget-line">&#9656; 1st Place Overall, CSI Hacks</p>
-      <p class="widget-line">&#9656; 2nd Place, Berkeley Robotics Hackathon</p>
-      <p class="widget-line">&#9656; Co-Founder &amp; Hardware Lead, Fetch</p>
-      <p class="widget-line widget-dim">Leland High School &middot; Mechatronics &amp; Robotics</p>
-    </div>
-  </div>
-
-</div>
-
-<!-- ============ WINDOWS ============ -->
-<div class="card win-terminal" data-card="about">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&gt;_</span>
-    <span class="win-tb-name">about.txt — Text Editor</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section about">
-    <div class="win-linebar" aria-hidden="true"></div>
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_01</span>
-        <h2>about.txt</h2>
+    <h1 class="sr-only" id="hero-h">Varun Chilukuri &mdash; engineering in the bay</h1>
+    <div class="field reveal-load" style="--d:1">
+      <canvas class="field-canvas" id="field" aria-hidden="true"></canvas>
+      <p class="field-fallback" aria-hidden="true">VARUN</p>
+      <div class="field-readout" aria-hidden="true">
+        <span>nodes <b id="fNodes">0</b></span>
+        <span>spring <b>0.055</b></span>
+        <span>damping <b>0.86</b></span>
+        <span class="field-hint">move through it &rarr;</span>
       </div>
-      <div class="about-grid">
-        <div class="about-copy">
-          <p class="lede">Hi, I'm Varun. I'm a high school student passionate about <strong>mechatronics, autonomous robotics, and embedded systems</strong>.</p>
-          <p>I enjoy building working prototypes utilizing CAD, 3D printing, and electrical systems. Currently building personal robotics projects, competing in hackathons, and documenting all my work on GitHub. I also use Raspberry Pis, Arduino, Python, Flask, BLE, and bash when a project needs them.</p>
-          <p>Interested in autonomous navigation, computer vision, and building robots that solve real-world problems while designing fun hardware systems with various mechanical actuators.</p>
-          <div class="about-footer">
-            <div class="about-fact">
-              <span class="fact-label">Currently</span>
-              <span>Leland High School</span>
-            </div>
-            <div class="about-fact">
-              <span class="fact-label">Previously</span>
-              <span>Bret Harte Middle School</span>
+    </div>
+
+    <div class="hero-bottom">
+      <p class="hero-title reveal-load" style="--d:2">Engineering in the <em>bay.</em></p>
+      <div class="hero-side reveal-load" style="--d:3">
+        <p class="hero-byline">Student @ Leland High School <b>|</b> Hackathon Enthusiast <b>|</b> Mechatronics &bull; Embedded Systems &bull; Robotics &bull; CAD</p>
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="#work">See the work <span aria-hidden="true">&darr;</span></a>
+          <a class="btn" href="mailto:varunchilukuri7@gmail.com">Email me <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <ul class="hero-links">
+          <li><a href="https://github.com/vrun-systems26" target="_blank" rel="noopener">GitHub <span aria-hidden="true">&nearr;</span></a></li>
+          <li><a href="https://www.linkedin.com/in/varunchilukuri26/" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">&nearr;</span></a></li>
+          <li><a href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">Devpost <span aria-hidden="true">&nearr;</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STAT STRIP ============ -->
+  <div class="wrap">
+    <dl class="stats">
+      <div class="stat"><dt>awards &amp; placements</dt><dd><span class="count" data-to="4">0</span></dd></div>
+      <div class="stat"><dt>builds documented</dt><dd><span class="count" data-to="9">0</span></dd></div>
+      <div class="stat"><dt>hours, Ceres idea to demo</dt><dd>~<span class="count" data-to="7">0</span></dd></div>
+      <div class="stat"><dt>college teams, Berkeley</dt><dd><span class="count" data-to="80">0</span>+</dd></div>
+    </dl>
+  </div>
+
+  <!-- ============ 01 ABOUT ============ -->
+  <section class="sec wrap" id="about" aria-labelledby="about-h">
+    <aside class="sec-index">
+      <span class="sec-num">01</span>
+      <h2 class="sec-name" id="about-h">About</h2>
+      <span class="sec-note">// who's building this</span>
+    </aside>
+    <div class="sec-body">
+      <p class="lede reveal">Hi, I'm Varun &mdash; a high school student building <em>robots, mechatronics, and embedded systems</em>.</p>
+      <p class="about-line reveal">I prototype with CAD, 3D printing, and electronics, compete in hackathons, and document everything on GitHub.</p>
+      <dl class="facts reveal">
+        <div><dt>Currently</dt><dd>Leland High School</dd></div>
+        <div><dt>Previously</dt><dd>Bret Harte Middle School</dd></div>
+        <div><dt>Based in</dt><dd>San Jose, CA</dd></div>
+        <div><dt>Into</dt><dd>Autonomy &amp; computer vision</dd></div>
+      </dl>
+
+      <ul class="socials reveal" aria-label="Find me online">
+        <li>
+          <a class="soc" href="https://github.com/vrun-systems26" target="_blank" rel="noopener">
+            <span class="soc-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></span>
+            <span class="soc-txt"><b>GitHub</b><small>@vrun-systems26</small></span>
+            <span class="soc-go" aria-hidden="true">&nearr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="soc" href="https://www.linkedin.com/in/varunchilukuri26/" target="_blank" rel="noopener">
+            <span class="soc-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4v16h-4V8zm7.5 0h3.8v2.2h.05c.53-1 1.83-2.2 3.77-2.2 4.03 0 4.78 2.65 4.78 6.1V24h-4v-8.1c0-1.93-.03-4.42-2.7-4.42-2.7 0-3.1 2.1-3.1 4.28V24h-4V8z"/></svg></span>
+            <span class="soc-txt"><b>LinkedIn</b><small>/in/varunchilukuri26</small></span>
+            <span class="soc-go" aria-hidden="true">&nearr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="soc" href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">
+            <span class="soc-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6.5 2.5h11L23 12l-5.5 9.5h-11L1 12z"/><path d="M9 7.5h2.6a4.5 4.5 0 010 9H9z"/></svg></span>
+            <span class="soc-txt"><b>Devpost</b><small>@varunchilukuri7</small></span>
+            <span class="soc-go" aria-hidden="true">&nearr;</span>
+          </a>
+        </li>
+        <li class="soc-mail">
+          <a class="soc" href="mailto:varunchilukuri7@gmail.com">
+            <span class="soc-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 6.5l9 6.5 9-6.5"/></svg></span>
+            <span class="soc-txt"><b>Email</b><small>varunchilukuri7@gmail.com</small></span>
+          </a>
+          <button type="button" class="soc-copy" data-copy="varunchilukuri7@gmail.com" aria-label="Copy email address">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+            <span class="soc-copied" aria-hidden="true">copied</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 02 WORK ============ -->
+  <section class="sec wrap" id="work" aria-labelledby="work-h">
+    <aside class="sec-index">
+      <span class="sec-num">02</span>
+      <h2 class="sec-name" id="work-h">Selected work</h2>
+      <span class="sec-note">// five flagship builds</span>
+      <ol class="sec-toc" aria-label="Projects in this section">
+        <li><a href="#p-fetch" data-proj="p-fetch">Fetch</a></li>
+        <li><a href="#p-ceres" data-proj="p-ceres">Ceres</a></li>
+        <li><a href="#p-sweeper" data-proj="p-sweeper">Street Sweeper</a></li>
+        <li><a href="#p-arm" data-proj="p-arm">HocDiuTempusSumpsit</a></li>
+        <li><a href="#p-hope" data-proj="p-hope">Hope</a></li>
+      </ol>
+    </aside>
+    <div class="sec-body">
+
+      <article class="proj" id="p-fetch">
+        <header class="proj-head reveal">
+          <span class="proj-idx">02.1</span>
+          <h3 class="proj-name">Fetch</h3>
+          <span class="tag-win">1st Place Overall &middot; CSI Hacks</span>
+        </header>
+        <div class="proj-row reveal">
+          <div class="gallery g3">
+            <img src="images/fetch-1.jpg" alt="Fetch, a mecanum-drive robot with a trash-can body, on a tile floor" loading="lazy">
+            <img src="images/fetch-2.jpg" alt="Fetch mecanum robot, side angle showing the yellow mecanum wheels and wiring" loading="lazy">
+            <img src="images/fetch-3.jpg" alt="Fetch mecanum robot, front view with ultrasonic sensors and camera visible" loading="lazy">
+          </div>
+          <div class="proj-info">
+            <p class="role">Co-founder &middot; hardware lead</p>
+            <p class="desc">A trash-can robot that drives itself to whoever calls it, localizing with AprilTags instead of lidar. Built with Rishith in ~8 hours &mdash; I did the CAD, electronics, and hardware.</p>
+            <p class="specline">Pi 4 + Arduino Uno R4 <b>/</b> 4&times; NEMA 17 mecanum <b>/</b> AprilTag + QR nav <b>/</b> ultrasonic e-stop</p>
+            <ul class="chips"><li>Mecanum Kinematics</li><li>AprilTag Localization</li><li>CAD</li><li>Embedded Electronics</li></ul>
+            <div class="links">
+              <a href="https://github.com/vrun-systems26/Fetch-CSI-Hacks" target="_blank" rel="noopener">GitHub <span aria-hidden="true">&nearr;</span></a>
+              <a href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">Devpost <span aria-hidden="true">&nearr;</span></a>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ============ FETCH ============ -->
-<div class="card win-files" data-card="fetch">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&#128193;</span>
-    <span class="win-tb-name">Fetch — File Manager</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section projects">
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_02</span>
-        <h2>Fetch/</h2>
-      </div>
-
-      <article class="project-card flagship">
-        <div class="project-media gallery-3">
-          <img src="images/fetch-1.jpg" alt="Fetch, a mecanum-drive robot with a trash-can body, on a tile floor">
-          <img src="images/fetch-2.jpg" alt="Fetch mecanum robot, side angle showing the yellow mecanum wheels and wiring">
-          <img src="images/fetch-3.jpg" alt="Fetch mecanum robot, front view with ultrasonic sensors and camera visible">
-        </div>
-        <div class="project-body">
-          <div class="project-kicker">
-            <span class="badge badge-win">1ST PLACE OVERALL · CSI HACKS · 82+ TEAMS</span>
-          </div>
-          <h3>Fetch</h3>
-          <p class="project-role">Co-Founder &amp; Hardware Lead, mechanical + electrical, roughly half the stack</p>
-          <p>Fetch is a robot that carries a trash can around a gallery and comes when you call it. You drive it around a room once and name each stop, and after that it just goes there on its own. It uses AprilTags and QR codes instead of lidar or a stored map, plus an ultrasonic e-stop so it doesn't run into anyone. Visitors call it by pointing their phone at the AprilTag next to them. Built this with my co-founder Rishith in about eight hours: he did the app and routing, I did the CAD, electronics, and hardware.</p>
-          <ul class="spec-list">
-            <li><span>Compute</span> Raspberry Pi 4 + Arduino Uno R4</li>
-            <li><span>Drive</span> 4× NEMA 17, mecanum wheels</li>
-            <li><span>Localization</span> AprilTags + QR destinations</li>
-            <li><span>Safety</span> Ultrasonic e-stop</li>
-          </ul>
-          <div class="skill-tags">
-            <span class="skill-tag">Mecanum Kinematics</span>
-            <span class="skill-tag">AprilTag Localization</span>
-            <span class="skill-tag">CAD Design</span>
-            <span class="skill-tag">Embedded Electronics</span>
-            <span class="skill-tag">Raspberry Pi</span>
-            <span class="skill-tag">Arduino Uno R4</span>
-            <span class="skill-tag">Hardware Integration</span>
-          </div>
-          <div class="project-links">
-            <a href="https://github.com/vrun-systems26/Fetch-CSI-Hacks" target="_blank" rel="noopener">GitHub ↗</a>
-            <a href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">Devpost ↗</a>
-          </div>
-        </div>
       </article>
-    </div>
-  </section>
-</div>
 
-<!-- ============ STREET SWEEPER ============ -->
-<div class="card win-files" data-card="street-sweeper">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&#128193;</span>
-    <span class="win-tb-name">Street_Sweeper — File Manager</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section projects">
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_03</span>
-        <h2>Street_Sweeper/</h2>
-      </div>
-
-      <article class="project-card flagship">
-        <div class="project-media gallery-4">
-          <img src="images/street-sweeper-1.jpg" alt="Street Sweeper robot with a phone mounted as its display/camera">
-          <img src="images/street-sweeper-2.jpg" alt="Street Sweeper electronics close-up, ESP32 and wiring visible">
-          <img src="images/street-sweeper-3.jpg" alt="Street Sweeper robot, front view showing the two-wheel drivetrain">
-          <img src="images/street-sweeper-ui.jpg" alt="Street Sweeper web app, Play, How to Play, and Leaderboard screen">
-        </div>
-        <div class="project-body">
-          <div class="project-kicker">
-            <span class="badge badge-win">2ND PLACE · INTERACTIVE LEARNING TRACK · MILPITAS HACKS</span>
+      <article class="proj" id="p-ceres">
+        <header class="proj-head reveal">
+          <span class="proj-idx">02.2</span>
+          <h3 class="proj-name">Ceres</h3>
+          <span class="tag-win">2nd Place &middot; Berkeley Robotics Hackathon</span>
+        </header>
+        <div class="proj-row reveal">
+          <div class="gallery g3">
+            <img src="images/ceres-1.jpg" alt="Ceres agriculture robot, full four-wheel chassis with pan-tilt camera mount" loading="lazy">
+            <img src="images/ceres-2.jpg" alt="Ceres electronics close-up, servo turret, wiring, and motor driver board" loading="lazy">
+            <img src="images/ceres-3.jpg" alt="Ceres VLM leaf-detection screen, bounding box drawn around a diseased leaf" loading="lazy">
           </div>
-          <h3>Street Sweeper</h3>
-          <p class="project-role">Team build (4 people), hardware &amp; electronics</p>
-          <p>A trash-collection robot on a two-wheel drivetrain, with a camera-guided intake driven by an ESP32 and an L298N motor driver. The part that actually won our track: you type in commands and the robot runs them while it's out collecting trash, so it doubles as a coding lesson. Built this with a team of four at Milpitas Hacks, splitting up the mechanical build, the wiring, and the intake mechanism, and got the whole thing demo-ready in time for judging.</p>
-          <ul class="spec-list">
-            <li><span>Compute</span> ESP32</li>
-            <li><span>Drive</span> L298N, two-wheel drivetrain</li>
-            <li><span>Vision</span> Camera-guided intake mechanism</li>
-            <li><span>Track win</span> Command-driven coding lesson while collecting trash</li>
-          </ul>
-          <div class="skill-tags">
-            <span class="skill-tag">ESP32</span>
-            <span class="skill-tag">Motor Drivers (L298N)</span>
-            <span class="skill-tag">Computer Vision</span>
-            <span class="skill-tag">Command Parsing</span>
-            <span class="skill-tag">Mechanical Assembly</span>
-            <span class="skill-tag">Team Collaboration</span>
-          </div>
-          <div class="project-links">
-            <a href="https://github.com/vrun-systems26/Street-Sweeper-Milpitas-Hacks" target="_blank" rel="noopener">GitHub ↗</a>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
-</div>
-
-<!-- ============ HOPE ============ -->
-<div class="card win-files" data-card="hope">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&#128193;</span>
-    <span class="win-tb-name">Hope — File Manager</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section projects">
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_04</span>
-        <h2>Hope/</h2>
-      </div>
-
-      <article class="project-card flagship">
-        <div class="project-media">
-          <img src="images/hope-rail.jpg" alt="Hope's V-slot rail assembly with NEMA17 stepper, carriage, and TB6600 driver electronics">
-          <img src="images/hope-workbench.jpg" alt="Hope's rail assembly on the workbench, wired to the microstepping driver mid-build">
-        </div>
-        <div class="project-body">
-          <div class="project-kicker">
-            <span class="badge">IN PROGRESS · SEARCH &amp; RESCUE</span>
-          </div>
-          <h3>Hope <span class="subname">(Rail-Mounted Rubble Scanner)</span></h3>
-          <p class="project-role">Building with Rishith and one more teammate, in progress</p>
-          <p>A rail-mounted scanner for search-and-rescue. Basically: a 24GHz mmWave radar can tell if something's moving or just sitting there, but it has no idea where. So instead of hunting for a fancier sensor, we just move a cheap one. A NEMA17 stepper drags it down a 400mm V-slot rail on a GT2 belt, stopping every so often to take a reading, which adds up to a full scan across a rubble pile. A Raspberry Pi runs the whole thing and serves a Flask page over its own WiFi so you can watch results come in live, color-coded.</p>
-          <ul class="spec-list">
-            <li><span>Sensing</span> 24GHz mmWave radar + webcam + laser marker</li>
-            <li><span>Motion</span> NEMA17 + GT2 belt, 400mm V-slot rail</li>
-            <li><span>Software</span> Pi control loop + Flask web GUI, live UART parsing</li>
-            <li><span>Scope</span> Detects motion/presence, not vital signs (a triage tool)</li>
-          </ul>
-          <div class="skill-tags">
-            <span class="skill-tag">mmWave Radar</span>
-            <span class="skill-tag">UART Frame Parsing</span>
-            <span class="skill-tag">Stepper Motor Control</span>
-            <span class="skill-tag">Raspberry Pi</span>
-            <span class="skill-tag">Flask</span>
-            <span class="skill-tag">GT2 Belt Drive Design</span>
-            <span class="skill-tag">V-Slot Rail Assembly</span>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
-</div>
-
-<!-- ============ HOCDIUTEMPUSSUMPSIT ============ -->
-<div class="card win-files" data-card="arm">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&#128193;</span>
-    <span class="win-tb-name">HocDiuTempusSumpsit — File Manager</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section projects">
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_05</span>
-        <h2>HocDiuTempusSumpsit/</h2>
-      </div>
-
-      <article class="project-card flagship">
-        <div class="project-media gallery-3">
-          <img src="images/arm-2.jpg" alt="HocDiuTempusSumpsit robotic arm, full build with wireless remote controller">
-          <img src="images/arm-1.jpg" alt="HocDiuTempusSumpsit gripper close-up, helical-gear fingers open">
-          <img src="images/arm-3.jpg" alt="HocDiuTempusSumpsit arm extended, gripper and linkage visible">
-        </div>
-        <div class="project-body">
-          <div class="project-kicker">
-            <span class="badge">3D-PRINTED · BLUETOOTH CONTROLLED</span>
-          </div>
-          <h3>HocDiuTempusSumpsit <span class="subname">(Bluetooth Robotic Arm)</span></h3>
-          <p class="project-role">Solo build</p>
-          <p>A 3D-printed, Bluetooth-controlled 4-bar linkage arm with three axes of rotation, a wireless remote, and a three-finger helical-gear gripper for grasping circular objects. Driven by a PCA9685 servo controller over two ESP-WROOM-32s. The elbow joint originally couldn't hold the wrist and gripper's weight, so I reworked the joint geometry and leverage instead of just using a bigger servo.</p>
-          <ul class="spec-list">
-            <li><span>Control</span> ESP-WROOM-32 + PCA9685 + BLE</li>
-            <li><span>Servos</span> MG996R, SG90, Spektrum A330</li>
-            <li><span>Mechanism</span> 4-bar linkage, three-finger helical-gear gripper</li>
-          </ul>
-          <div class="skill-tags">
-            <span class="skill-tag">4-Bar Linkage Design</span>
-            <span class="skill-tag">Gear Design</span>
-            <span class="skill-tag">PCA9685 Servo Control</span>
-            <span class="skill-tag">Bluetooth / BLE</span>
-            <span class="skill-tag">3D Printing</span>
-            <span class="skill-tag">Torque &amp; Leverage Analysis</span>
-          </div>
-          <div class="project-links">
-            <a href="https://github.com/vrun-systems26/Bluetooth-Robotic-Arm" target="_blank" rel="noopener">GitHub ↗</a>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
-</div>
-
-<!-- ============ CERES ============ -->
-<div class="card win-files" data-card="ceres">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&#128193;</span>
-    <span class="win-tb-name">Ceres — File Manager</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section projects">
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_06</span>
-        <h2>Ceres/</h2>
-      </div>
-
-      <article class="project-card flagship">
-        <div class="project-media gallery-3">
-          <img src="images/ceres-1.jpg" alt="Ceres agriculture robot, full four-wheel chassis with pan-tilt camera mount">
-          <img src="images/ceres-2.jpg" alt="Ceres electronics close-up, servo turret, wiring, and motor driver board">
-          <img src="images/ceres-3.jpg" alt="Ceres VLM leaf-detection screen, bounding box drawn around a diseased leaf">
-        </div>
-        <div class="project-body">
-          <div class="project-kicker">
-            <span class="badge badge-win">2ND PLACE · OPEN HARDWARE TRACK · BERKELEY ROBOTICS HACKATHON · 80+ TEAMS</span>
-          </div>
-          <h3>Ceres</h3>
-          <p class="project-role">Co-Founder &amp; Hardware Lead; Rishith led the software</p>
-          <p>Ceres is an agriculture robot built to make crop monitoring affordable, since most agriculture robots are expensive and complicated to run. It drives itself through rows of plants and points a pan-tilt camera at the leaves, running a VLM we trained ourselves to spot parasites and diseased leaves and report them back. A rack-and-pinion arm lowers an Adafruit STEMMA soil sensor into the ground at each stop to read moisture, temperature, and soil quality. Built this with my co-founder Rishith in about seven hours: I did the hardware, he did the software, and when our SD card corrupted mid-build we kept the whole thing alive by flashing a USB stick with Pi Imager and running off that instead.</p>
-          <ul class="spec-list">
-            <li><span>Compute</span> Raspberry Pi 4 + Arduino Mega</li>
-            <li><span>Drive</span> 4× DC motors, 4-wheel drivetrain, dual L298N drivers</li>
-            <li><span>Vision</span> Custom-trained VLM for leaf disease &amp; parasite detection</li>
-            <li><span>Soil</span> Adafruit STEMMA soil sensor on a rack-and-pinion (MG90S) insertion arm</li>
-            <li><span>Camera turret</span> 2× MG996R pan-tilt</li>
-          </ul>
-          <div class="skill-tags">
-            <span class="skill-tag">Custom-Trained VLM</span>
-            <span class="skill-tag">Soil Sensor Integration</span>
-            <span class="skill-tag">Rack &amp; Pinion Mechanism</span>
-            <span class="skill-tag">Pan-Tilt Camera Control</span>
-            <span class="skill-tag">DC Motor Drivetrain</span>
-            <span class="skill-tag">Raspberry Pi 4</span>
-            <span class="skill-tag">Arduino Mega</span>
-          </div>
-          <div class="project-links">
-            <a href="https://github.com/vrun-systems26/Ceres/tree/master" target="_blank" rel="noopener">GitHub ↗</a>
-            <a href="https://www.youtube.com/watch?v=oX8thTSngGY" target="_blank" rel="noopener">Demo ↗</a>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
-</div>
-
-<!-- ============ MORE BUILDS ============ -->
-<div class="card win-files" data-card="morebuilds">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&#128193;</span>
-    <span class="win-tb-name">more_builds — File Manager</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section projects">
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_07</span>
-        <h2>more_builds/</h2>
-      </div>
-      <p class="section-intro small">More of my projects.</p>
-
-      <div class="project-grid">
-        <!-- ECLIPSE LAMP -->
-        <article class="mini-card">
-          <div class="mini-media-pair">
-            <img src="images/eclipse-lamp-device.jpg" alt="The Eclipse Lamp internals, Raspberry Pi, gears, and 3D-printed shutter housing">
-            <img src="images/eclipse-lamp-feed.jpg" alt="The Eclipse Lamp live feed and Telegram alerts showing person detection">
-          </div>
-          <div class="mini-body">
-            <span class="badge small">COVERT HARDWARE</span>
-            <h4>The Eclipse Lamp</h4>
-            <p>Looks like a normal lamp. Inside, a motorized shutter cycles open every few seconds while the camera sweeps the room; AI checks each look for a person, locks onto them, and pushes a real-time alert to your phone.</p>
-            <div class="skill-tags">
-              <span class="skill-tag">AI Person Detection</span>
-              <span class="skill-tag">Motorized Shutter Mechanism</span>
-              <span class="skill-tag">Pan Camera Control</span>
-              <span class="skill-tag">Real-Time Alerts</span>
+          <div class="proj-info">
+            <p class="role">Co-founder &middot; hardware lead</p>
+            <p class="desc">An affordable crop-monitoring robot that spots diseased leaves with a VLM we trained and probes soil with a rack-and-pinion sensor arm. Built with Rishith in ~7 hours &mdash; I did the hardware.</p>
+            <p class="specline">Pi 4 + Arduino Mega <b>/</b> 4WD, dual L298N <b>/</b> MG996R pan-tilt camera <b>/</b> STEMMA soil probe</p>
+            <ul class="chips"><li>Custom VLM</li><li>Rack &amp; Pinion</li><li>Pan-Tilt Control</li><li>Soil Sensing</li></ul>
+            <div class="links">
+              <a href="https://github.com/vrun-systems26/Ceres/tree/master" target="_blank" rel="noopener">GitHub <span aria-hidden="true">&nearr;</span></a>
+              <a href="https://www.youtube.com/watch?v=oX8thTSngGY" target="_blank" rel="noopener">Demo <span aria-hidden="true">&nearr;</span></a>
             </div>
-            <a href="https://github.com/vrun-systems26/The-Eclipse-Lamp" target="_blank" rel="noopener" class="mini-link">GitHub ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="proj" id="p-sweeper">
+        <header class="proj-head reveal">
+          <span class="proj-idx">02.3</span>
+          <h3 class="proj-name">Street Sweeper</h3>
+          <span class="tag-win">2nd Place &middot; Milpitas Hacks</span>
+        </header>
+        <div class="proj-row reveal">
+          <div class="gallery g4">
+            <img src="images/street-sweeper-1.jpg" alt="Street Sweeper robot with a phone mounted as its display/camera" loading="lazy">
+            <img src="images/street-sweeper-2.jpg" alt="Street Sweeper electronics close-up, ESP32 and wiring visible" loading="lazy">
+            <img src="images/street-sweeper-3.jpg" alt="Street Sweeper robot, front view showing the two-wheel drivetrain" loading="lazy">
+            <img src="images/street-sweeper-ui.jpg" alt="Street Sweeper web app, Play, How to Play, and Leaderboard screen" loading="lazy">
+          </div>
+          <div class="proj-info">
+            <p class="role">Team of 4 &middot; hardware &amp; electronics</p>
+            <p class="desc">A trash-collecting robot you program by typing commands, so driving it doubles as a coding lesson.</p>
+            <p class="specline">ESP32 <b>/</b> L298N two-wheel drive <b>/</b> camera-guided intake</p>
+            <ul class="chips"><li>ESP32</li><li>Motor Drivers</li><li>Computer Vision</li><li>Command Parsing</li></ul>
+            <div class="links">
+              <a href="https://github.com/vrun-systems26/Street-Sweeper-Milpitas-Hacks" target="_blank" rel="noopener">GitHub <span aria-hidden="true">&nearr;</span></a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="proj" id="p-arm">
+        <header class="proj-head reveal">
+          <span class="proj-idx">02.4</span>
+          <h3 class="proj-name">HocDiuTempusSumpsit <small>Bluetooth robotic arm</small></h3>
+          <span class="tag-plain">Solo build</span>
+        </header>
+        <div class="proj-row reveal">
+          <div class="gallery g3">
+            <img src="images/arm-2.jpg" alt="HocDiuTempusSumpsit robotic arm, full build with wireless remote controller" loading="lazy">
+            <img src="images/arm-1.jpg" alt="HocDiuTempusSumpsit gripper close-up, helical-gear fingers open" loading="lazy">
+            <img src="images/arm-3.jpg" alt="HocDiuTempusSumpsit arm extended, gripper and linkage visible" loading="lazy">
+          </div>
+          <div class="proj-info">
+            <p class="role">3D-printed &middot; Bluetooth controlled</p>
+            <p class="desc">A 4-bar linkage arm with a three-finger helical-gear gripper. When the elbow couldn't hold the load, I reworked the joint geometry instead of buying a bigger servo.</p>
+            <p class="specline">2&times; ESP-WROOM-32 + PCA9685 over BLE <b>/</b> MG996R, SG90, A330 servos</p>
+            <ul class="chips"><li>4-Bar Linkage</li><li>Gear Design</li><li>BLE</li><li>3D Printing</li></ul>
+            <div class="links">
+              <a href="https://github.com/vrun-systems26/Bluetooth-Robotic-Arm" target="_blank" rel="noopener">GitHub <span aria-hidden="true">&nearr;</span></a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="proj" id="p-hope">
+        <header class="proj-head reveal">
+          <span class="proj-idx">02.5</span>
+          <h3 class="proj-name">Hope <small>rubble scanner</small></h3>
+          <span class="tag-live"><span class="led" aria-hidden="true"></span>In progress</span>
+        </header>
+        <div class="proj-row reveal">
+          <div class="gallery g2">
+            <img src="images/hope-rail.jpg" alt="Hope's V-slot rail assembly with NEMA17 stepper, carriage, and TB6600 driver electronics" loading="lazy">
+            <img src="images/hope-workbench.jpg" alt="Hope's rail assembly on the workbench, wired to the microstepping driver mid-build" loading="lazy">
+          </div>
+          <div class="proj-info">
+            <p class="role">With Rishith + 1 &middot; search &amp; rescue</p>
+            <p class="desc">Drags a cheap 24GHz mmWave radar along a 400mm rail to map motion across a rubble pile, streaming color-coded results to a live web page.</p>
+            <p class="specline">mmWave + webcam <b>/</b> NEMA17 + GT2 on V-slot <b>/</b> Pi + Flask</p>
+            <ul class="chips"><li>mmWave Radar</li><li>Stepper Control</li><li>Flask</li><li>UART Parsing</li></ul>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ 03 MORE BUILDS ============ -->
+  <section class="sec wrap" id="builds" aria-labelledby="builds-h">
+    <aside class="sec-index">
+      <span class="sec-num">03</span>
+      <h2 class="sec-name" id="builds-h">More builds</h2>
+      <span class="sec-note">// smaller, weirder, still fun</span>
+    </aside>
+    <div class="sec-body">
+      <div class="builds">
+
+        <article class="build reveal">
+          <div class="build-media duo">
+            <img src="images/eclipse-lamp-device.jpg" alt="The Eclipse Lamp internals, Raspberry Pi, gears, and 3D-printed shutter housing" loading="lazy">
+            <img src="images/eclipse-lamp-feed.jpg" alt="The Eclipse Lamp live feed and Telegram alerts showing person detection" loading="lazy">
+          </div>
+          <div class="build-body">
+            <span class="build-kind">Covert hardware</span>
+            <h3>The Eclipse Lamp</h3>
+            <p>Looks like a normal lamp; inside, a motorized shutter and sweeping camera spot people and alert your phone.</p>
+            <a class="build-link" href="https://github.com/vrun-systems26/The-Eclipse-Lamp" target="_blank" rel="noopener">GitHub <span aria-hidden="true">&nearr;</span></a>
           </div>
         </article>
 
-        <!-- MAGLIFT -->
-        <article class="mini-card">
-          <img src="images/maglift.jpg" alt="MagLift science fair presentation board with the magnetic crane prototype">
-          <div class="mini-body">
-            <span class="badge badge-win small">2ND PLACE · LELAND SCIENCE FAIR</span>
-            <h4>MagLift</h4>
-            <p>An aluminum prototype demonstrating how magnetic cranes work. One motor raises and lowers the magnet, a second rotates the crane, steered by a joystick and two touch pads. Designed, built, and coded solo.</p>
-            <div class="skill-tags">
-              <span class="skill-tag">Arduino Uno</span>
-              <span class="skill-tag">Stepper Motor Control</span>
-              <span class="skill-tag">DC Motor Control</span>
-              <span class="skill-tag">Joystick Interfacing</span>
-              <span class="skill-tag">Solo Prototyping</span>
-            </div>
+        <article class="build reveal">
+          <div class="build-media">
+            <img src="images/maglift.jpg" alt="MagLift science fair presentation board with the magnetic crane prototype" loading="lazy">
+          </div>
+          <div class="build-body">
+            <span class="build-kind win">2nd Place &middot; Leland Science Fair</span>
+            <h3>MagLift</h3>
+            <p>A magnetic-crane prototype with joystick and touch-pad control. Designed, built, and coded solo.</p>
           </div>
         </article>
 
-        <!-- ADVANCED ARM CONCEPT -->
-        <article class="mini-card">
-          <img src="images/mars61.jpg" alt="MARS-61 herringbone gear reduction prototype next to its NEMA17 drive motor">
-          <div class="mini-body">
-            <span class="badge small">CONCEPT · ON HOLD</span>
-            <h4>MARS-61 <span class="subname">(Advanced Robotic Arm)</span></h4>
-            <p>Dual NEMA 17 shoulder, a differential wrist, and a custom 5:17 herringbone gear reduction at the base, with cycloidal drives and planetary gearboxes on the research list. On hold for now, but not forgotten.</p>
-            <div class="skill-tags">
-              <span class="skill-tag">Herringbone Gear Design</span>
-              <span class="skill-tag">Differential Mechanisms</span>
-              <span class="skill-tag">Dual-Motor Coordination</span>
-              <span class="skill-tag">Gear Ratio Analysis</span>
-            </div>
+        <article class="build reveal">
+          <div class="build-media">
+            <img src="images/mars61.jpg" alt="MARS-61 herringbone gear reduction prototype next to its NEMA17 drive motor" loading="lazy">
+          </div>
+          <div class="build-body">
+            <span class="build-kind">Concept &middot; On hold</span>
+            <h3>MARS-61</h3>
+            <p>A heavy arm with a dual NEMA 17 shoulder and a custom 5:17 herringbone reduction. On hold, not forgotten.</p>
           </div>
         </article>
 
-        <!-- GAMING MOUSE -->
-        <article class="mini-card">
-          <img src="images/gaming-mouse.jpg" alt="Custom gaming mouse CAD model, hex-vented shell with side buttons">
-          <div class="mini-body">
-            <span class="badge small">BUILT FROM SCRATCH</span>
-            <h4>Custom Gaming Mouse</h4>
-            <p>A mouse built from scratch around a Seeed XIAO ESP32-S3, with a PixArt PMW optical sensor for cursor tracking, a rotary encoder for the scroll wheel, and a 3.7V LiPo, plus arrow keys and a spacebar built into the shell on top of normal mouse features. Some parts scavenged from other mice.</p>
-            <div class="skill-tags">
-              <span class="skill-tag">ESP32-S3</span>
-              <span class="skill-tag">Optical Sensor Integration</span>
-              <span class="skill-tag">Rotary Encoder</span>
-              <span class="skill-tag">LiPo Power Management</span>
-              <span class="skill-tag">Enclosure Design</span>
-              <span class="skill-tag">Firmware Programming</span>
-            </div>
-            <a href="https://github.com/vrun-systems26/Custom-Gaming-Mouse" target="_blank" rel="noopener" class="mini-link">GitHub ↗</a>
+        <article class="build reveal">
+          <div class="build-media">
+            <img src="images/gaming-mouse.jpg" alt="Custom gaming mouse CAD model, hex-vented shell with side buttons" loading="lazy">
+          </div>
+          <div class="build-body">
+            <span class="build-kind">Built from scratch</span>
+            <h3>Gaming Mouse</h3>
+            <p>A mouse on a XIAO ESP32-S3 with an optical sensor, LiPo power, and arrow keys built into the shell.</p>
+            <a class="build-link" href="https://github.com/vrun-systems26/Custom-Gaming-Mouse" target="_blank" rel="noopener">GitHub <span aria-hidden="true">&nearr;</span></a>
           </div>
         </article>
+
       </div>
     </div>
   </section>
-</div>
 
-<!-- ============ SKILLS ============ -->
-<div class="card win-terminal" data-card="skills">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&gt;_</span>
-    <span class="win-tb-name">skills.cfg — Text Editor</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
+  <!-- ============ 04 AWARDS ============ -->
+  <section class="sec wrap" id="awards" aria-labelledby="awards-h">
+    <aside class="sec-index">
+      <span class="sec-num">04</span>
+      <h2 class="sec-name" id="awards-h">Awards</h2>
+      <span class="sec-note">// the ones I'm most proud of</span>
+    </aside>
+    <div class="sec-body">
+      <ol class="awards">
+        <li class="award reveal">
+          <span class="place gold">1<sup>st</sup></span>
+          <div class="award-main">
+            <h3>Overall &middot; CSI Hacks <span>82+ teams</span></h3>
+            <p><a href="#p-fetch">Fetch</a>, designed and built in 8 hours.</p>
+          </div>
+        </li>
+        <li class="award reveal">
+          <span class="place">2<sup>nd</sup></span>
+          <div class="award-main">
+            <h3>Open Hardware &middot; Berkeley Robotics Hackathon <span>80+ teams</span></h3>
+            <p><a href="#p-ceres">Ceres</a>, in 7 hours &mdash; the only high schoolers among Berkeley, UCLA, and Stanford teams.</p>
+          </div>
+        </li>
+        <li class="award reveal">
+          <span class="place">2<sup>nd</sup></span>
+          <div class="award-main">
+            <h3>Interactive Learning &middot; Milpitas Hacks <span>220+ participants</span></h3>
+            <p><a href="#p-sweeper">Street Sweeper</a>, the robot that teaches coding.</p>
+          </div>
+        </li>
+        <li class="award reveal">
+          <span class="place">2<sup>nd</sup></span>
+          <div class="award-main">
+            <h3>Leland High School Science Fair <span>30+ submissions</span></h3>
+            <p><a href="#builds">MagLift</a>, a solo magnetic-crane prototype.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ 05 STACK ============ -->
+  <section class="sec wrap" id="stack" aria-labelledby="stack-h">
+    <aside class="sec-index">
+      <span class="sec-num">05</span>
+      <h2 class="sec-name" id="stack-h">Stack</h2>
+      <span class="sec-note">// things I've worked with</span>
+    </aside>
+    <div class="sec-body">
+      <div class="stack">
+        <div class="cell reveal"><i>01</i><h3>Microcontrollers</h3><p>Pi 4 &middot; Arduino &middot; ESP32</p></div>
+        <div class="cell reveal"><i>02</i><h3>Motors</h3><p>NEMA 17 &middot; DC &middot; servos</p></div>
+        <div class="cell reveal"><i>03</i><h3>Sensors</h3><p>mmWave &middot; ultrasonic &middot; optical</p></div>
+        <div class="cell reveal"><i>04</i><h3>Drivers &amp; controllers</h3><p>L298N &middot; TB6600 &middot; PCA9685</p></div>
+        <div class="cell reveal"><i>05</i><h3>Power</h3><p>LiPo &middot; bench supply</p></div>
+        <div class="cell reveal"><i>06</i><h3>CAD &amp; fabrication</h3><p>CAD &middot; 3D printing</p></div>
+        <div class="cell reveal"><i>07</i><h3>Mechanisms</h3><p>linkages &middot; gears &middot; belts</p></div>
+        <div class="cell reveal"><i>08</i><h3>Software</h3><p>Python &middot; Flask &middot; BLE &middot; bash</p></div>
+        <div class="cell reveal"><i>09</i><h3>PCB design &amp; soldering</h3></div>
+        <div class="cell reveal"><i>10</i><h3>Hand &amp; power tools</h3></div>
+        <div class="cell reveal"><i>11</i><h3>Version control (Git)</h3></div>
+        <div class="cell reveal"><i>12</i><h3>Test &amp; measurement</h3></div>
+      </div>
+
+      <div class="activity reveal">
+        <div class="activity-head">
+          <h3>Commits</h3>
+          <p><b id="actTotal">469</b> contributions in the last year</p>
+          <a href="https://github.com/vrun-systems26" target="_blank" rel="noopener">@vrun-systems26 <span aria-hidden="true">&nearr;</span></a>
+        </div>
+        <div class="heat" id="heat" role="img" aria-label="GitHub contribution graph for the last year">
+          <div class="heat-months" id="heatMonths"></div>
+          <div class="heat-grid" id="heatGrid"></div>
+        </div>
+        <div class="heat-legend" aria-hidden="true">
+          <span>less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><span>more</span>
+        </div>
+        <div class="heat-tip" id="heatTip" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 CONTACT ============ -->
+  <section class="sec wrap" id="contact" aria-labelledby="contact-h">
+    <aside class="sec-index">
+      <span class="sec-num">06</span>
+      <h2 class="sec-name">Contact</h2>
+      <span class="sec-note">// reach out</span>
+    </aside>
+    <div class="sec-body contact">
+      <h2 class="contact-title reveal" id="contact-h">Let's build <em>something.</em></h2>
+      <p class="contact-sub reveal">Reach out, or check out what I've been working on.</p>
+      <a class="contact-email reveal" href="mailto:varunchilukuri7@gmail.com">varunchilukuri7@gmail.com <span aria-hidden="true">&rarr;</span></a>
+
+      <svg class="sig" id="sig" viewBox="0 0 280 130" aria-label="Varun, signed" role="img">
+        <path class="sig-stroke" d="M20 30 C 26 52, 34 76, 44 94 C 52 72, 60 44, 74 22 C 70 44, 76 70, 90 70 C 98 70, 102 60, 104 54 C 98 50, 84 58, 86 72 C 88 84, 102 80, 106 66 L 106 80 C 108 88, 114 88, 120 80 C 122 72, 124 64, 126 58 C 128 66, 128 76, 128 86 C 130 72, 138 60, 148 62 C 148 70, 146 80, 152 84 C 160 88, 166 76, 168 64 C 168 74, 168 84, 174 84 C 180 84, 184 76, 186 68 C 188 62, 188 72, 188 86 C 192 72, 198 62, 206 64 C 214 66, 212 80, 216 84 C 222 90, 236 80, 246 68"/>
+        <path class="sig-stroke sig-under" d="M28 110 C 90 98, 170 102, 254 92"/>
+      </svg>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot wrap">
+  <table class="titleblock" aria-label="Page details">
+    <tr>
+      <td><span>Drawn by</span>V. Chilukuri</td>
+      <td><span>Location</span>San Jose, CA</td>
+      <td><span>Rev</span><span class="js-rev"></span></td>
+      <td><span>Sheet</span>1 of 1</td>
+    </tr>
+  </table>
+  <div class="foot-row">
+    <p>&copy; <span class="js-year"></span> Varun Chilukuri</p>
+    <p class="foot-tip">pro tip: keep capacitors away from wall sockets</p>
+    <a class="foot-secret" href="desktop/" title="the old desktop version">$ startx</a>
   </div>
-  <section class="win-body section hardware">
-    <div class="win-linebar" aria-hidden="true"></div>
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_08</span>
-        <h2>skills.cfg</h2>
-      </div>
-      <p class="section-intro">A few things I've worked with.</p>
+</footer>
 
-      <div class="skills-rows">
-        <div class="skills-row"><span>Microcontrollers</span></div>
-        <div class="skills-row"><span>Motors</span></div>
-        <div class="skills-row"><span>Sensors</span></div>
-        <div class="skills-row"><span>Drivers &amp; controllers</span></div>
-        <div class="skills-row"><span>Power</span></div>
-        <div class="skills-row"><span>CAD &amp; fabrication</span></div>
-        <div class="skills-row"><span>Mechanisms</span></div>
-        <div class="skills-row"><span>Software</span></div>
-        <div class="skills-row"><span>PCB design &amp; soldering</span></div>
-        <div class="skills-row"><span>Hand &amp; power tools</span></div>
-        <div class="skills-row"><span>Version control (Git)</span></div>
-        <div class="skills-row"><span>Test &amp; measurement</span></div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ============ AWARDS ============ -->
-<div class="card win-terminal" data-card="awards">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&gt;_</span>
-    <span class="win-tb-name">awards.log — tail -f</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section awards">
-    <div class="win-linebar" aria-hidden="true"></div>
-    <div class="win-content">
-      <div class="section-head">
-        <span class="section-num">part_09</span>
-        <h2>awards.log</h2>
-      </div>
-      <p class="section-intro">The ones I'm most proud of.</p>
-
-      <div class="award-list">
-        <div class="award-row">
-          <span class="award-mark">01</span>
-          <div>
-            <h4>1st Place Overall · CSI Hacks (82+ Teams)</h4>
-            <p>For <strong>Fetch</strong>, co-founded and co-built as hardware lead. Designed, printed, wired, and demoed inside an 8-hour build window.</p>
-          </div>
-        </div>
-        <div class="award-row">
-          <span class="award-mark">02</span>
-          <div>
-            <h4>2nd Place, Interactive Learning Track · Milpitas Hacks (220+ Participants)</h4>
-            <p>For <strong>Street Sweeper</strong>, a trash-collection robot that doubles as a coding lesson for whoever's driving it.</p>
-          </div>
-        </div>
-        <div class="award-row">
-          <span class="award-mark">03</span>
-          <div>
-            <h4>2nd Place · Leland High School Science Fair (30+ Submissions)</h4>
-            <p>For <strong>MagLift</strong>, a working magnetic crane prototype. Designed, built, and coded solo.</p>
-          </div>
-        </div>
-        <div class="award-row">
-          <span class="award-mark">04</span>
-          <div>
-            <h4>2nd Place, Open Hardware Track · Berkeley Robotics Hackathon (80+ Teams)</h4>
-            <p>For <strong>Ceres</strong>, co-founded and co-built as hardware lead. Designed, printed, wired, and demoed inside a 7-hour build window, against 80 teams of college students from Berkeley, UCLA, and Stanford — we were the only high schoolers there.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ============ CONTACT ============ -->
-<div class="card win-terminal" data-card="contact">
-  <div class="win-titlebar">
-    <span class="win-tb-icon">&gt;_</span>
-    <span class="win-tb-name">contact.sh — bash</span>
-    <span class="win-tb-nav">
-      <button type="button" class="win-nav-btn" data-nav="prev" aria-label="Previous file">&#8249;</button>
-      <button type="button" class="win-nav-btn" data-nav="next" aria-label="Next file">&#8250;</button>
-    </span>
-    <span class="win-tb-btns"><button type="button" class="win-btn win-min" tabindex="-1"></button><button type="button" class="win-btn win-max" data-maximize tabindex="-1"></button><button class="win-btn win-close" data-close aria-label="Close"></button></span>
-  </div>
-  <section class="win-body section contact">
-    <div class="win-linebar" aria-hidden="true"></div>
-    <div class="win-content">
-      <p class="term-prompt">varun@chilukuri:~$ ./contact.sh</p>
-      <div class="contact-inner">
-        <span class="section-num">part_10</span>
-        <h2>Let's build something.</h2>
-        <p class="contact-subtitle">Reach out, or check out what I've been working on.</p>
-        <a href="mailto:varunchilukuri7@gmail.com" class="contact-email">varunchilukuri7@gmail.com</a>
-        <div class="contact-links">
-          <a href="https://github.com/vrun-systems26" target="_blank" rel="noopener">GitHub ↗</a>
-          <a href="https://www.linkedin.com/in/varunchilukuri26/" target="_blank" rel="noopener">LinkedIn ↗</a>
-          <a href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">Devpost ↗</a>
-        </div>
-        <div class="card-footer-note">
-          <p>© <span class="js-year"></span> Varun Chilukuri</p>
-          <p>pro tip: keep capacitors away from wall sockets</p>
-        </div>
-      </div>
-      <p class="term-prompt term-cursor">varun@chilukuri:~$ <span class="motd-caret">&#9608;</span></p>
-    </div>
-  </section>
-</div>
-
-<script src="js/script.js?v=205"></script>
+<script src="js/script.js?v=303"></script>
 </body>
 </html>
