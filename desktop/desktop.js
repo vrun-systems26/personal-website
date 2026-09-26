@@ -159,7 +159,7 @@ cards.forEach((card) => {
 });
 
 // ---------- prev/next: flip through files without going back to the desktop ----------
-const FILE_ORDER = ["about", "fetch", "street-sweeper", "hope", "arm", "ceres", "morebuilds", "skills", "awards", "contact"];
+const FILE_ORDER = ["about", "fetch", "street-sweeper", "arm", "ceres", "morebuilds", "skills", "awards", "contact"];
 
 function navigateCard(currentCard, direction) {
   const name = currentCard.dataset.card;

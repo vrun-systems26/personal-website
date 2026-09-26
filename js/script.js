@@ -99,15 +99,17 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
   const counts = document.querySelectorAll(".count[data-to]");
   if (!counts.length) return;
   const run = (el) => {
-    const to = +el.dataset.to;
-    if (reduceMotion) { el.textContent = to; return; }
+    if (reduceMotion) { el.textContent = el.dataset.to; el.dataset.done = "1"; return; }
     const start = performance.now();
     const dur = 1300;
     const step = (t) => {
+      // read the target every frame, so a live number arriving mid-count still lands
+      const to = +el.dataset.to;
       const p = Math.min(1, (t - start) / dur);
       const eased = 1 - Math.pow(1 - p, 3);
       el.textContent = Math.round(to * eased);
       if (p < 1) requestAnimationFrame(step);
+      else el.dataset.done = "1";
     };
     requestAnimationFrame(step);
   };
@@ -347,9 +349,16 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   function render(data) {
     const days = (data && data.contributions) || [];
     if (!days.length) return;
-    if (totalOut && data.total) {
+    if (data.total) {
       const t = data.total.lastYear ?? Object.values(data.total)[0];
-      if (t != null) totalOut.textContent = t;
+      if (t != null) {
+        if (totalOut) totalOut.textContent = t;
+        const stat = document.getElementById("statCommits");
+        if (stat) {
+          stat.dataset.to = t;
+          if (stat.dataset.done) stat.textContent = t;
+        }
+      }
     }
     grid.innerHTML = "";
     months.innerHTML = "";
