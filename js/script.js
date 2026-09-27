@@ -217,7 +217,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
 
   const WORD = "VARUN";
   const K = 0.06, DAMP = 0.85, PUSH = 3;
-  let W = 0, H = 0, gap = 4, radius = 60, n = 0, wordW = 0;
+  let W = 0, H = 0, gap = 4, radius = 60, n = 0, wordW = 0, wordX = 0;
   let hx, hy, x, y, vx, vy;
   const pointer = { x: -9999, y: -9999, active: false, last: 0 };
   let running = false, raf = 0;
@@ -245,8 +245,9 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     o.font = font(fs);
     m = o.measureText(WORD);
     wordW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
+    wordX = Math.max(0, (W - wordW) / 2); // centered in its box
     o.fillStyle = "#fff";
-    o.fillText(WORD, m.actualBoundingBoxLeft, (H - (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)) / 2 + m.actualBoundingBoxAscent);
+    o.fillText(WORD, wordX + m.actualBoundingBoxLeft, (H - (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)) / 2 + m.actualBoundingBoxAscent);
 
     const data = o.getImageData(0, 0, W, H).data;
     const homes = [];
@@ -276,7 +277,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     if (!pointer.active || now - pointer.last > 2600) {
       const t = (now - t0) / 1000;
       // idle: a slow, gentle ghost cursor keeps the word breathing without breaking it up
-      mx = wordW * (0.5 + 0.55 * Math.sin(t * 0.45));
+      mx = wordX + wordW * (0.5 + 0.55 * Math.sin(t * 0.45));
       my = H * (0.5 + 0.35 * Math.sin(t * 0.9 + 1));
       push = PUSH * 0.35;
       rad = radius * 0.55;
@@ -857,7 +858,8 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = W * dpr; canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      R = Math.max(1, W / 2 - 14);
+      // floor ellipse plus the walls standing on it must fit the band's height, not just its width
+      R = Math.max(1, Math.min(W / 2 - 14, (H - 44) / 1.12));
       px = R / RANGE;
       cx = W / 2; cy = H * 0.5;
     }
