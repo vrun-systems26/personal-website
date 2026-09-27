@@ -417,7 +417,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   function setState(on) {
     btn.classList.toggle("is-playing", on);
     btn.setAttribute("aria-pressed", String(on));
-    if (label) label.textContent = on ? "Champagne Coast" : "recommended: play music";
+    if (label) label.textContent = on ? "Champagne Coast" : "recommended: play music for a better experience";
   }
   async function play() {
     card.hidden = false;
