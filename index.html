@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=501">
+<link rel="stylesheet" href="css/style.css?v=521">
 <script>document.documentElement.classList.add("js");</script>
 
 <script type="application/ld+json">
@@ -49,31 +49,33 @@
 <body>
 <a class="skip" href="#work">Skip to work</a>
 
-<!-- section ruler, fixed on the left edge -->
-<nav class="ruler" aria-label="Sections">
-  <a href="#top" data-spy="top"><span>Intro</span></a>
-  <a href="#socials" data-spy="socials"><span>Socials</span></a>
-  <a href="#work" data-spy="work"><span>Work</span></a>
-  <a href="#stack" data-spy="stack"><span>Stack</span></a>
-  <a href="#building" data-spy="building"><span>Commits</span></a>
-  <a href="#awards" data-spy="awards"><span>Awards</span></a>
-  <a href="#contact" data-spy="contact"><span>Contact</span></a>
-</nav>
+<!-- slow fluid glow behind the whole page -->
+<div class="fluid" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
-<div class="frame">
-<main class="main" id="top">
-
-  <!-- ============ TOP BAR ============ -->
-  <header class="bar">
-    <a href="#top" class="logo" aria-label="Varun Chilukuri, back to top">VC</a>
-    <div class="bar-right">
-      <span class="chip chip-clock"><span class="led" aria-hidden="true"></span>San Jose <b id="clock">--:--</b></span>
+<!-- ============ MENU ============ -->
+<header class="nav">
+  <div class="nav-in">
+    <a href="#top" class="nav-name">Varun Chilukuri</a>
+    <nav class="nav-links" id="navLinks" aria-label="Sections">
+      <a href="#socials" data-spy="socials">Socials</a>
+      <a href="#work" data-spy="work">Work</a>
+      <a href="#stack" data-spy="stack">Stack</a>
+      <a href="#building" data-spy="building">Commits</a>
+      <a href="#awards" data-spy="awards">Awards</a>
+      <a href="#contact" data-spy="contact">Contact</a>
+    </nav>
+    <div class="nav-right">
       <a class="chip chip-gh" href="https://github.com/vrun-systems26" target="_blank" rel="noopener" aria-label="GitHub, contributions in the last year">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         <b class="js-commits">469</b>
       </a>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="navLinks" aria-label="Menu"><span></span><span></span></button>
     </div>
-  </header>
+  </div>
+</header>
+
+<div class="frame">
+<main class="main" id="top">
 
   <!-- ============ HERO ============ -->
   <section class="hero" aria-labelledby="hero-h">
@@ -85,8 +87,6 @@
       <span>I build</span>
       <span><u>robots</u>, mechatronics &amp; <u>embedded systems</u>.</span>
     </h1>
-    <div class="scope" aria-hidden="true"><canvas id="scope"></canvas></div>
-    <div class="hero-foot">
     <p class="lead">High schooler at Leland turning CAD, 3D prints, and wiring into working prototypes, mostly at hackathons. Engineering in the bay.</p>
     <div class="meta">
       <span class="meta-item">
@@ -101,7 +101,6 @@
         </button>
         <a class="music-credit" href="https://soundcloud.com/bloodorange/champagne-coast" target="_blank" rel="noopener" hidden>Blood Orange &middot; SoundCloud &#8599;</a>
       </span>
-    </div>
     </div>
   </section>
 
@@ -279,7 +278,7 @@
   <div class="foot-top">
   <div class="foot-scan" aria-hidden="true">
     <canvas class="scene" data-scene="map" aria-hidden="true"></canvas>
-    <p>the map it made<br><b class="js-pts">0</b> pts</p>
+    <p>a room,<br>mapped by Fetch</p>
   </div>
   <svg class="sig" id="sig" viewBox="0 0 280 130" aria-label="Varun, signed" role="img">
     <path class="sig-stroke" d="M20 30 C 26 52, 34 76, 44 94 C 52 72, 60 44, 74 22 C 70 44, 76 70, 90 70 C 98 70, 102 60, 104 54 C 98 50, 84 58, 86 72 C 88 84, 102 80, 106 66 L 106 80 C 108 88, 114 88, 120 80 C 122 72, 124 64, 126 58 C 128 66, 128 76, 128 86 C 130 72, 138 60, 148 62 C 148 70, 146 80, 152 84 C 160 88, 166 76, 168 64 C 168 74, 168 84, 174 84 C 180 84, 184 76, 186 68 C 188 62, 188 72, 188 86 C 192 72, 198 62, 206 64 C 214 66, 212 80, 216 84 C 222 90, 236 80, 246 68"/>
@@ -293,26 +292,6 @@
   </div>
 </footer>
 </div>
-
-<!-- wide screens: the music tip lives in the empty right column -->
-<div class="music music-corner">
-  <button type="button" class="music-tip" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange">
-    <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span class="music-label">recommended: play music for a better experience</span>
-  </button>
-  <a class="music-credit" href="https://soundcloud.com/bloodorange/champagne-coast" target="_blank" rel="noopener" hidden>Blood Orange &middot; SoundCloud &#8599;</a>
-</div>
-
-<!-- two tiny pixel versions of the builds, parked in the side columns -->
-<button type="button" class="bot bot-left" data-open="ceres" aria-label="Ceres, open project">
-  <canvas class="bot-cv" id="botCeres" width="48" height="28"></canvas>
-  <span class="bot-tag" aria-hidden="true">ceres</span>
-</button>
-<button type="button" class="bot bot-right" data-open="fetch" aria-label="Fetch, open project">
-  <canvas class="bot-cv" id="botFetch" width="40" height="34"></canvas>
-  <span class="bot-tag" aria-hidden="true">fetch</span>
-</button>
-
 
 <!-- ============ PROJECT DETAILS (opened from the Work rows) ============ -->
 <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
@@ -379,6 +358,6 @@
   </article>
 </div>
 
-<script src="js/script.js?v=501"></script>
+<script src="js/script.js?v=520"></script>
 </body>
 </html>
