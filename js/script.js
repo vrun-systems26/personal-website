@@ -387,7 +387,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   const card = document.getElementById("np");
   const closeBtn = document.getElementById("npClose");
   if (!btn || !card) return;
-  const VIDEO = "uKnUvd4mPkI";
+  const VIDEO = "d8NRvNm5RXk";
   const VOLUME = 12;      // faint: sits under everything, but you can hear it
   const FADE_IN = 4000;
   const FADE_OUT = 1100;
