@@ -433,6 +433,151 @@ dotWord(document.getElementById("field"), "VARUN");
   }));
 })();
 
+// ---------- hero: two helical gears turning in mesh, a copper tint with a darker orange border ----------
+(function () {
+  const canvas = document.getElementById("gears");
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+  const TAU = Math.PI * 2;
+  const YAW = -0.62, PITCH = 0.8; // camera: looking down at the gears from the front left
+  const THICK = 0.3;               // how deep the gears are
+  const SLICES = 30;               // the body is stacked from thin slices, bottom up, so nothing ever needs sorting
+  const SPEED = 0.26;              // radians per second for the big gear
+
+  // same tooth pitch on both, so they mesh
+  const A = { R: 1, teeth: 28, h: 0.15, holes: 6 };
+  const B = { R: 22 / 28, teeth: 22, h: 0.15, holes: 5 };
+  // helical: each tooth winds a full pitch down the face; the pair wind in opposite hands
+  A.twist = 1.0 * (TAU / A.teeth);
+  B.twist = -A.twist * (A.R / B.R);
+  const PHI = 0.95; // where B sits around A
+  const D = A.R + B.R + A.h * 0.3;
+  A.x = -Math.cos(PHI) * D / 2; A.z = -Math.sin(PHI) * D / 2;
+  B.x = A.x + Math.cos(PHI) * D; B.z = A.z + Math.sin(PHI) * D;
+  // phase so a tooth of one always sits in a gap of the other where they meet
+  const PHASE = ((PHI * (A.teeth + B.teeth)) / TAU + B.teeth / 2 - 0.5) * TAU / B.teeth;
+
+  // the old award pill: copper tint over the page for the fill, half copper for the border
+  const FILL = "rgb(37,25,17)";
+  const SIDE = "rgb(24,17,12)";
+  const EDGE = "rgba(224,138,75,0.5)";
+
+  let W = 1, H = 1, S = 1, cx = 0, cy = 0, raf = 0, visible = true, last = performance.now(), rot = 0.4;
+  let sx = 0, sy = 0;
+  const cyw = Math.cos(YAW), syw = Math.sin(YAW), cp = Math.cos(PITCH), sp = Math.sin(PITCH);
+  function P(x, y, z) {
+    const X = x * cyw - z * syw, Z = x * syw + z * cyw;
+    const Y2 = y * cp + Z * sp, Z2 = Z * cp - y * sp;
+    const k = 9 / (9 + Z2);
+    sx = cx + X * S * k; sy = cy - Y2 * S * k;
+  }
+
+  // tooth profile: a wide rounded root tapering to a narrow point, curved all the way.
+  // samples start at the gear's own angle, so they turn with it instead of sliding over the teeth
+  function outline(g, r) {
+    const n = g.teeth * 12, pts = [];
+    for (let i = 0; i < n; i++) {
+      const th = r + (i / n) * TAU;
+      const s = 0.5 + 0.5 * Math.cos(g.teeth * (th - r));
+      const rr = g.R - g.h * 0.55 + g.h * Math.pow(s, 2.2);
+      pts.push([g.x + Math.cos(th) * rr, g.z + Math.sin(th) * rr]);
+    }
+    return pts;
+  }
+  function holes(g, r) {
+    const list = [[g.x, g.z, g.R * 0.24, r]];
+    for (let k = 0; k < g.holes; k++) {
+      const a = r + (k * TAU) / g.holes;
+      list.push([g.x + Math.cos(a) * g.R * 0.58, g.z + Math.sin(a) * g.R * 0.58, g.R * 0.16, a]);
+    }
+    return list;
+  }
+  // one level of the gear: the outline turned by the twist at depth f (0 = top, 1 = bottom), straight holes cut out
+  function level(g, out, hs, f) {
+    const y = -THICK * f, a = -g.twist * f, c = Math.cos(a), s = Math.sin(a);
+    ctx.beginPath();
+    out.forEach((pt, i) => {
+      const dx = pt[0] - g.x, dz = pt[1] - g.z;
+      P(g.x + dx * c - dz * s, y, g.z + dx * s + dz * c);
+      if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy);
+    });
+    ctx.closePath();
+    for (const [hx, hz, hr, a0] of hs) {
+      for (let i = 0; i <= 40; i++) { const t = a0 + (i / 40) * TAU; P(hx + Math.cos(t) * hr, y, hz + Math.sin(t) * hr); if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy); }
+      ctx.closePath();
+    }
+  }
+
+  function drawGear(g, r) {
+    const out = outline(g, r), hs = holes(g, r);
+    ctx.lineJoin = "round";
+    // bottom edge: the border, so the underside reads too
+    level(g, out, hs, 1);
+    ctx.fillStyle = SIDE; ctx.fill("evenodd");
+    ctx.strokeStyle = EDGE; ctx.lineWidth = 1.2; ctx.stroke();
+    // the body, stacked upward; each slice covers the one below
+    ctx.fillStyle = SIDE;
+    for (let s = SLICES - 1; s >= 1; s--) { level(g, out, hs, s / SLICES); ctx.fill("evenodd"); }
+    // the top face: tinted fill with the border
+    level(g, out, hs, 0);
+    ctx.fillStyle = FILL; ctx.fill("evenodd");
+    ctx.strokeStyle = EDGE; ctx.lineWidth = 1.4; ctx.stroke();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const rb = -rot * (A.teeth / B.teeth) + PHASE;
+    // the farther gear (higher on screen) first; fixed for this camera, so the order never swaps
+    P(A.x, 0, A.z); const ya = sy;
+    P(B.x, 0, B.z); const yb = sy;
+    if (ya < yb) { drawGear(A, rot); drawGear(B, rb); } else { drawGear(B, rb); drawGear(A, rot); }
+  }
+
+  function size() {
+    const rc = canvas.getBoundingClientRect();
+    W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // fit both gears (and their depth) inside the canvas
+    S = 1; cx = 0; cy = 0;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const g of [A, B]) {
+      for (let i = 0; i < 64; i++) {
+        const th = (i / 64) * TAU, rr = g.R + g.h / 2;
+        for (const y of [0, -THICK]) {
+          P(g.x + Math.cos(th) * rr, y, g.z + Math.sin(th) * rr);
+          x0 = Math.min(x0, sx); x1 = Math.max(x1, sx); y0 = Math.min(y0, sy); y1 = Math.max(y1, sy);
+        }
+      }
+    }
+    const pad = Math.min(W, H) * 0.07;
+    S = Math.min((W - pad * 2) / (x1 - x0), (H - pad * 2) / (y1 - y0));
+    cx = W / 2 - ((x0 + x1) / 2) * S;
+    cy = H / 2 - ((y0 + y1) / 2) * S;
+  }
+
+  function tick(now) {
+    raf = 0;
+    rot += Math.min(0.05, (now - last) / 1000) * SPEED;
+    last = now;
+    draw();
+    if (visible) raf = requestAnimationFrame(tick);
+  }
+  const start = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+
+  size();
+  if (reduceMotion) draw();
+  else {
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible) start(); }).observe(canvas);
+    }
+    start();
+  }
+  let rt = 0;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { size(); draw(); }, 150); });
+})();
+
 // ---------- a small scene for each section ----------
 (function () {
   const TAU = Math.PI * 2;
@@ -483,7 +628,7 @@ dotWord(document.getElementById("field"), "VARUN");
       px = cx + X * scale * k; py = cy - Y2 * scale * k; pz = Z2;
       if (measuring) { if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; }
     }
-    const shade = (b) => (opts.flat ? b : b * (1 - Math.max(-0.4, Math.min(0.5, pz * 0.09))));
+    const shade = (b) => b * (1 - Math.max(-0.4, Math.min(0.5, pz * 0.09)));
     function dot(x, y, z, b) {
       if (form < 1) {
         const h = hash(++idx * 1.618), lp = Math.min(1, Math.max(0, (form - h * 0.6) / 0.4));
@@ -502,7 +647,7 @@ dotWord(document.getElementById("field"), "VARUN");
       if (pts.length < 2) return;
       ctx.globalCompositeOperation = "lighter";
       ctx.strokeStyle = cu(Math.min(0.6, b * 0.42));
-      ctx.lineWidth = opts.lw || 1;
+      ctx.lineWidth = 1;
       ctx.beginPath();
       pts.forEach((p, i) => { P(p[0], p[1], p[2]); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
       if (closed) ctx.closePath();
@@ -522,14 +667,12 @@ dotWord(document.getElementById("field"), "VARUN");
       return pts;
     }
     function ring(x, y, z, r, b, from, to) { path(circle(x, y, z, r, from, to), b, from === undefined); }
-    function fill(pts, style, holes = []) {
+    function fill(pts, style) {
       ctx.beginPath();
-      for (const ring of [pts, ...holes]) {
-        ring.forEach((p, i) => { P(p[0], p[1], p[2]); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
-        ctx.closePath();
-      }
+      pts.forEach((p, i) => { P(p[0], p[1], p[2]); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+      ctx.closePath();
       ctx.fillStyle = style;
-      ctx.fill("evenodd");
+      ctx.fill();
     }
     function box(x0, y0, z0, x1, y1, z1, b, face = 0) {
       if (face) {
@@ -606,7 +749,7 @@ dotWord(document.getElementById("field"), "VARUN");
         const L = B[b];
         if (!L.length) continue;
         ctx.fillStyle = SCOLS[b];
-        const d = (b === 0 ? 1.8 : 1.5) * (opts.dot || 1);
+        const d = b === 0 ? 1.8 : 1.5;
         for (let k = 0; k < L.length; k += 2) ctx.fillRect(L[k] - d / 2, L[k + 1] - d / 2, d, d);
         L.length = 0;
       }
@@ -622,61 +765,7 @@ dotWord(document.getElementById("field"), "VARUN");
   // how brightly a spot at distance d is lit by rings expanding from the middle
   const litBy = (fronts, d, w) => fronts.reduce((g, [R, s]) => Math.max(g, s * Math.exp(-(((R - d) / w) ** 2))), 0);
 
-  // two helical gears in mesh (the hero piece), same tooth pitch so they mesh
-  const GT = 0.3; // how deep the gears are
-  const GA = { R: 1, teeth: 28, h: 0.15, holes: 6 };
-  const GB = { R: 22 / 28, teeth: 22, h: 0.15, holes: 5 };
-  GA.twist = TAU / GA.teeth; // each tooth winds a full pitch down the face; the pair wind in opposite hands
-  GB.twist = -GA.twist * (GA.R / GB.R);
-  const GPHI = 0.95, GD = GA.R + GB.R + GA.h * 0.3;
-  GA.x = -Math.cos(GPHI) * GD / 2; GA.z = -Math.sin(GPHI) * GD / 2;
-  GB.x = GA.x + Math.cos(GPHI) * GD; GB.z = GA.z + Math.sin(GPHI) * GD;
-  // phase so a tooth of one always sits in a gap of the other where they meet
-  const GPHASE = ((GPHI * (GA.teeth + GB.teeth)) / TAU + GB.teeth / 2 - 0.5) * TAU / GB.teeth;
-  // a point on the tooth profile at angle th, f of the way down from the top face, turned by the twist
-  function gearAt(g, r, th, f) {
-    const s = 0.5 + 0.5 * Math.cos(g.teeth * (th - r));
-    const rr = g.R - g.h * 0.55 + g.h * Math.pow(s, 2.2);
-    const q = th - g.twist * f;
-    return [g.x + Math.cos(q) * rr, GT * (1 - f), g.z + Math.sin(q) * rr];
-  }
-  function gear(a, g, r) {
-    const n = g.teeth * 10, top = [], bot = [];
-    for (let i = 0; i < n; i++) { const th = r + (i / n) * TAU; top.push(gearAt(g, r, th, 0)); bot.push(gearAt(g, r, th, 1)); }
-    const hub = a.circle(g.x, GT, g.z, g.R * 0.24, r, r + TAU, 40);
-    const holes = [hub];
-    for (let k = 0; k < g.holes; k++) {
-      const q = r + (k * TAU) / g.holes;
-      holes.push(a.circle(g.x + Math.cos(q) * g.R * 0.58, GT, g.z + Math.sin(q) * g.R * 0.58, g.R * 0.16, r, r + TAU, 30));
-    }
-    // a faint copper face so each gear reads as a solid part, not just a wire
-    a.fill(top, a.cu(0.08), holes);
-    a.path(bot, 0.3, true, 4);
-    // the helical flanks: one line down every tooth tip
-    for (let k = 0; k < g.teeth; k++) {
-      const th = r + (k * TAU) / g.teeth, pts = [];
-      for (let j = 0; j <= 6; j++) pts.push(gearAt(g, r, th, j / 6));
-      a.path(pts, 0.5, false, 3);
-    }
-    a.path(top, 1, true, 2);
-    holes.forEach((h) => a.path(h, 0.74, true, 2));
-    a.path(a.circle(g.x, 0, g.z, g.R * 0.24, r, r + TAU, 40), 0.3, true, 2);
-    a.path(a.circle(g.x, GT, g.z, g.R * 0.8, r, r + TAU, 90), 0.3, true, 3);
-  }
-
   const SCENES = {
-    // Hero: the gears, built from the same glowing dots as the rest of the page
-    gears: [{ pitch: 0.8, dot: 1.4, lw: 1.2, flat: true }, (t, a) => {
-      a.v.yaw = -0.62;
-      a.floor(2.2, 0);
-      const rA = 0.4 + t * 0.26;
-      gear(a, GA, rA);
-      gear(a, GB, -rA * (GA.teeth / GB.teeth) + GPHASE);
-      // a warm glow where the teeth meet
-      const mx = GA.x + Math.cos(GPHI) * GA.R, mz = GA.z + Math.sin(GPHI) * GA.R;
-      a.flare(mx, GT, mz, 22, 0.32);
-    }, { dust: 0 }],
-
     // Socials: a lattice mast broadcasting; each node flares and links up as a ring reaches it
     signal: [{ pitch: 0.3 }, (t, a) => {
       a.v.yaw = t * 0.12;
