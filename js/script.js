@@ -429,18 +429,18 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   update();
 })();
 
-// ---------- music: opt-in, very quiet, fades in and out ----------
+// ---------- music: opt-in, quiet, fades in and out ----------
+// plays Blood Orange's own upload through a minimized SoundCloud embed; the credit link shows while it plays.
+// browsers that won't start sound from outside the embed get a thin SoundCloud strip to tap instead.
 (function () {
-  // one tip inline in the intro (small screens), one parked in the right column (wide screens)
   const btns = Array.from(document.querySelectorAll(".music-tip"));
-  const card = document.getElementById("np");
-  const closeBtn = document.getElementById("npClose");
-  if (!btns.length || !card) return;
-  const VIDEO = "d8NRvNm5RXk";
-  const VOLUME = 25;      // quiet, sits under everything, but clearly there
+  const credits = Array.from(document.querySelectorAll(".music-credit"));
+  if (!btns.length) return;
+  const TRACK = "https://soundcloud.com/bloodorange/champagne-coast";
+  const VOLUME = 35;      // quiet, sits under everything, but clearly there
   const FADE_IN = 4000;
   const FADE_OUT = 1100;
-  let player = null, fadeTimer = 0, level = 0, playing = false;
+  let widget = null, frame = null, ready = null, fadeTimer = 0, checkTimer = 0, level = 0, playing = false, offered = false;
 
   function fadeTo(target, ms, done) {
     clearInterval(fadeTimer);
@@ -449,64 +449,97 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     fadeTimer = setInterval(() => {
       i++;
       level = from + (target - from) * (i / steps);
-      if (player && player.setVolume) player.setVolume(Math.round(level));
+      if (widget) widget.setVolume(Math.round(level));
       if (i >= steps) { clearInterval(fadeTimer); if (done) done(); }
     }, 50);
   }
-  function loadApi() {
-    if (window.YT && window.YT.Player) return Promise.resolve();
-    return new Promise((resolve) => {
-      const prev = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); resolve(); };
-      const s = document.createElement("script");
-      s.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(s);
-    });
-  }
-  function setState(on) {
+  function setState(on, text) {
     playing = on;
     btns.forEach((b) => {
       b.classList.toggle("is-playing", on);
       b.setAttribute("aria-pressed", String(on));
       const label = b.querySelector(".music-label");
-      if (label) label.textContent = on ? "now playing: Champagne Coast (click to stop)" : "recommended: play music for a better experience";
+      if (label) label.textContent = text || (on ? "now playing: Champagne Coast (click to stop)" : "recommended: play music for a better experience");
     });
+    if (on) credits.forEach((c) => (c.hidden = false));
+  }
+  const showStrip = (on) => frame && frame.classList.toggle("is-shown", on);
+
+  // the SoundCloud embed only loads once someone asks for music
+  function load() {
+    if (ready) return ready;
+    ready = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://w.soundcloud.com/player/api.js";
+      s.onerror = reject;
+      s.onload = () => {
+        frame = document.createElement("iframe");
+        frame.className = "sc-frame";
+        frame.title = "Champagne Coast by Blood Orange on SoundCloud";
+        frame.allow = "autoplay; encrypted-media";
+        frame.src = "https://w.soundcloud.com/player/?url=" + encodeURIComponent(TRACK) + "&auto_play=false&visual=false&show_artwork=false&show_comments=false&show_user=true&sharing=false&buying=false&download=false&color=%23e08a4b";
+        document.body.appendChild(frame);
+        widget = window.SC.Widget(frame);
+        const E = window.SC.Widget.Events;
+        widget.bind(E.READY, () => resolve());
+        // started from the strip: take over from here, then tuck the strip away
+        widget.bind(E.PLAY, () => {
+          if (!frame.classList.contains("is-shown")) return;
+          showStrip(false);
+          setState(true);
+          fadeTo(VOLUME, FADE_IN);
+          verify();
+        });
+        // loop: start over when it ends, as long as it is still switched on
+        widget.bind(E.FINISH, () => { if (playing) { widget.seekTo(0); widget.play(); } });
+        widget.bind(E.ERROR, () => stop());
+      };
+      document.head.appendChild(s);
+    });
+    ready.catch(() => { ready = null; stop(); });
+    return ready;
   }
   async function play() {
-    card.hidden = false;
     setState(true);
-    if (player && player.playVideo) {
-      player.setVolume(0); level = 0;
-      player.playVideo();
-      fadeTo(VOLUME, FADE_IN);
-      return;
-    }
-    await loadApi();
-    if (!playing || player) return; // stopped (or already built) while loading
-    player = new YT.Player("ytPlayer", {
-      videoId: VIDEO,
-      width: "200",
-      height: "200",
-      playerVars: { autoplay: 1, loop: 1, playlist: VIDEO, controls: 0, rel: 0, playsinline: 1, disablekb: 1, iv_load_policy: 3 },
-      events: {
-        onReady: (e) => {
-          e.target.setVolume(0); level = 0;
-          if (!playing) return; // stopped before it was ready
-          e.target.playVideo();
-          fadeTo(VOLUME, FADE_IN);
-        },
-      },
-    });
+    try { await load(); } catch (e) { return; }
+    if (!playing) return; // switched off while it was loading
+    widget.setVolume(0); level = 0;
+    widget.play();
+    fadeTo(VOLUME, FADE_IN);
+    verify();
+  }
+  // a moment after starting, make sure sound is really going: if the browser refused, offer the strip once,
+  // and if even that can't play, say so and leave the SoundCloud link
+  function verify() {
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(() => widget.isPaused((paused) => {
+      if (!paused || !playing) return;
+      clearInterval(fadeTimer); level = 0; widget.setVolume(0);
+      if (!offered) {
+        offered = true;
+        setState(false, "tap \u25B6 on the SoundCloud strip to play");
+        showStrip(true);
+      } else {
+        setState(false, "music couldn't start in this browser");
+      }
+      credits.forEach((c) => (c.hidden = false));
+    }), 2500);
   }
   function stop() {
+    clearTimeout(checkTimer);
+    showStrip(false);
     setState(false);
     fadeTo(0, FADE_OUT, () => {
-      if (player && player.pauseVideo) player.pauseVideo();
-      card.hidden = true;
+      if (playing) return; // switched back on during the fade
+      if (widget) widget.pause();
+      credits.forEach((c) => (c.hidden = true));
     });
   }
-  btns.forEach((b) => b.addEventListener("click", () => (playing ? stop() : play())));
-  if (closeBtn) closeBtn.addEventListener("click", stop);
+  btns.forEach((b) => b.addEventListener("click", () => {
+    if (playing) stop();
+    else if (frame && frame.classList.contains("is-shown")) stop(); // second tap while the strip is up: put it away
+    else play();
+  }));
 })();
 
 // ---------- pixel bots: Ceres (left column) and Fetch (right column), animating in place ----------
@@ -1287,46 +1320,6 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       a.flare(xa + 1.06, TH, 0, 9, 0.35 + 0.15 * Math.sin(t * 3));
     }, { dust: 14, after: (t, a) => a.label("12 : 8", `${Math.round(0.45 / TAU * 60 * 10) / 10} rpm`) }],
 
-    // Awards: a servo holding position, then sweeping; its horn leaves a fading wedge like the scan
-    servo: [{ pitch: 0.42 }, (t, a) => {
-      a.v.yaw = -0.6 + 0.3 * Math.sin(t * 0.28);
-      a.floor(1.9, 2);
-      a.box(-0.8, 0, -0.4, 0.8, 0.72, 0.4, 0.6, 0.12);
-      a.box(-1.14, 0.5, -0.4, -0.8, 0.58, 0.4, 0.45, 0.08);
-      a.box(0.8, 0.5, -0.4, 1.14, 0.58, 0.4, 0.45, 0.08);
-      a.fill([[-0.55, 0.12, 0.401], [0.55, 0.12, 0.401], [0.55, 0.5, 0.401], [-0.55, 0.5, 0.401]], a.cu(0.09));
-      a.ring(-0.97, 0.58, 0, 0.06, 0.55); a.ring(0.97, 0.58, 0, 0.06, 0.55);
-      a.ring(-0.4, 0.72, 0, 0.17, 0.75);
-      const ang = (s) => -Math.PI / 2 + 1.05 * Math.sin(s * 1.1);
-      const o = [-0.4, 0.88, 0], L = 1.05, now = ang(t);
-      // the sweep wedge behind the horn
-      for (let k = 1; k <= 10; k++) {
-        const a0 = ang(t - (k - 1) * 0.05), a1 = ang(t - k * 0.05);
-        a.fill([o, [o[0] + Math.cos(a0) * L, 0.88, Math.sin(a0) * L], [o[0] + Math.cos(a1) * L, 0.88, Math.sin(a1) * L]], a.cu(0.16 * (1 - k / 11)));
-      }
-      const dx = Math.cos(now), dz = Math.sin(now), nx = -dz, nz = dx;
-      const hornPts = [
-        [o[0] + nx * 0.12, 0.88, o[2] + nz * 0.12], [o[0] + dx * L + nx * 0.07, 0.88, o[2] + dz * L + nz * 0.07],
-        [o[0] + dx * (L + 0.07), 0.88, o[2] + dz * (L + 0.07)],
-        [o[0] + dx * L - nx * 0.07, 0.88, o[2] + dz * L - nz * 0.07], [o[0] - nx * 0.12, 0.88, o[2] - nz * 0.12],
-      ];
-      a.fill(hornPts, a.cu(0.3));
-      a.path(hornPts, 0.9, true, 1);
-      for (let k = 1; k <= 4; k++) a.dot(o[0] + dx * 0.23 * k, 0.881, o[2] + dz * 0.23 * k, 1);
-      a.flare(o[0], 0.9, o[2], 8, 0.5);
-      for (let w = 0; w < 3; w++) {
-        const pts = [];
-        for (let i = 0; i <= 12; i++) { const s = i / 12; pts.push([0.8 + s * 0.7, 0.16 - s * 0.14 + w * 0.05, s * s * 0.55 - 0.05 + w * 0.02]); }
-        a.path(pts, 0.35, false, 3);
-      }
-    }, {
-      dust: 12,
-      after: (t, a) => {
-        const s = Math.sin(t * 1.1), ms = (1.5 + 0.5 * s).toFixed(2), deg = Math.round(s * 60);
-        a.label(`pwm ${ms} ms`, `${deg > 0 ? "+" : ""}${deg}°`);
-      },
-    }],
-
     // Stack: a printer laying a vase down one layer at a time
     printer: [{ pitch: 0.34 }, (t, a) => {
       a.v.yaw = 0.4 + t * 0.1;
@@ -1362,58 +1355,6 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
         a.label(`layer ${String(layer).padStart(2, "0")}/16`, "215°C");
       },
     }],
-
-    // Commits: activity rolling back into depth, the newest row lit and filled
-    waterfall: [{ pitch: 0.5 }, (t, a) => {
-      a.v.yaw = -0.3;
-      const ROWS = 11, GAP = 0.3, scroll = t * 0.4, base = Math.floor(scroll), frac = scroll - base;
-      const wave = (id, x) => {
-        let y = 0.04 * Math.sin(3 * x + id);
-        for (let j = 0; j < 3; j++) {
-          const c = hash(id * 7 + j) * 4.6 - 2.3, h = 0.15 + 0.6 * hash(id * 13 + j);
-          y += h * Math.exp(-(((x - c) / 0.16) ** 2));
-        }
-        return y;
-      };
-      for (let k = ROWS - 1; k >= 0; k--) {
-        const id = base - k, d = k + frac, z = d * GAP - 1.4;
-        let b = 0.95 * (1 - d / ROWS);
-        if (k === 0) b *= Math.min(1, frac * 4);
-        const pts = [];
-        for (let x = -2.6; x <= 2.601; x += 0.05) pts.push([x, wave(id, x), z]);
-        if (k <= 1) a.fill([[-2.6, 0, z], ...pts, [2.6, 0, z]], a.cu(0.1 * b));
-        a.path(pts, b, false, k <= 1 ? 1 : 2);
-        if (k === 1) for (let j = 0; j < 3; j++) { const c = hash(id * 7 + j) * 4.6 - 2.3; a.flare(c, wave(id, c), z, 7, 0.35 * b); }
-      }
-    }, { dust: 10, after: (t, a) => a.label("commits / day", "live") }],
-
-    // Contact: a sonar dome pinging the floor; whatever the ring touches lights up and pings back
-    sonar: [{ pitch: 0.6 }, (t, a) => {
-      a.v.yaw = t * 0.09;
-      a.floor(2.4);
-      const fronts = [];
-      for (let i = 0; i < 3; i++) {
-        const f = (t / 3.4 + i / 3) % 1, R = 0.35 + f * 2.05;
-        fronts.push([R, 1 - f]);
-        const inner = a.circle(0, 0.004, 0, Math.max(0.3, R - 0.16)).reverse();
-        a.fill(a.circle(0, 0.004, 0, R).concat(inner), a.cu(0.07 * (1 - f)));
-        a.ring(0, 0.006, 0, R, (1 - f) * 0.95);
-      }
-      [[1.5, 0.8, 0.26, 0.3], [-1.3, 1.0, 0.2, 0.5], [0.3, -1.6, 0.24, 0.24], [-1.1, -1.1, 0.16, 0.36]].forEach(([x, z, s, h], i) => {
-        const g = litBy(fronts, Math.hypot(x, z), 0.26);
-        a.box(x - s / 2, 0, z - s / 2, x + s / 2, h, z + s / 2, 0.3 + 0.65 * g, 0.05 + 0.22 * g);
-        if (g > 0.3) { a.flare(x, h, z, 8, g * 0.7); a.ring(x, 0.004, z, 0.2 + (1 - g) * 0.45, g * 0.6); }
-      });
-      const dome = [];
-      for (let i = 0; i <= 24; i++) { const th = (i / 24) * Math.PI; dome.push([Math.cos(th) * 0.3, Math.sin(th) * 0.3, 0]); }
-      a.fill(a.circle(0, 0.003, 0, 0.3), a.cu(0.14));
-      for (let k = 0; k < 6; k++) {
-        const yaw = (k / 6) * Math.PI;
-        a.path(dome.map(([x, y]) => [x * Math.cos(yaw), y, x * Math.sin(yaw)]), 0.55, false, 2);
-      }
-      a.flare(0, 0.34, 0, 11, 0.5 + 0.3 * Math.sin(t * 4));
-      a.dot(0, 0.34, 0, 1);
-    }, { dust: 18, after: (t, a) => a.label("sonar · 40 kHz", "4 contacts") }],
 
     // Footer: the same room as the flat map the scan leaves behind, with Fetch driving its route
     map: [{ pitch: 0.78 }, (t, a) => {
