@@ -152,19 +152,13 @@ button { font: inherit; color: inherit; }
     position: absolute; top: 14px; right: -4px;
     width: 340px; height: 262px;
   }
-  .scope canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+  .scope canvas { display: block; width: 100%; height: 100%; }
   .hero .field { margin-right: 370px; }
   .hello, .headline, .lead { position: relative; z-index: 1; }
 }
 
 .field { position: relative; height: 104px; margin: 4px 0 34px; }
 .field-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
-/* sits inside the scan, on the same line as its readout */
-.scope-hint {
-  position: absolute; left: 6px; bottom: 4px;
-  font-family: var(--mono); font-size: 10px; line-height: 1; color: rgba(163, 157, 147, 0.7);
-  pointer-events: none;
-}
 
 .hello { margin: 0 0 18px; font-family: var(--mono); font-size: 17px; font-weight: 600; letter-spacing: 0.02em; }
 .headline {

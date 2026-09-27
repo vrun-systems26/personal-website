@@ -844,9 +844,9 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     const hx = new Float32Array(MAX), hy = new Float32Array(MAX), ht = new Float32Array(MAX), hn = new Uint8Array(MAX);
     let head = 0, count = 0, total = 0;
     let W = 1, H = 1, R = 1, cx = 0, cy = 0, px = 1;
-    let beam = 0, clock = 0, yaw = 0.5, tilt = 0.5, tiltT = 0.5, rx = 0, ry = 0;
+    let beam = 0, clock = 0, yaw = 0.5, rx = 0, ry = 0;
+    const tilt = 0.5;
     let raf = 0, visible = true, last = performance.now();
-    const cursor = { on: false, x: 0, y: 0 };
     const dust = Array.from({ length: 46 }, () => [(Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6, Math.random() * 1.1, Math.random() * 6]);
     const B = [[], [], [], [], []];
     let sx = 0, sy = 0;
@@ -872,7 +872,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     }
 
     function record(a) {
-      const hit = cast(rx, ry, a, cursor.on ? [cursor.x, cursor.y, 0.17, 3] : null);
+      const hit = cast(rx, ry, a, null);
       if (!hit) return;
       const n = hit[0] + (Math.random() - 0.5) * 0.03;
       hx[head] = rx + Math.cos(a) * n; hy[head] = ry + Math.sin(a) * n; ht[head] = clock; hn[head] = hit[1];
@@ -981,7 +981,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       const ex = sx, ey = sy;
 
       // the beam, out to whatever it is touching right now
-      const hit = cast(rx, ry, beam, cursor.on ? [cursor.x, cursor.y, 0.17, 3] : null);
+      const hit = cast(rx, ry, beam, null);
       const reach = hit ? hit[0] : RANGE;
       P(rx + Math.cos(beam) * reach, ry + Math.sin(beam) * reach, 0.16);
       const lg = ctx.createLinearGradient(ex, ey, sx, sy);
@@ -1008,7 +1008,6 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       raf = 0;
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now; clock += dt;
-      tilt += (tiltT - tilt) * 0.04;
       yaw += dt * (Math.PI * 2) / 110; // the whole view turns, very slowly
       const prev = beam;
       beam += (Math.PI * 2 * dt) / PERIOD;
@@ -1023,23 +1022,6 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     // start mid-scan: lay down the last sweep and a half with the ages it would have had
     for (let a = beam - Math.PI * 3; a < beam; a += 0.005) { clock = -((beam - a) / (Math.PI * 2)) * PERIOD; record(a); }
     clock = 0;
-    canvas.addEventListener("pointermove", (e) => {
-      const rc = canvas.getBoundingClientRect();
-      const x = e.clientX - rc.left - cx, y = e.clientY - rc.top - cy;
-      const u = x / px, v = -y / (px * st);
-      cursor.on = u * u + v * v < (RANGE - 0.2) * (RANGE - 0.2);
-      cursor.x = rx + u * cyw + v * syw; cursor.y = ry - u * syw + v * cyw;
-    });
-    canvas.addEventListener("pointerleave", () => { cursor.on = false; });
-    const hero = document.querySelector(".hero");
-    if (hero) {
-      hero.addEventListener("pointermove", (e) => {
-        const rc = canvas.getBoundingClientRect();
-        const ny = (e.clientY - (rc.top + rc.height / 2)) / window.innerHeight;
-        tiltT = 0.5 + Math.max(-0.14, Math.min(0.2, -ny * 0.6));
-      });
-      hero.addEventListener("pointerleave", () => { tiltT = 0.5; });
-    }
     if (reduceMotion) {
       draw(performance.now());
     } else {
@@ -1254,20 +1236,19 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     // Socials: a lattice mast broadcasting; each node flares and links up as a ring reaches it
     signal: [{ pitch: 0.3 }, (t, a) => {
       a.v.yaw = t * 0.12;
-      a.floor(2.4);
+      a.floor(2.4, 0);
       const H = 0.95, r = 0.18;
       a.fill(a.circle(0, 0.001, 0, 0.4), a.cu(0.1));
       const rail = (k, y) => { const th = (k * TAU) / 3, f = 1 - (y / H) * 0.7; return [Math.cos(th) * r * f, y, Math.sin(th) * r * f]; };
       for (let k = 0; k < 3; k++) {
         a.line(rail(k, 0), rail(k, H), 0.7, 16);
-        for (let y = 0; y < H - 0.14; y += 0.18) a.line(rail(k, y), rail((k + 1) % 3, y + 0.18), 0.34, 4);
+        for (let y = 0; y < H - 0.2; y += 0.24) a.line(rail(k, y), rail((k + 1) % 3, y + 0.24), 0.3, 4);
       }
       const fronts = [];
       for (let i = 0; i < 3; i++) {
         const f = (t / 2.8 + i / 3) % 1, R = 0.25 + f * 2.15;
         fronts.push([R, 1 - f]);
         a.ring(0, H, 0, R, (1 - f) * 0.9);
-        a.ring(0, 0.002, 0, R, (1 - f) * 0.25);
       }
       const nodes = [[1.9, 0.7], [-1.5, 1.3], [-0.3, -2.0], [1.3, -1.5]];
       nodes.forEach(([x, z]) => {
@@ -1279,58 +1260,49 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       const blink = 0.55 + 0.45 * Math.sin(t * 5);
       a.flare(0, H + 0.08, 0, 10, 0.55 * blink + 0.2);
       a.dot(0, H + 0.08, 0, 1);
-    }, { dust: 16, after: (t, a) => a.label("tx · 2.4 GHz", "4 nodes") }],
+    }, { dust: 6, after: (t, a) => a.label("tx · 2.4 GHz", "4 nodes") }],
 
-    // Work: a pair of gears in mesh, faces lit, teeth standing proud
-    gears: [{ pitch: 0.52 }, (t, a) => {
-      a.v.yaw = -0.3 + 0.18 * Math.sin(t * 0.22);
-      a.floor(2.3, 2);
-      const TH = 0.1;
-      const gear = (cx, R, teeth, rot, hubR, spokes) => {
-        const n = Math.round(R * 110), top = [], bot = [];
+    // Work: two gears in mesh, seen from above; rims stand up in dots like the scan's walls
+    gears: [{ pitch: 0.95 }, (t, a) => {
+      a.v.yaw = -0.2; // a fixed view: only the gears move
+      a.floor(2.2, 0);
+      const gear = (cx, R, teeth, rot, holes) => {
+        const n = Math.round(R * 160), rim = [];
         for (let i = 0; i <= n; i++) {
           const th = (i / n) * TAU;
           const f = ((((th - rot) * teeth) / TAU) % 1 + 1) % 1;
-          const rr = f < 0.5 ? R + 0.12 : R - 0.03;
-          top.push([cx + Math.cos(th) * rr, TH, Math.sin(th) * rr]);
-          bot.push([cx + Math.cos(th) * rr, -TH, Math.sin(th) * rr]);
+          // squared-off teeth with short flanks
+          const rr = f < 0.04 ? R - 0.02 + (f / 0.04) * 0.15 : f < 0.46 ? R + 0.13 : f < 0.5 ? R + 0.13 - ((f - 0.46) / 0.04) * 0.15 : R - 0.02;
+          rim.push([cx + Math.cos(th) * rr, 0.12, Math.sin(th) * rr]);
         }
-        a.fill(bot, a.cu(0.05));
-        a.path(bot, 0.3, true, 3);
-        a.fill(top, a.cu(0.13));
-        a.path(top, 0.85, true, 2);
-        for (let k = 0; k < teeth; k++) {
-          const th = rot + ((k + 0.25) * TAU) / teeth;
-          const x = cx + Math.cos(th) * (R + 0.12), z = Math.sin(th) * (R + 0.12);
-          a.line([x, -TH, z], [x, TH, z], 0.55, 3);
+        a.fill(rim, a.cu(0.12));
+        for (let row = 0; row < 3; row++) for (let i = 0; i < rim.length; i += 2) a.dot(rim[i][0], row * 0.04, rim[i][2], 0.28 + row * 0.12);
+        a.path(rim, 0.95, true, 2);
+        for (let k = 0; k < holes; k++) {
+          const th = rot + (k * TAU) / holes;
+          a.ring(cx + Math.cos(th) * R * 0.56, 0.12, Math.sin(th) * R * 0.56, R * 0.16, 0.7);
         }
-        a.fill(a.circle(cx, TH + 0.001, 0, hubR), "rgba(11,10,9,0.55)");
-        a.ring(cx, TH, 0, hubR, 0.8);
-        a.ring(cx, TH, 0, 0.07, 0.95);
-        for (let k = 0; k < spokes; k++) {
-          const th = rot + (k * TAU) / spokes;
-          a.line([cx + Math.cos(th) * hubR, TH, Math.sin(th) * hubR], [cx + Math.cos(th) * (R - 0.14), TH, Math.sin(th) * (R - 0.14)], 0.5, 8);
-        }
-        a.line([cx, -0.5, 0], [cx, -TH, 0], 0.3, 5);
+        a.ring(cx, 0.12, 0, R * 0.2, 0.9);
+        a.dot(cx, 0.12, 0, 1);
       };
       const rot = t * 0.45;
       const xa = -0.85, xb = -0.85 + 1.0 + 0.667 + 0.11;
-      gear(xa, 1.0, 12, rot, 0.26, 5);
-      gear(xb, 0.667, 8, -rot * 1.5, 0.18, 4);
-      a.flare(xa + 1.06, TH, 0, 9, 0.35 + 0.15 * Math.sin(t * 3));
-    }, { dust: 14, after: (t, a) => a.label("12 : 8", `${Math.round(0.45 / TAU * 60 * 10) / 10} rpm`) }],
+      gear(xa, 1.0, 12, rot, 5);
+      gear(xb, 0.667, 8, -rot * 1.5, 3);
+      a.flare(xa + 1.055, 0.12, 0, 8, 0.3);
+    }, { dust: 6, after: (t, a) => a.label("12 : 8", `${Math.round(0.45 / TAU * 60 * 10) / 10} rpm`) }],
 
     // Stack: a printer laying a vase down one layer at a time
-    printer: [{ pitch: 0.34 }, (t, a) => {
-      a.v.yaw = 0.4 + t * 0.1;
-      a.floor(1.7, 2);
+    printer: [{ pitch: 0.4 }, (t, a) => {
+      a.v.yaw = 0.55; // a fixed view: only the print grows
+      a.floor(1.7, 0);
       a.fill([[-1.05, 0, -1.05], [1.05, 0, -1.05], [1.05, 0, 1.05], [-1.05, 0, 1.05]], a.cu(0.06));
-      for (let x = -1; x <= 1.001; x += 0.25) for (let z = -1; z <= 1.001; z += 0.25) a.dot(x, 0, z, 0.16);
+      for (let x = -0.875; x <= 0.876; x += 0.35) for (let z = -0.875; z <= 0.876; z += 0.35) a.dot(x, 0, z, 0.14);
       a.path([[-1.05, 0, -1.05], [1.05, 0, -1.05], [1.05, 0, 1.05], [-1.05, 0, 1.05]], 0.4, true, 4);
       const L = 16, CYCLE = 12, u = t % CYCLE;
       const p = Math.min(1, u / 10) * L, done = Math.floor(p), frac = p - done;
       const fade = u > 11.2 ? 1 - (u - 11.2) / 0.8 : 1;
-      const rad = (y) => 0.42 + 0.14 * Math.sin(y * 4.6 + 0.6);
+      const rad = (y) => 0.52 + 0.16 * Math.sin(y * 4.2 + 0.6);
       for (let i = 0; i < done; i++) {
         const y = i * 0.075, age = (done - i) / L;
         a.ring(0, y, 0, rad(y), (0.9 - age * 0.45) * fade);
@@ -1345,11 +1317,9 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       a.box(nx - 0.09, top + 0.12, nz - 0.09, nx + 0.09, top + 0.26, nz + 0.09, 0.7, 0.25);
       a.beam([nx, top + 0.12, nz], [nx, top, nz], 0.9);
       if (done < L) a.flare(nx, top - 0.02, nz, 9, 0.75);
-      a.line([-1.25, top + 0.19, nz], [1.25, top + 0.19, nz], 0.35, 20);
-      a.line([-1.25, 0, 0], [-1.25, 1.45, 0], 0.28, 14);
-      a.line([1.25, 0, 0], [1.25, 1.45, 0], 0.28, 14);
+      a.line([-1.1, top + 0.19, nz], [1.1, top + 0.19, nz], 0.25, 20);
     }, {
-      dust: 12,
+      dust: 6,
       after: (t, a) => {
         const u = t % 12, layer = Math.min(16, Math.floor(Math.min(1, u / 10) * 16) + 1);
         a.label(`layer ${String(layer).padStart(2, "0")}/16`, "215°C");
@@ -1368,7 +1338,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
           a.path(top, 0.6, true, 1);
           a.dot(x + e, 0.07, z + e, 0.35); a.dot(x, 0.07, z + e, 0.35);
         }
-        else a.dot(x + CELL * 0.4, 0, z + CELL * 0.4, 0.16);
+        else a.dot(x + CELL * 0.4, 0, z + CELL * 0.4, 0.1);
       }
       const T = (t / 26) * TAU;
       const trail = [];
