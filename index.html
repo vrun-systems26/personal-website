@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=408">
+<link rel="stylesheet" href="css/style.css?v=411">
 <script>document.documentElement.classList.add("js");</script>
 
 <script type="application/ld+json">
@@ -93,9 +93,9 @@
         San Jose, CA
       </span>
       <span class="meta-pill">Mechatronics &bull; Embedded Systems &bull; Robotics &bull; CAD</span>
-      <button type="button" class="music-tip" id="musicBtn" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange, instrumental">
+      <button type="button" class="music-tip music-inline" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange, instrumental">
         <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span id="musicLabel">recommended: play music for a better experience</span>
+        <span class="music-label">recommended: play music for a better experience</span>
       </button>
     </div>
   </section>
@@ -139,6 +139,16 @@
           <span class="soc-txt"><b>Email</b><small>varunchilukuri7@gmail.com</small></span>
         </a>
         <button type="button" class="soc-copy" data-copy="varunchilukuri7@gmail.com" aria-label="Copy email address">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+          <span class="soc-copied" aria-hidden="true">copied</span>
+        </button>
+      </li>
+      <li class="soc-mail soc-wide">
+        <div class="soc">
+          <span class="soc-ico soc-dc" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.32 4.37A19.8 19.8 0 0015.39 2.8a13.7 13.7 0 00-.63 1.3 18.4 18.4 0 00-5.52 0 13.7 13.7 0 00-.64-1.3 19.7 19.7 0 00-4.93 1.54C.54 9.04-.32 13.58.1 18.06a19.9 19.9 0 006.04 3.05c.49-.66.92-1.36 1.3-2.1a12.9 12.9 0 01-2.04-.98l.5-.39a14.2 14.2 0 0012.2 0l.5.39c-.65.39-1.33.71-2.05.98.38.74.82 1.44 1.3 2.1a19.8 19.8 0 006.05-3.05c.5-5.18-.84-9.68-3.58-13.69zM8.02 15.33c-1.18 0-2.16-1.09-2.16-2.42s.95-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42zm7.97 0c-1.18 0-2.16-1.09-2.16-2.42s.95-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42z"/></svg></span>
+          <span class="soc-txt"><b>Discord</b><small>@vaboooonc_19214</small></span>
+        </div>
+        <button type="button" class="soc-copy" data-copy="vaboooonc_19214" aria-label="Copy Discord username">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
           <span class="soc-copied" aria-hidden="true">copied</span>
         </button>
@@ -273,6 +283,22 @@
 </footer>
 </div>
 
+<!-- wide screens: the music tip lives in the empty right column -->
+<button type="button" class="music-tip music-corner" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange, instrumental">
+  <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span class="music-label">recommended: play music for a better experience</span>
+</button>
+
+<!-- two tiny pixel versions of the builds, parked in the side columns -->
+<button type="button" class="bot bot-left" data-open="ceres" aria-label="Ceres, open project">
+  <canvas class="bot-cv" id="botCeres" width="48" height="28"></canvas>
+  <span class="bot-tag" aria-hidden="true">ceres</span>
+</button>
+<button type="button" class="bot bot-right" data-open="fetch" aria-label="Fetch, open project">
+  <canvas class="bot-cv" id="botFetch" width="40" height="34"></canvas>
+  <span class="bot-tag" aria-hidden="true">fetch</span>
+</button>
+
 <!-- now playing: only loads YouTube once someone turns the music on -->
 <aside class="np" id="np" hidden aria-label="Now playing">
   <div class="np-head">
@@ -349,6 +375,6 @@
   </article>
 </div>
 
-<script src="js/script.js?v=409"></script>
+<script src="js/script.js?v=411"></script>
 </body>
 </html>

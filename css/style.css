@@ -237,6 +237,9 @@ button { font: inherit; color: inherit; }
 .soc-go { margin-left: auto; color: var(--faint); font-size: 14px; transition: color 0.2s, transform 0.25s var(--ease); }
 .soc:hover .soc-go { color: var(--copper); transform: translate(2px, -2px) rotate(-45deg); }
 .soc-mail .soc { padding-right: 56px; }
+.soc-dc { color: #8b93f8; }
+/* odd cell out (Discord) spans the full row */
+.cells-2 > li.soc-wide:last-child:nth-child(odd) { grid-column: 1 / -1; border-right: 0; }
 .soc-copy {
   position: absolute; right: 12px; top: 50%;
   transform: translateY(-50%);
@@ -620,4 +623,53 @@ body.sheet-open { overflow: hidden; }
 @media (max-width: 720px) {
   .chip-clock { display: none; }
   .np { right: 8px; bottom: 8px; }
+}
+
+/* ---------- side columns (wide screens): music tip top-right, pixel bots parked at the bottom ---------- */
+.music-corner { display: none; }
+.bot { display: none; }
+
+@media (min-width: 1200px) {
+  .music-inline { display: none; }
+  .music-corner {
+    display: inline-flex; align-items: flex-start;
+    position: fixed; top: 18px; right: 18px; z-index: 40;
+    max-width: calc((100vw - var(--frame-w)) / 2 - 36px);
+    text-align: right; line-height: 1.5;
+  }
+  .music-corner .eq { margin-top: 3px; }
+  .np { top: 72px; right: 18px; bottom: auto; }
+
+  .bot {
+    display: block;
+    position: fixed; bottom: 22px; z-index: 15;
+    padding: 0; border: 0; background: none; cursor: pointer;
+  }
+  /* each bot sits centered in its side column */
+  .bot-left { left: calc((100vw - var(--frame-w)) / 4 - 72px); }
+  .bot-right { right: calc((100vw - var(--frame-w)) / 4 - 60px); }
+  /* the little ledge each one lives on */
+  .bot::after {
+    content: ""; position: absolute; left: -12px; right: -12px; bottom: -1px;
+    border-top: 1px dashed var(--line-2);
+  }
+  .bot-cv { display: block; image-rendering: crisp-edges; image-rendering: pixelated; }
+  #botCeres { width: 144px; height: 84px; }
+  #botFetch { width: 120px; height: 102px; }
+  .bot-tag {
+    position: absolute; left: 50%; top: -16px;
+    transform: translate(-50%, 4px);
+    font-family: var(--mono); font-size: 10px; color: var(--copper-2);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s, transform 0.25s var(--ease);
+  }
+  .bot:hover .bot-tag, .bot:focus-visible .bot-tag { opacity: 1; transform: translate(-50%, 0); }
+  .bot:focus-visible { outline: 1px dashed var(--copper-2); outline-offset: 6px; }
+}
+/* narrower side columns: same bots at 2x instead of 3x */
+@media (min-width: 1200px) and (max-width: 1379px) {
+  #botCeres { width: 96px; height: 56px; }
+  #botFetch { width: 80px; height: 68px; }
+  .bot-left { left: calc((100vw - var(--frame-w)) / 4 - 48px); }
+  .bot-right { right: calc((100vw - var(--frame-w)) / 4 - 40px); }
 }
