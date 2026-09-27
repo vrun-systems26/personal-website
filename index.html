@@ -3,30 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Varun Chilukuri, Robotics &amp; Mechatronics Engineer</title>
-<meta name="description" content="Varun Chilukuri is a student engineer at Leland High School and co-founder of Fetch, a 1st-place-winning mecanum robotics platform. Robotic arms, agriculture robots, and mechatronic systems built from scratch.">
+<title>Varun Chilukuri</title>
+<meta name="description" content="Varun Chilukuri is a student engineer at Leland High School building robots, mechatronics and embedded systems, mostly at hackathons.">
 <meta name="author" content="Varun Chilukuri">
 <meta name="keywords" content="Varun Chilukuri, robotics, mechatronics, embedded systems, Fetch robot, Ceres, Leland High School, hackathon, CAD, 3D printing">
-<meta name="theme-color" content="#0b0a09">
+<meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="dark">
 
 <meta property="og:type" content="profile">
-<meta property="og:title" content="Varun Chilukuri, Robotics & Mechatronics Engineer">
-<meta property="og:description" content="Student engineer building robotic arms, agriculture robots, and mechatronic systems from scratch. Co-founder of Fetch, 1st Place Overall at CSI Hacks.">
+<meta property="og:title" content="Varun Chilukuri">
+<meta property="og:description" content="Student engineer building robots, mechatronics and embedded systems from scratch.">
 <meta property="og:image" content="images/fetch-1.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Varun Chilukuri, Robotics & Mechatronics Engineer">
-<meta name="twitter:description" content="Student engineer building robotic arms, agriculture robots, and mechatronic systems from scratch.">
+<meta name="twitter:title" content="Varun Chilukuri">
+<meta name="twitter:description" content="Student engineer building robots, mechatronics and embedded systems from scratch.">
 <meta name="twitter:image" content="images/fetch-1.jpg">
 
-<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
-<link rel="icon" type="image/png" sizes="512x512" href="images/favicon-512.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png" id="favicon">
 <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=621">
-<script>document.documentElement.classList.add("js");</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=723">
+<noscript><style>.pane[hidden] { display: block !important; } .close { display: none !important; }</style></noscript>
 
 <script type="application/ld+json">
 {
@@ -48,265 +47,234 @@
 </script>
 </head>
 <body>
-<a class="skip" href="#work">Skip to work</a>
+<a class="skip" href="#h-index">Skip to content</a>
 
-<!-- slow fluid glow behind the whole page -->
-<div class="fluid" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<!-- the heat grid: fills everything right of the columns, carries the name, and crawls in and out as columns open -->
+<canvas id="field" aria-hidden="true"></canvas>
 
-<!-- ============ MENU ============ -->
-<header class="nav">
-  <div class="nav-in">
-    <a href="#top" class="nav-name">Varun Chilukuri</a>
-    <nav class="nav-links" id="navLinks" aria-label="Sections">
-      <a href="#socials" data-spy="socials">Socials</a>
-      <a href="#work" data-spy="work">Work</a>
-      <a href="#awards" data-spy="awards">Awards</a>
-      <a href="#contact" data-spy="contact">Contact</a>
-    </nav>
-    <div class="nav-right">
-      <span class="music music-nav">
-        <button type="button" class="music-tip" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange">
-          <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="music-label">recommended: play music for a better experience</span>
-          <span class="music-short">music</span>
-        </button>
-        <a class="music-credit" href="https://soundcloud.com/bloodorange/champagne-coast" target="_blank" rel="noopener" hidden><span class="cr-long">Blood Orange &middot; </span>SoundCloud &#8599;</a>
-      </span>
-      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="navLinks" aria-label="Menu"><span></span><span></span></button>
-    </div>
-  </div>
-</header>
+<main class="deck" id="deck">
 
-<div class="frame">
-<main class="main" id="top">
+  <!-- ============ INDEX ============ -->
+  <section class="pane" data-pane="index" aria-labelledby="h-index">
+    <div class="pane-in">
+      <h1 class="name" id="h-index" tabindex="-1"><span>Varun</span> <em>Chilukuri</em></h1>
+      <p class="bio">I build robots, mechatronics and embedded systems, mostly at hackathons. Student at Leland High, San Jose.</p>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero" aria-labelledby="hero-h">
-    <div class="hero-text">
-      <div class="field" aria-hidden="true">
-        <canvas class="field-canvas" id="field"></canvas>
-      </div>
-      <p class="hello">Hello, I'm Varun Chilukuri</p>
-      <h1 class="headline" id="hero-h">
-        <span>I build</span>
-        <span><u>robots</u>, mechatronics &amp; <u>embedded systems</u>.</span>
-      </h1>
-      <p class="lead">High schooler at Leland turning CAD, 3D prints, and wiring into working prototypes, mostly at hackathons. Engineering in the bay.</p>
-      <p class="proof"><b>1st overall</b> at CSI Hacks &middot; 2nd at the Berkeley Robotics Hackathon &middot; 2nd at Milpitas Hacks</p>
-    </div>
-    <div class="hero-art" aria-hidden="true"><canvas id="gears"></canvas></div>
-  </section>
+      <nav class="list" aria-label="Hackathon builds">
+        <a href="#/fetch" data-to="fetch">Fetch</a>
+        <a href="#/ceres" data-to="ceres">Ceres</a>
+        <a href="#/sweeper" data-to="sweeper">Street Sweeper</a>
+      </nav>
+      <nav class="list" aria-label="More">
+        <a href="#/builds" data-to="builds">Side builds</a>
+        <a href="#/awards" data-to="awards">Awards</a>
+      </nav>
 
-  <!-- ============ SOCIALS ============ -->
-  <section class="block" id="socials" aria-labelledby="socials-h">
-    <h2 class="block-head" id="socials-h"><span>Socials</span><canvas class="scene" data-scene="signal" aria-hidden="true"></canvas></h2>
-    <ul class="cells cells-2">
-      <li>
-        <a class="soc" href="https://github.com/vrun-systems26" target="_blank" rel="noopener">
-          <span class="soc-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></span>
-          <span class="soc-txt"><b>GitHub</b><small>@vrun-systems26</small></span>
-          <span class="soc-go" aria-hidden="true">&rarr;</span>
-        </a>
-      </li>
-      <li>
-        <a class="soc" href="https://www.linkedin.com/in/varunchilukuri26/" target="_blank" rel="noopener">
-          <span class="soc-ico soc-li" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4v16h-4V8zm7.5 0h3.8v2.2h.05c.53-1 1.83-2.2 3.77-2.2 4.03 0 4.78 2.65 4.78 6.1V24h-4v-8.1c0-1.93-.03-4.42-2.7-4.42-2.7 0-3.1 2.1-3.1 4.28V24h-4V8z"/></svg></span>
-          <span class="soc-txt"><b>LinkedIn</b><small>/in/varunchilukuri26</small></span>
-          <span class="soc-go" aria-hidden="true">&rarr;</span>
-        </a>
-      </li>
-      <li>
-        <a class="soc" href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">
-          <span class="soc-ico soc-dp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M6.5 2.5h11L23 12l-5.5 9.5h-11L1 12z"/><path d="M9 7.5h2.6a4.5 4.5 0 010 9H9z"/></svg></span>
-          <span class="soc-txt"><b>Devpost</b><small>@varunchilukuri7</small></span>
-          <span class="soc-go" aria-hidden="true">&rarr;</span>
-        </a>
-      </li>
-      <li class="soc-mail">
-        <a class="soc" href="mailto:varunchilukuri7@gmail.com">
-          <span class="soc-ico soc-em" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 6.5l9 6.5 9-6.5"/></svg></span>
-          <span class="soc-txt"><b>Email</b><small>varunchilukuri7@gmail.com</small></span>
-        </a>
-        <button type="button" class="soc-copy" data-copy="varunchilukuri7@gmail.com" aria-label="Copy email address">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
-          <span class="soc-copied" aria-hidden="true">copied</span>
-        </button>
-      </li>
-      <li class="soc-mail soc-wide">
-        <div class="soc">
-          <span class="soc-ico soc-dc" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.32 4.37A19.8 19.8 0 0015.39 2.8a13.7 13.7 0 00-.63 1.3 18.4 18.4 0 00-5.52 0 13.7 13.7 0 00-.64-1.3 19.7 19.7 0 00-4.93 1.54C.54 9.04-.32 13.58.1 18.06a19.9 19.9 0 006.04 3.05c.49-.66.92-1.36 1.3-2.1a12.9 12.9 0 01-2.04-.98l.5-.39a14.2 14.2 0 0012.2 0l.5.39c-.65.39-1.33.71-2.05.98.38.74.82 1.44 1.3 2.1a19.8 19.8 0 006.05-3.05c.5-5.18-.84-9.68-3.58-13.69zM8.02 15.33c-1.18 0-2.16-1.09-2.16-2.42s.95-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42zm7.97 0c-1.18 0-2.16-1.09-2.16-2.42s.95-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42z"/></svg></span>
-          <span class="soc-txt"><b>Discord</b><small>@vaboooonc_19214</small></span>
+      <div class="pane-foot">
+        <p class="sound-note" role="status" hidden></p>
+        <div class="foot-row">
+          <nav class="links" aria-label="Elsewhere">
+            <a href="https://github.com/vrun-systems26" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://www.linkedin.com/in/varunchilukuri26/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">Devpost</a>
+            <button type="button" data-copy="varunchilukuri7@gmail.com" data-done="Email copied: varunchilukuri7@gmail.com">Email</button>
+            <button type="button" data-copy="vaboooonc_19214" data-done="Discord copied: vaboooonc_19214">Discord</button>
+          </nav>
+          <button type="button" class="sound" aria-pressed="false" aria-label="Play music: Champagne Coast by Blood Orange">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5h3l4.5-4v13l-4.5-4h-3z"/></svg>
+            <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
         </div>
-        <button type="button" class="soc-copy" data-copy="vaboooonc_19214" aria-label="Copy Discord username">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
-          <span class="soc-copied" aria-hidden="true">copied</span>
-        </button>
-      </li>
-    </ul>
-  </section>
-
-  <!-- ============ WORK ============ -->
-  <section class="block" id="work" aria-labelledby="work-h">
-    <h2 class="block-head" id="work-h"><span>Work</span><canvas class="scene" data-scene="printer" aria-hidden="true"></canvas></h2>
-    <p class="tools">Fusion 360 &middot; Onshape &middot; KiCad &middot; ESP32 &middot; Raspberry Pi &middot; Arduino &middot; C / C++ &middot; Python &middot; OpenCV &middot; 3D printing</p>
-
-    <div class="folder">
-      <p class="folder-name f1">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 014.5 5H9l2 2.5h8.5A1.5 1.5 0 0121 9v8.5a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5z"/></svg>
-        hackathons
-      </p>
-      <ul class="rows">
-        <li><button type="button" class="row" data-open="fetch">
-          <span class="row-name">Fetch</span><span class="row-desc">Trash-can robot that comes when you call it</span>
-          <span class="tag tag-hot">1st place</span><span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-        <li><button type="button" class="row" data-open="ceres">
-          <span class="row-name">Ceres</span><span class="row-desc">Crop-scouting robot with a custom-trained VLM</span>
-          <span class="tag">2nd place</span><span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-        <li><button type="button" class="row" data-open="sweeper">
-          <span class="row-name">Street Sweeper</span><span class="row-desc">Trash robot that doubles as a coding lesson</span>
-          <span class="tag">2nd place</span><span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-      </ul>
-    </div>
-
-    <div class="folder">
-      <p class="folder-name f2">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 014.5 5H9l2 2.5h8.5A1.5 1.5 0 0121 9v8.5a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5z"/></svg>
-        side builds
-      </p>
-      <ul class="rows">
-        <li><button type="button" class="row" data-open="arm">
-          <span class="row-name">HocDiuTempusSumpsit</span><span class="row-desc">Bluetooth 4-bar robotic arm</span>
-          <span class="tag tag-dim">solo</span><span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-        <li><button type="button" class="row" data-open="eclipse">
-          <span class="row-name">The Eclipse Lamp</span><span class="row-desc">A lamp that quietly watches the room</span>
-          <span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-        <li><button type="button" class="row" data-open="maglift">
-          <span class="row-name">MagLift</span><span class="row-desc">Magnetic crane prototype</span>
-          <span class="tag">2nd place</span><span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-        <li><button type="button" class="row" data-open="mars">
-          <span class="row-name">MARS-61</span><span class="row-desc">Heavy arm with a herringbone reduction</span>
-          <span class="tag tag-dim">on hold</span><span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-        <li><button type="button" class="row" data-open="mouse">
-          <span class="row-name">Gaming Mouse</span><span class="row-desc">A mouse built from scratch</span>
-          <span class="row-go" aria-hidden="true">&#8599;</span>
-        </button></li>
-      </ul>
-    </div>
-    <p class="block-foot"><a href="https://github.com/vrun-systems26" target="_blank" rel="noopener">see everything on GitHub <span aria-hidden="true">&rarr;</span></a></p>
-  </section>
-
-  <!-- ============ AWARDS ============ -->
-  <section class="block" id="awards" aria-labelledby="awards-h">
-    <h2 class="block-head" id="awards-h"><span>Awards</span></h2>
-    <ul class="cells cells-2">
-      <li class="award"><span class="award-place hot">1st</span><div><b>Overall, CSI Hacks</b><small>Fetch &bull; 82+ teams</small></div></li>
-      <li class="award"><span class="award-place">2nd</span><div><b>Open Hardware, Berkeley Robotics Hackathon</b><small>Ceres &bull; 80+ teams, only high schoolers</small></div></li>
-      <li class="award"><span class="award-place">2nd</span><div><b>Interactive Learning, Milpitas Hacks</b><small>Street Sweeper &bull; 220+ participants</small></div></li>
-      <li class="award"><span class="award-place">2nd</span><div><b>Leland High School Science Fair</b><small>MagLift &bull; 30+ submissions</small></div></li>
-    </ul>
-  </section>
-
-  <!-- ============ CONTACT ============ -->
-  <section class="block" id="contact" aria-labelledby="contact-h">
-    <div class="cta">
-      <h2 class="cta-title" id="contact-h">let's build something.</h2>
-      <p class="cta-sub">Reach out, or check out what I've been working on.</p>
-      <div class="cta-actions">
-        <a class="btn btn-solid" href="mailto:varunchilukuri7@gmail.com">Email me <span aria-hidden="true">&rarr;</span></a>
-        <a class="btn" href="https://www.linkedin.com/in/varunchilukuri26/" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">&#8599;</span></a>
+        <a class="now" href="https://soundcloud.com/bloodorange/champagne-coast" target="_blank" rel="noopener" hidden>Champagne Coast &middot; Blood Orange on SoundCloud &#8599;</a>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ SIDE BUILDS ============ -->
+  <section class="pane" data-pane="builds" aria-labelledby="h-builds" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-builds" tabindex="-1">Side builds</h2>
+        <a class="close" href="#/" aria-label="Close side builds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <nav class="list" aria-label="Side builds">
+        <a href="#/builds/arm" data-to="arm">HocDiuTempusSumpsit</a>
+        <a href="#/builds/eclipse" data-to="eclipse">The Eclipse Lamp</a>
+        <a href="#/builds/maglift" data-to="maglift">MagLift</a>
+        <a href="#/builds/mars" data-to="mars">MARS-61</a>
+        <a href="#/builds/mouse" data-to="mouse">Gaming Mouse</a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ============ AWARDS (all of them live here, nowhere else) ============ -->
+  <section class="pane" data-pane="awards" aria-labelledby="h-awards" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-awards" tabindex="-1">Awards</h2>
+        <a class="close" href="#/" aria-label="Close awards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <ol class="awards">
+        <li><span class="place is-first">1st</span><div><b>Overall, CSI Hacks</b><span>Fetch &middot; 82+ teams</span></div></li>
+        <li><span class="place">2nd</span><div><b>Open Hardware, Berkeley Robotics Hackathon</b><span>Ceres &middot; 80+ teams, high schoolers only</span></div></li>
+        <li><span class="place">2nd</span><div><b>Interactive Learning, Milpitas Hacks</b><span>Street Sweeper &middot; 220+ participants</span></div></li>
+        <li><span class="place">2nd</span><div><b>Leland High School Science Fair</b><span>MagLift &middot; 30+ submissions</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section class="pane" data-pane="fetch" aria-labelledby="h-fetch" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-fetch" tabindex="-1">Fetch</h2>
+        <a class="close" href="#/" aria-label="Close Fetch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Co-founder &middot; hardware lead &middot; CSI Hacks</p>
+      <figure class="gallery">
+        <img class="main" src="images/fetch-1.jpg" alt="Fetch, a mecanum-drive robot with a trash-can body, on a tile floor" loading="lazy">
+        <div class="thumbs">
+          <button type="button" aria-pressed="true" aria-label="Photo 1"><img src="images/fetch-1.jpg" alt="Fetch, a mecanum-drive robot with a trash-can body, on a tile floor" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 2"><img src="images/fetch-2.jpg" alt="Fetch, side angle showing the yellow mecanum wheels and wiring" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 3"><img src="images/fetch-3.jpg" alt="Fetch, front view with ultrasonic sensors and camera visible" loading="lazy"></button>
+        </div>
+      </figure>
+      <p>A trash can that drives itself to whoever calls it, finding its way with AprilTags instead of lidar. Built in about 8 hours; I did the CAD, electronics and hardware.</p>
+      <dl class="spec"><div><dt>Compute</dt><dd>Pi 4 + Arduino Uno R4</dd></div><div><dt>Drive</dt><dd>4&times; NEMA 17, mecanum</dd></div><div><dt>Navigation</dt><dd>AprilTag + QR, ultrasonic e-stop</dd></div></dl>
+      <p class="out"><a href="https://github.com/vrun-systems26/Fetch-CSI-Hacks" target="_blank" rel="noopener">GitHub &#8599;</a><a href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">Devpost &#8599;</a></p>
+    </div>
+  </section>
+
+  <section class="pane" data-pane="ceres" aria-labelledby="h-ceres" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-ceres" tabindex="-1">Ceres</h2>
+        <a class="close" href="#/" aria-label="Close Ceres"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Co-founder &middot; hardware lead &middot; Berkeley Robotics Hackathon</p>
+      <figure class="gallery">
+        <img class="main" src="images/ceres-1.jpg" alt="Ceres agriculture robot, four-wheel chassis with pan-tilt camera mount" loading="lazy">
+        <div class="thumbs">
+          <button type="button" aria-pressed="true" aria-label="Photo 1"><img src="images/ceres-1.jpg" alt="Ceres agriculture robot, four-wheel chassis with pan-tilt camera mount" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 2"><img src="images/ceres-2.jpg" alt="Ceres electronics close-up, servo turret, wiring, and motor driver board" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 3"><img src="images/ceres-3.jpg" alt="Ceres VLM leaf-detection screen with a bounding box around a diseased leaf" loading="lazy"></button>
+        </div>
+      </figure>
+      <p>An affordable crop-scouting robot that spots diseased leaves with a VLM we trained, and probes the soil with a rack-and-pinion arm. Built in about 7 hours; I did the hardware.</p>
+      <dl class="spec"><div><dt>Compute</dt><dd>Pi 4 + Arduino Mega</dd></div><div><dt>Drive</dt><dd>4WD, dual L298N</dd></div><div><dt>Sensing</dt><dd>MG996R pan-tilt camera, STEMMA soil probe</dd></div></dl>
+      <p class="out"><a href="https://github.com/vrun-systems26/Ceres/tree/master" target="_blank" rel="noopener">GitHub &#8599;</a><a href="https://www.youtube.com/watch?v=oX8thTSngGY" target="_blank" rel="noopener">Demo &#8599;</a></p>
+    </div>
+  </section>
+
+  <section class="pane" data-pane="sweeper" aria-labelledby="h-sweeper" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-sweeper" tabindex="-1">Street Sweeper</h2>
+        <a class="close" href="#/" aria-label="Close Street Sweeper"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Team of 4 &middot; hardware &amp; electronics &middot; Milpitas Hacks</p>
+      <figure class="gallery">
+        <img class="main" src="images/street-sweeper-1.jpg" alt="Street Sweeper robot with a phone mounted as its camera" loading="lazy">
+        <div class="thumbs">
+          <button type="button" aria-pressed="true" aria-label="Photo 1"><img src="images/street-sweeper-1.jpg" alt="Street Sweeper robot with a phone mounted as its camera" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 2"><img src="images/street-sweeper-2.jpg" alt="Street Sweeper electronics close-up, ESP32 and wiring" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 3"><img src="images/street-sweeper-3.jpg" alt="Street Sweeper robot, front view of the two-wheel drivetrain" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 4"><img src="images/street-sweeper-ui.jpg" alt="Street Sweeper web app with Play, How to Play, and Leaderboard" loading="lazy"></button>
+        </div>
+      </figure>
+      <p>A trash-collecting robot you drive by typing commands, so playing with it doubles as a coding lesson.</p>
+      <dl class="spec"><div><dt>Compute</dt><dd>ESP32</dd></div><div><dt>Drive</dt><dd>L298N, two-wheel drive</dd></div><div><dt>Intake</dt><dd>Camera-guided</dd></div></dl>
+      <p class="out"><a href="https://github.com/vrun-systems26/Street-Sweeper-Milpitas-Hacks" target="_blank" rel="noopener">GitHub &#8599;</a></p>
+    </div>
+  </section>
+
+  <section class="pane" data-pane="arm" aria-labelledby="h-arm" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-arm" tabindex="-1">HocDiu<wbr>Tempus<wbr>Sumpsit</h2>
+        <a class="close" href="#/builds" aria-label="Close HocDiuTempusSumpsit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Solo &middot; Bluetooth robotic arm</p>
+      <figure class="gallery">
+        <img class="main" src="images/arm-2.jpg" alt="HocDiuTempusSumpsit robotic arm with its wireless remote" loading="lazy">
+        <div class="thumbs">
+          <button type="button" aria-pressed="true" aria-label="Photo 1"><img src="images/arm-2.jpg" alt="HocDiuTempusSumpsit robotic arm with its wireless remote" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 2"><img src="images/arm-1.jpg" alt="HocDiuTempusSumpsit gripper close-up, helical-gear fingers open" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 3"><img src="images/arm-3.jpg" alt="HocDiuTempusSumpsit arm extended, gripper and linkage visible" loading="lazy"></button>
+        </div>
+      </figure>
+      <p>A 4-bar linkage arm with a three-finger helical-gear gripper. When the elbow couldn't hold the load, I reworked the joint geometry instead of buying a bigger servo.</p>
+      <dl class="spec"><div><dt>Control</dt><dd>2&times; ESP-WROOM-32 + PCA9685, BLE</dd></div><div><dt>Servos</dt><dd>MG996R, SG90, A330</dd></div></dl>
+      <p class="out"><a href="https://github.com/vrun-systems26/Bluetooth-Robotic-Arm" target="_blank" rel="noopener">GitHub &#8599;</a></p>
+    </div>
+  </section>
+
+  <section class="pane" data-pane="eclipse" aria-labelledby="h-eclipse" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-eclipse" tabindex="-1">The Eclipse Lamp</h2>
+        <a class="close" href="#/builds" aria-label="Close The Eclipse Lamp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Covert hardware</p>
+      <figure class="gallery">
+        <img class="main" src="images/eclipse-lamp-device.jpg" alt="The Eclipse Lamp internals, Raspberry Pi, gears, and 3D-printed shutter housing" loading="lazy">
+        <div class="thumbs">
+          <button type="button" aria-pressed="true" aria-label="Photo 1"><img src="images/eclipse-lamp-device.jpg" alt="The Eclipse Lamp internals, Raspberry Pi, gears, and 3D-printed shutter housing" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 2"><img src="images/eclipse-lamp-feed.jpg" alt="The Eclipse Lamp live feed and phone alerts showing person detection" loading="lazy"></button>
+        </div>
+      </figure>
+      <p>Looks like a normal lamp. Inside, a motorized shutter and a sweeping camera spot people and alert your phone.</p>
+      <p class="out"><a href="https://github.com/vrun-systems26/The-Eclipse-Lamp" target="_blank" rel="noopener">GitHub &#8599;</a></p>
+    </div>
+  </section>
+
+  <section class="pane" data-pane="maglift" aria-labelledby="h-maglift" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-maglift" tabindex="-1">MagLift</h2>
+        <a class="close" href="#/builds" aria-label="Close MagLift"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Solo &middot; science fair</p>
+      <figure class="gallery">
+        <img class="main" src="images/maglift.jpg" alt="MagLift science fair board with the magnetic crane prototype" loading="lazy">
+      </figure>
+      <p>A magnetic crane prototype with joystick and touch-pad control. Designed, built and coded solo.</p>
+    </div>
+  </section>
+
+  <section class="pane" data-pane="mars" aria-labelledby="h-mars" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-mars" tabindex="-1">MARS-61</h2>
+        <a class="close" href="#/builds" aria-label="Close MARS-61"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Concept &middot; on hold</p>
+      <figure class="gallery">
+        <img class="main" src="images/mars61.jpg" alt="MARS-61 herringbone gear reduction next to its NEMA 17 drive motor" loading="lazy">
+      </figure>
+      <p>A heavy arm with a dual NEMA 17 shoulder and a custom 5:17 herringbone reduction. On hold, not forgotten.</p>
+    </div>
+  </section>
+
+  <section class="pane" data-pane="mouse" aria-labelledby="h-mouse" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-mouse" tabindex="-1">Gaming Mouse</h2>
+        <a class="close" href="#/builds" aria-label="Close Gaming Mouse"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Built from scratch</p>
+      <figure class="gallery">
+        <img class="main" src="images/gaming-mouse.jpg" alt="Custom gaming mouse CAD model with a hex-vented shell" loading="lazy">
+      </figure>
+      <p>A mouse on a XIAO ESP32-S3 with an optical sensor, LiPo power, and arrow keys built into the shell.</p>
+      <p class="out"><a href="https://github.com/vrun-systems26/Custom-Gaming-Mouse" target="_blank" rel="noopener">GitHub &#8599;</a></p>
     </div>
   </section>
 
 </main>
 
-<footer class="foot">
-  <div class="foot-top">
-  <svg class="sig" id="sig" viewBox="0 0 280 130" aria-label="Varun, signed" role="img">
-    <path class="sig-stroke" d="M20 30 C 26 52, 34 76, 44 94 C 52 72, 60 44, 74 22 C 70 44, 76 70, 90 70 C 98 70, 102 60, 104 54 C 98 50, 84 58, 86 72 C 88 84, 102 80, 106 66 L 106 80 C 108 88, 114 88, 120 80 C 122 72, 124 64, 126 58 C 128 66, 128 76, 128 86 C 130 72, 138 60, 148 62 C 148 70, 146 80, 152 84 C 160 88, 166 76, 168 64 C 168 74, 168 84, 174 84 C 180 84, 184 76, 186 68 C 188 62, 188 72, 188 86 C 192 72, 198 62, 206 64 C 214 66, 212 80, 216 84 C 222 90, 236 80, 246 68"/>
-    <path class="sig-stroke sig-under" d="M28 110 C 90 98, 170 102, 254 92"/>
-  </svg>
-  </div>
-  <div class="foot-row">
-    <span>&copy; <span class="js-year"></span> Varun Chilukuri &middot; built in San Jose</span>
-    <span class="foot-tip">pro tip: keep capacitors away from wall sockets</span>
-    <a class="foot-secret" href="desktop/" title="the old desktop version">$ startx</a>
-  </div>
-</footer>
-</div>
+<div class="toast" role="status" aria-live="polite"></div>
 
-<!-- ============ PROJECT DETAILS (opened from the Work rows) ============ -->
-<dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
-  <div class="sheet-inner">
-    <header class="sheet-head">
-      <div>
-        <p class="sheet-kicker" id="sheetKicker"></p>
-        <h3 class="sheet-title" id="sheetTitle"></h3>
-      </div>
-      <button type="button" class="sheet-close" data-close aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </header>
-    <div class="sheet-body" id="sheetBody"></div>
-  </div>
-</dialog>
-
-<div class="details" hidden>
-  <article data-proj="fetch" data-kicker="1st Place Overall &middot; CSI Hacks" data-title="Fetch">
-    <div class="shots"><img src="images/fetch-1.jpg" alt="Fetch, a mecanum-drive robot with a trash-can body, on a tile floor"><img src="images/fetch-2.jpg" alt="Fetch, side angle showing the yellow mecanum wheels and wiring"><img src="images/fetch-3.jpg" alt="Fetch, front view with ultrasonic sensors and camera visible"></div>
-    <p class="role">Co-founder &middot; hardware lead</p>
-    <p>A trash-can robot that drives itself to whoever calls it, localizing with AprilTags instead of lidar. Built in ~8 hours; I did the CAD, electronics, and hardware.</p>
-    <dl class="spec"><div><dt>Compute</dt><dd>Pi 4 + Arduino Uno R4</dd></div><div><dt>Drive</dt><dd>4&times; NEMA 17, mecanum</dd></div><div><dt>Navigation</dt><dd>AprilTag + QR, ultrasonic e-stop</dd></div></dl>
-    <p class="sheet-links"><a href="https://github.com/vrun-systems26/Fetch-CSI-Hacks" target="_blank" rel="noopener">GitHub &#8599;</a><a href="https://devpost.com/varunchilukuri7" target="_blank" rel="noopener">Devpost &#8599;</a></p>
-  </article>
-  <article data-proj="ceres" data-kicker="2nd Place &middot; Berkeley Robotics Hackathon" data-title="Ceres">
-    <div class="shots"><img src="images/ceres-1.jpg" alt="Ceres agriculture robot, four-wheel chassis with pan-tilt camera mount"><img src="images/ceres-2.jpg" alt="Ceres electronics close-up, servo turret, wiring, and motor driver board"><img src="images/ceres-3.jpg" alt="Ceres VLM leaf-detection screen with a bounding box around a diseased leaf"></div>
-    <p class="role">Co-founder &middot; hardware lead</p>
-    <p>An affordable crop-monitoring robot that spots diseased leaves with a VLM we trained and probes soil with a rack-and-pinion sensor arm. Built in ~7 hours; I did the hardware.</p>
-    <dl class="spec"><div><dt>Compute</dt><dd>Pi 4 + Arduino Mega</dd></div><div><dt>Drive</dt><dd>4WD, dual L298N</dd></div><div><dt>Sensing</dt><dd>MG996R pan-tilt camera, STEMMA soil probe</dd></div></dl>
-    <p class="sheet-links"><a href="https://github.com/vrun-systems26/Ceres/tree/master" target="_blank" rel="noopener">GitHub &#8599;</a><a href="https://www.youtube.com/watch?v=oX8thTSngGY" target="_blank" rel="noopener">Demo &#8599;</a></p>
-  </article>
-  <article data-proj="sweeper" data-kicker="2nd Place &middot; Milpitas Hacks" data-title="Street Sweeper">
-    <div class="shots"><img src="images/street-sweeper-1.jpg" alt="Street Sweeper robot with a phone mounted as its camera"><img src="images/street-sweeper-2.jpg" alt="Street Sweeper electronics close-up, ESP32 and wiring"><img src="images/street-sweeper-3.jpg" alt="Street Sweeper robot, front view of the two-wheel drivetrain"><img src="images/street-sweeper-ui.jpg" alt="Street Sweeper web app with Play, How to Play, and Leaderboard"></div>
-    <p class="role">Team of 4 &middot; hardware &amp; electronics</p>
-    <p>A trash-collecting robot you program by typing commands, so driving it doubles as a coding lesson.</p>
-    <dl class="spec"><div><dt>Compute</dt><dd>ESP32</dd></div><div><dt>Drive</dt><dd>L298N, two-wheel drive</dd></div><div><dt>Intake</dt><dd>Camera-guided</dd></div></dl>
-    <p class="sheet-links"><a href="https://github.com/vrun-systems26/Street-Sweeper-Milpitas-Hacks" target="_blank" rel="noopener">GitHub &#8599;</a></p>
-  </article>
-  <article data-proj="arm" data-kicker="Solo build &middot; 3D-printed" data-title="HocDiuTempusSumpsit">
-    <div class="shots"><img src="images/arm-2.jpg" alt="HocDiuTempusSumpsit robotic arm with its wireless remote"><img src="images/arm-1.jpg" alt="HocDiuTempusSumpsit gripper close-up, helical-gear fingers open"><img src="images/arm-3.jpg" alt="HocDiuTempusSumpsit arm extended, gripper and linkage visible"></div>
-    <p class="role">Bluetooth robotic arm</p>
-    <p>A 4-bar linkage arm with a three-finger helical-gear gripper. When the elbow couldn't hold the load, I reworked the joint geometry instead of buying a bigger servo.</p>
-    <dl class="spec"><div><dt>Control</dt><dd>2&times; ESP-WROOM-32 + PCA9685, BLE</dd></div><div><dt>Servos</dt><dd>MG996R, SG90, A330</dd></div></dl>
-    <p class="sheet-links"><a href="https://github.com/vrun-systems26/Bluetooth-Robotic-Arm" target="_blank" rel="noopener">GitHub &#8599;</a></p>
-  </article>
-  <article data-proj="eclipse" data-kicker="Covert hardware" data-title="The Eclipse Lamp">
-    <div class="shots"><img src="images/eclipse-lamp-device.jpg" alt="The Eclipse Lamp internals, Raspberry Pi, gears, and 3D-printed shutter housing"><img src="images/eclipse-lamp-feed.jpg" alt="The Eclipse Lamp live feed and phone alerts showing person detection"></div>
-    <p>Looks like a normal lamp; inside, a motorized shutter and sweeping camera spot people and alert your phone.</p>
-    <p class="sheet-links"><a href="https://github.com/vrun-systems26/The-Eclipse-Lamp" target="_blank" rel="noopener">GitHub &#8599;</a></p>
-  </article>
-  <article data-proj="maglift" data-kicker="2nd Place &middot; Leland Science Fair" data-title="MagLift">
-    <div class="shots"><img src="images/maglift.jpg" alt="MagLift science fair board with the magnetic crane prototype"></div>
-    <p>A magnetic-crane prototype with joystick and touch-pad control. Designed, built, and coded solo.</p>
-  </article>
-  <article data-proj="mars" data-kicker="Concept &middot; on hold" data-title="MARS-61">
-    <div class="shots"><img src="images/mars61.jpg" alt="MARS-61 herringbone gear reduction next to its NEMA 17 drive motor"></div>
-    <p>A heavy arm with a dual NEMA 17 shoulder and a custom 5:17 herringbone reduction. On hold, not forgotten.</p>
-  </article>
-  <article data-proj="mouse" data-kicker="Built from scratch" data-title="Gaming Mouse">
-    <div class="shots"><img src="images/gaming-mouse.jpg" alt="Custom gaming mouse CAD model with a hex-vented shell"></div>
-    <p>A mouse on a XIAO ESP32-S3 with an optical sensor, LiPo power, and arrow keys built into the shell.</p>
-    <p class="sheet-links"><a href="https://github.com/vrun-systems26/Custom-Gaming-Mouse" target="_blank" rel="noopener">GitHub &#8599;</a></p>
-  </article>
-</div>
-
-<script src="js/script.js?v=620"></script>
+<script src="js/script.js?v=720"></script>
 </body>
 </html>
