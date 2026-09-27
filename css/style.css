@@ -642,7 +642,7 @@ body.sheet-open { overflow: hidden; }
 
   .bot {
     display: block;
-    position: fixed; bottom: 22px; z-index: 15;
+    position: fixed; bottom: 24vh; z-index: 15;
     padding: 0; border: 0; background: none; cursor: pointer;
   }
   /* each bot sits centered in its side column */

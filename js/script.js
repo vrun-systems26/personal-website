@@ -437,7 +437,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   const closeBtn = document.getElementById("npClose");
   if (!btns.length || !card) return;
   const VIDEO = "d8NRvNm5RXk";
-  const VOLUME = 20;      // quiet, sits under everything, but clearly there
+  const VOLUME = 25;      // quiet, sits under everything, but clearly there
   const FADE_IN = 4000;
   const FADE_OUT = 1100;
   let player = null, fadeTimer = 0, level = 0, playing = false;
