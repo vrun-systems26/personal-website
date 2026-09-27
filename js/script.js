@@ -379,3 +379,59 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
   update();
 })();
+
+// ---------- music: opt-in, quiet, looping ----------
+(function () {
+  const btn = document.getElementById("musicBtn");
+  const card = document.getElementById("np");
+  const closeBtn = document.getElementById("npClose");
+  if (!btn || !card) return;
+  const VIDEO = "uKnUvd4mPkI";
+  const VOLUME = 30; // faint, but you can hear it
+  let player = null;
+
+  function loadApi() {
+    if (window.YT && window.YT.Player) return Promise.resolve();
+    return new Promise((resolve) => {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); resolve(); };
+      const s = document.createElement("script");
+      s.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(s);
+    });
+  }
+  function setState(playing) {
+    btn.classList.toggle("is-playing", playing);
+    btn.setAttribute("aria-pressed", String(playing));
+  }
+  async function play() {
+    card.hidden = false;
+    if (player && player.playVideo) {
+      player.setVolume(VOLUME);
+      player.playVideo();
+      return;
+    }
+    await loadApi();
+    player = new YT.Player("ytPlayer", {
+      videoId: VIDEO,
+      width: "100%",
+      height: "100%",
+      playerVars: { autoplay: 1, loop: 1, playlist: VIDEO, controls: 1, rel: 0, playsinline: 1 },
+      events: {
+        onReady: (e) => { e.target.setVolume(VOLUME); e.target.playVideo(); },
+        onStateChange: (e) => {
+          const playing = e.data === YT.PlayerState.PLAYING;
+          if (playing) e.target.setVolume(VOLUME);
+          setState(playing);
+        },
+      },
+    });
+  }
+  function stop() {
+    if (player && player.pauseVideo) player.pauseVideo();
+    card.hidden = true;
+    setState(false);
+  }
+  btn.addEventListener("click", () => (card.hidden ? play() : stop()));
+  if (closeBtn) closeBtn.addEventListener("click", stop);
+})();
