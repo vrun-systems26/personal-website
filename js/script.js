@@ -171,7 +171,7 @@ const field = (function () {
 
   function size() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = window.innerWidth; H = window.innerHeight;
+    W = window.innerWidth; H = Math.max(window.innerHeight, Math.round(cv.getBoundingClientRect().height));
     G = W < 700 ? Math.max(9, Math.min(14, Math.floor((W - 24) / (FONTS[1].cw + 4)))) : 18;
     GAP = G < 12 ? 1 : 2;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
@@ -249,10 +249,10 @@ const field = (function () {
   }
 
   const BAND = 10, SWEEP_DUR = 0.85;
-  function startSweep(x0, x1, onMove, onDone) {
+  function startSweep(x0, x1, onMove, onDone, bounds) {
     if (sweep) finishSweep();
     if (reduceMotion) { onMove(1e5); onDone(); return; }
-    const me = { c0: Math.max(0, Math.round((x0 - ox) / G)), c1: Math.min(cols - 1, Math.round((x1 - ox) / G) - 1), t0: now(), seed: Math.random() * 1000, onMove, onDone };
+    const me = { c0: Math.max(0, Math.round((x0 - ox) / G)), c1: Math.min(cols - 1, Math.round((x1 - ox) / G) - 1), t0: now(), seed: Math.random() * 1000, onMove, onDone, bounds };
     sweep = me;
     // if frames stall (a throttled tab), never leave the swap half done
     setTimeout(() => { if (sweep === me) finishSweep(); }, (SWEEP_DUR + 0.6) * 1000);
@@ -272,6 +272,8 @@ const field = (function () {
     const y = -BAND * G + (H + 2 * BAND * G) * ease(p);   // the band's middle, top of the screen to below the bottom
     sweep.onMove(y);
     const mid = Math.round((y - oy) / G), sd = sweep.seed, rr = Math.min(2, s * 0.12);
+    // on phones the band only shows over the card it is revealing
+    const bd = sweep.bounds ? sweep.bounds() : null;
     for (let c = sweep.c0 - 1; c <= sweep.c1 + 1; c++) {
       const top = mid - BAND / 2 - Math.floor(hashf(sd + c * 1.3) * 3);
       const bot = mid + BAND / 2 + Math.floor(hashf(sd + c * 2.9 + 5) * 3);
@@ -279,6 +281,7 @@ const field = (function () {
         // now and then a row pokes one tile past the column's edges
         if ((c < sweep.c0 || c > sweep.c1) && hashf(sd + r * 4.1 + c * 0.7) > 0.3) continue;
         const x = ox + c * G, yy = oy + r * G;
+        if (bd && (yy + G < bd.top - G * 2 || yy > bd.bottom + G * 2)) continue;
         const col = rampAt(palTo, clamp01(0.25 + heatAt(x + G / 2, yy + G / 2, t) * 0.75));
         sctx.fillStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
         sctx.beginPath();
@@ -384,15 +387,27 @@ const field = (function () {
     while (k < stack.length && k < next.length && stack[k] === next[k]) k++;
     const leaving = stack.slice(k), entering = next.slice(k);
     const swap = leaving.length > 0 && entering.length > 0;
-    // on wide screens a sibling swap happens under a band of tiles sweeping down the column
-    const band = wide && animate && swap;
+    // on wide screens a sibling swap happens under a band of tiles sweeping down the column;
+    // on phones every card that opens is printed in by the same band
+    const band = animate && entering.length > 0 && (wide ? swap : true);
     field.endSweep();
     leaving.forEach((id, j) => {
-      if (band && j === 0) return;
+      if (band && wide && j === 0) return;
       hide(panes[id], !animate ? null : wide ? "is-leaving" : swap ? null : "is-fading");
     });
-    entering.forEach((id, j) => show(panes[id], k + j, !animate ? null : swap && j === 0 ? (band ? null : "is-swapping") : "is-entering"));
-    if (band) {
+    entering.forEach((id, j) => show(panes[id], k + j, !animate ? null : j === 0 && band ? null : swap && j === 0 ? "is-swapping" : "is-entering"));
+    if (band && !wide) {
+      const newP = panes[entering[0]], ntok = newP._tok;
+      newP.style.clipPath = "inset(0 0 100% 0)";
+      const r = newP.getBoundingClientRect();
+      field.sweep(r.left, r.right, (y) => {
+        if (newP._tok !== ntok) return;
+        const b = newP.getBoundingClientRect();
+        newP.style.clipPath = `inset(0 0 ${Math.max(0, Math.min(b.height, b.bottom - y))}px 0)`;
+      }, () => {
+        if (newP._tok === ntok) newP.style.clipPath = "";
+      }, () => newP.getBoundingClientRect());
+    } else if (band) {
       const oldP = panes[leaving[0]], newP = panes[entering[0]];
       const otok = (oldP._tok = (oldP._tok || 0) + 1), ntok = newP._tok;
       oldP.style.zIndex = String(19 - k);          // the old one waits underneath until the band has passed
@@ -445,8 +460,11 @@ const field = (function () {
   });
   window.addEventListener("hashchange", () => apply(parse(), "nav"));
 
-  let rt = 0;
+  let rt = 0, lastW = window.innerWidth;
   window.addEventListener("resize", () => {
+    // on phones a height-only change is the address bar sliding; the grid already covers that
+    if (!wideQuery.matches && window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
     clearTimeout(rt);
     rt = setTimeout(() => { field.size(); place(false); field.setPalette(stack[stack.length - 1], false); field.redraw(); }, 120);
   });
