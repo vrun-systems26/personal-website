@@ -35,10 +35,10 @@ const field = (function () {
   let G = 18, GAP = 2;                   // tile pitch and the gap between tiles
   let W = 1, H = 1, cols = 0, rows = 0, ox = 0, oy = 0;
   let eFrom, eTo, eT0, eDelay, pDelay;   // per row: the covered edge and its motion; the palette sweep
-  let edgeGoal = 0, stage = { x: 0, top: 0, h: 1 };
+  let edgeGoal = 0;
   let palFrom = PAL.index, palTo = PAL.index, palT0 = -99;
   const stamps = [], ripples = [];
-  let running = false, raf = 0, pulseT = -99;
+  let running = false, raf = 0;
   const T0 = performance.now();
   const now = () => (performance.now() - T0) / 1000;
   const EDGE_DUR = 0.5, PAL_DUR = 0.32, LEVELS = 40;
@@ -62,51 +62,6 @@ const field = (function () {
   const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
   // ----- the name, in 5x7 pixel letters, laid into the grid -----
-  // two pixel faces: a bold 7x9 one when there is room, and a 5x7 one for tighter spaces and phones
-  const FONTS = [
-    { w: 7, h: 9, gap: 2, g: {
-      V: ["11...11", "11...11", "11...11", "11...11", "11...11", ".11.11.", ".11.11.", "..111..", "...1..."],
-      A: ["..111..", ".11.11.", "11...11", "11...11", "1111111", "11...11", "11...11", "11...11", "11...11"],
-      R: ["111111.", "11...11", "11...11", "11...11", "111111.", "11.11..", "11..11.", "11...11", "11...11"],
-      U: ["11...11", "11...11", "11...11", "11...11", "11...11", "11...11", "11...11", "11...11", ".11111."],
-      N: ["11...11", "111..11", "1111.11", "11.1111", "11..111", "11...11", "11...11", "11...11", "11...11"],
-    } },
-    { w: 5, h: 7, gap: 1, g: {
-      V: ["1...1", "1...1", "1...1", "1...1", "1...1", ".1.1.", "..1.."],
-      A: [".111.", "1...1", "1...1", "11111", "1...1", "1...1", "1...1"],
-      R: ["1111.", "1...1", "1...1", "1111.", "1.1..", "1..1.", "1...1"],
-      U: ["1...1", "1...1", "1...1", "1...1", "1...1", "1...1", ".111."],
-      N: ["1...1", "11..1", "1.1.1", "1..11", "1...1", "1...1", "1...1"],
-    } },
-  ];
-  const NAME = "VARUN";
-  FONTS.forEach((f) => { f.cw = NAME.length * (f.w + f.gap) - f.gap; });
-  let nameAt = null, nameT0 = -99, nameFrom = null;   // where it sits now, and where it faded from
-  function placeName() {
-    // centred in the open space, snapped to the tiles, in the biggest face that fits; hidden if neither fits.
-    // only tiles fully on screen and fully inside the open space count
-    const c0 = Math.max(0, Math.ceil((stage.x - ox) / G)), c1 = Math.floor((W - ox) / G) - 1;
-    const r0 = Math.max(0, Math.ceil((stage.top - oy) / G)), r1 = Math.min(Math.floor((H - oy) / G) - 1, Math.floor((stage.top + stage.h - oy) / G) - 1);
-    const room = c1 - c0 + 1, tall = r1 - r0 + 1;
-    let next = null;
-    for (const f of FONTS) {
-      if (room >= f.cw + 4 && tall >= f.h + 2) {
-        next = { c: c0 + Math.floor((room - f.cw) / 2), r: r0 + Math.floor((tall - f.h) / 2), f };
-        break;
-      }
-    }
-    const same = (a, b) => (a && b ? a.c === b.c && a.r === b.r && a.f === b.f : a === b);
-    if (same(next, nameAt)) return;
-    nameFrom = nameAt; nameAt = next; nameT0 = now();
-  }
-  function nameHit(at, c, r) {
-    if (!at) return 0;
-    const f = at.f, lc = c - at.c, lr = r - at.r;
-    if (lc < 0 || lr < 0 || lc >= f.cw || lr >= f.h) return 0;
-    const g = Math.floor(lc / (f.w + f.gap)), gc = lc % (f.w + f.gap);
-    if (gc >= f.w) return 0;
-    return f.g[NAME[g]][lr][gc] === "1" ? 1 : 0;
-  }
   function heatAt(x, y, t) {
     // two layers of drifting noise, plus a slow wave folded through them (in screen pixels, so tile size doesn't matter)
     const n1 = vnoise(x * 0.0045 + t * 0.045, y * 0.0045 - t * 0.02, t * 0.05);
@@ -150,20 +105,15 @@ const field = (function () {
     colors = [];
     kick();
   }
-  function setStage(x, top, h) { stage = { x, top, h }; placeName(); kick(); }
-  function pulseName() { pulseT = now(); kick(); }
 
   const mixc = (a, b, f) => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
   function rampAt(p, h) { const pos = h * 4, i = Math.min(3, Math.floor(pos)); return mixc(p.stops[i], p.stops[i + 1], pos - i); }
   // colour for a heat level, palette mix step, and how strongly the name is lit on that tile
-  function colorFor(m, l, n) {
-    const k = (n * 5 + m) * LEVELS + l;
+  // colour for a heat level and a step of the palette sweep
+  function colorFor(m, l) {
+    const k = m * LEVELS + l;
     if (!colors[k]) {
-      const h = l / (LEVELS - 1);
-      let c = mixc(rampAt(palFrom, h), rampAt(palTo, h), m / 4);
-      // the name reads against anything: it lifts dark tiles and darkens light ones
-      // letters lift gently toward white, the same way on any colour
-      if (n) c = mixc(c, [246, 246, 244], 0.3 + n * 0.1);
+      const c = mixc(rampAt(palFrom, l / (LEVELS - 1)), rampAt(palTo, l / (LEVELS - 1)), m / 4);
       colors[k] = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`;
     }
     return colors[k];
@@ -172,7 +122,7 @@ const field = (function () {
   function size() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth; H = Math.max(window.innerHeight, Math.round(cv.getBoundingClientRect().height));
-    G = W < 700 ? Math.max(9, Math.min(14, Math.floor((W - 24) / (FONTS[1].cw + 4)))) : 18;
+    G = W < 700 ? 13 : 18;
     GAP = G < 12 ? 1 : 2;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -184,8 +134,6 @@ const field = (function () {
     eFrom = new Float32Array(rows).fill(keep); eTo = new Float32Array(rows).fill(keep);
     eT0 = new Float32Array(rows); eDelay = new Float32Array(rows); pDelay = new Float32Array(rows);
     colors = [];
-    nameAt = null; nameFrom = null;
-    placeName();
   }
 
   const buckets = [];
@@ -195,10 +143,6 @@ const field = (function () {
     if (palDone && palFrom !== palTo) { palFrom = palTo; colors = []; }
     while (stamps.length && t - stamps[0][2] > 1) stamps.shift();
     while (ripples.length && t - ripples[0][2] > 1.4) ripples.shift();
-    // the name fades between spots when the open space changes; a hover on the name makes it glow for a moment
-    // out from the old spot first, then in at the new one, so the letters never overlap
-    const nOff = 1 - clamp01((t - nameT0) / 0.3), nOn = clamp01((t - nameT0 - 0.3) / 0.45), pu = t - pulseT;
-    const pulse = pu > 0 && pu < 2.6 ? Math.sin(Math.min(1, pu / 0.35) * Math.PI / 2) * (pu > 2 ? 1 - (pu - 2) / 0.6 : 1) : 0;
     const wakeS2 = 2 * (G * 1.7) ** 2, wakeLim = (G * 5.5) ** 2, rw = G * 1.1;
     for (const b of buckets) if (b) b.length = 0;
     off.length = 0;
@@ -220,10 +164,7 @@ const field = (function () {
         }
         if (glow) { const dx = cxx - e; if (dx < G * 4) h += 0.8 * glow * Math.exp(-((dx / (G * 1.3)) ** 2)); }
         h = clamp01(h);
-        let n = 0;
-        const on = nameHit(nameAt, c, r) * nOn + nameHit(nameFrom, c, r) * nOff;
-        if (on > 0.02) n = Math.max(1, Math.min(3, Math.round(on * (1 + pulse * 2))));
-        const k = (n * 5 + m) * LEVELS + Math.round(h * (LEVELS - 1));
+        const k = m * LEVELS + Math.round(h * (LEVELS - 1));
         (buckets[k] || (buckets[k] = [])).push(x, y);
       }
     }
@@ -240,8 +181,7 @@ const field = (function () {
     for (let k = 0; k < buckets.length; k++) {
       const b = buckets[k];
       if (!b || !b.length) continue;
-      const l = k % LEVELS, m = Math.floor(k / LEVELS) % 5, n = Math.floor(k / (LEVELS * 5));
-      ctx.fillStyle = colorFor(m, l, n);
+      ctx.fillStyle = colorFor(Math.floor(k / LEVELS), k % LEVELS);
       ctx.beginPath();
       for (let i = 0; i < b.length; i += 2) rect(b[i], b[i + 1]);
       ctx.fill();
@@ -319,14 +259,13 @@ const field = (function () {
   document.addEventListener("visibilitychange", () => { if (document.hidden) finishSweep(); else kick(); });
 
   size();
-  return { size, setEdge, setPalette, setStage, pulseName, start, redraw: kick, sweep: startSweep, endSweep: finishSweep };
+  return { size, setEdge, setPalette, start, redraw: kick, sweep: startSweep, endSweep: finishSweep };
 })();
 
 // ---------- columns: which are open comes from the address, so links, back and forward all just work ----------
 (function () {
   const panes = {};
   document.querySelectorAll(".pane[data-pane]").forEach((p) => (panes[p.dataset.pane] = p));
-  const deck = document.getElementById("deck");
   const ROUTES = {
     "": ["index"],
     fetch: ["index", "fetch"], ceres: ["index", "ceres"], sweeper: ["index", "sweeper"],
@@ -368,16 +307,9 @@ const field = (function () {
   }
 
   function paneWidth() { return panes.index.getBoundingClientRect().width; }
+  // the grid starts where the open columns end; on phones the cards sit on top of it instead
   function place(animate) {
-    if (wideQuery.matches) {
-      const edge = stack.length * paneWidth();
-      field.setStage(edge, 0, window.innerHeight);
-      field.setEdge(edge, animate);
-    } else {
-      const top = parseFloat(getComputedStyle(deck).paddingTop) || 240;
-      field.setStage(0, 0, top);
-      field.setEdge(0, animate);
-    }
+    field.setEdge(wideQuery.matches ? stack.length * paneWidth() : 0, animate);
   }
 
   function apply(next, how) {
@@ -479,10 +411,6 @@ const field = (function () {
     const top = panes[stack[stack.length - 1]];
     (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => top.scrollIntoView({ block: "start" }));
   }
-
-  // hovering or tapping the name lights it up in the grid
-  const name = document.querySelector(".name");
-  if (name) { name.addEventListener("pointerenter", field.pulseName); name.addEventListener("click", field.pulseName); }
 })();
 
 // ---------- favicon: a small grid of tiles in the open page's colours ----------

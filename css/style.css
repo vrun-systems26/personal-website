@@ -26,7 +26,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 400 17px/1.6 var(--sans);
+  font: 400 18px/1.6 var(--sans);
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; }
@@ -40,7 +40,7 @@ img { display: block; max-width: 100%; }
   position: fixed; left: 16px; top: -80px; z-index: 100;
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px;
   background: var(--ink); color: var(--bg); border-radius: 8px;
-  text-decoration: none; font-weight: 500;
+  text-decoration: none;
 }
 .skip:focus { top: 12px; }
 
@@ -54,8 +54,7 @@ img { display: block; max-width: 100%; }
 .pane { background: var(--paper); }
 .pane-in { padding: 40px 34px 28px; }
 
-.name { margin: 0 0 18px; font: 500 50px/0.98 var(--serif); letter-spacing: -0.01em; }
-.name { font-style: italic; }
+.name { margin: 0 0 18px; font: italic 500 50px/0.98 var(--serif); letter-spacing: -0.01em; }
 .name span, .name em { display: block; font-style: italic; }
 .bio { margin: 0 0 32px; max-width: 24em; color: var(--muted); }
 
@@ -63,7 +62,7 @@ img { display: block; max-width: 100%; }
 .list a {
   position: relative;
   display: flex; align-items: center; min-height: 44px;
-  font-size: 18.5px; font-weight: 500; text-decoration: none;
+  text-decoration: none;
   transition: transform 0.35s var(--ease), color 0.2s;
 }
 .list a::before {
@@ -77,7 +76,7 @@ img { display: block; max-width: 100%; }
 .list a.is-open::before { transform: scale(1); }
 
 .pane-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin: 0 0 18px; }
-.pane-head h2 { margin: 0; font: 500 38px/1.05 var(--serif); letter-spacing: -0.01em; overflow-wrap: anywhere; min-width: 0; }
+.pane-head h2 { margin: 0; font: italic 500 38px/1.05 var(--serif); letter-spacing: -0.01em; overflow-wrap: anywhere; min-width: 0; }
 .close {
   flex: 0 0 auto; width: 44px; height: 44px; margin: -4px -12px 0 0;
   display: grid; place-items: center; border-radius: 50%;
@@ -102,13 +101,13 @@ img { display: block; max-width: 100%; }
 
 .spec { margin: 6px 0 22px; border-top: 1px solid var(--rule); }
 .spec div { display: grid; grid-template-columns: 100px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
-.spec dt { font-size: 14px; line-height: 1.7; color: var(--muted); }
-.spec dd { margin: 0; font-size: 15.5px; }
+.spec dt { font-size: 15px; line-height: 1.7; color: var(--muted); }
+.spec dd { margin: 0; font-size: 15px; line-height: 1.7; }
 
 .out { display: flex; flex-wrap: wrap; gap: 0 22px; }
 .out a {
   display: inline-flex; align-items: center; min-height: 44px;
-  font-weight: 500; text-decoration: underline; text-decoration-color: var(--rule);
+  text-decoration: underline; text-decoration-color: var(--rule);
   text-decoration-thickness: 1.5px; text-underline-offset: 5px; transition: text-decoration-color 0.2s;
 }
 .out a:hover { text-decoration-color: var(--accent); }
@@ -118,7 +117,7 @@ img { display: block; max-width: 100%; }
 .awards li:first-child { padding-top: 4px; }
 .place { font: italic 500 30px/1 var(--serif); }
 .place.is-first { color: var(--accent); }
-.awards b { display: block; font-weight: 500; line-height: 1.4; }
+.awards b { display: block; font-weight: 400; line-height: 1.4; }
 .awards span:not(.place) { display: block; margin-top: 2px; font-size: 15px; color: var(--muted); }
 
 /* ---------- the index column's foot: links, sound ---------- */
@@ -128,7 +127,7 @@ img { display: block; max-width: 100%; }
 .links a, .links button {
   display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0;
   border: 0; background: none; cursor: pointer;
-  font-size: 16px; text-decoration: none; transition: color 0.2s;
+  font-size: 15px; text-decoration: none; transition: color 0.2s;
 }
 .links a:hover, .links button:hover { color: var(--accent); }
 
@@ -150,11 +149,11 @@ img { display: block; max-width: 100%; }
 @keyframes bar { 0%, 100% { height: 3px; } 50% { height: 13px; } }
 .now {
   display: inline-flex; align-items: center; min-height: 44px;
-  font-size: 13.5px; line-height: 1.4; color: var(--muted); text-decoration: none;
+  font-size: 15px; line-height: 1.4; color: var(--muted); text-decoration: none;
 }
 .now:hover { color: var(--accent); }
 .now[hidden], .sound-note[hidden] { display: none; }
-.sound-note { margin: 0 0 4px; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+.sound-note { margin: 0 0 4px; font-size: 15px; line-height: 1.5; color: var(--muted); }
 
 .name { cursor: default; }
 
@@ -169,7 +168,7 @@ img { display: block; max-width: 100%; }
 .toast {
   position: fixed; left: 50%; bottom: 24px; z-index: 90;
   max-width: calc(100vw - 32px); padding: 12px 18px; border-radius: 10px;
-  background: var(--ink); color: var(--bg); font-size: 14.5px; font-weight: 500;
+  background: var(--ink); color: var(--bg); font-size: 15px;
   opacity: 0; transform: translate(-50%, 16px); pointer-events: none;
   transition: opacity 0.25s, transform 0.35s var(--ease);
 }
