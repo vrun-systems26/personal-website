@@ -753,7 +753,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   requestAnimationFrame(tick);
 })();
 
-// ---------- lidar scan: Fetch sweeps a room into a glowing point cloud (hero, echoed in the footer) ----------
+// ---------- lidar scan: Fetch sweeps a room into a glowing point cloud (hero), and the map it leaves (footer) ----------
 (function () {
   const RANGE = 3.1;          // meters out to the rim
   const PERIOD = 8;           // seconds per sweep, slow on purpose
@@ -804,17 +804,17 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   const COLS = ["rgba(255,236,214,0.8)", "rgba(248,196,150,0.5)", "rgba(242,168,107,0.42)", "rgba(224,138,75,0.3)", "rgba(150,92,52,0.22)"];
   const ROW = 0.065; // meters between stacked dots on a wall
 
-  function create(canvas, mini) {
+  function create(canvas) {
     const ctx = canvas.getContext("2d");
-    const MAX = mini ? 1600 : 3000;
-    const FADE = mini ? Infinity : PERIOD * 1.8;
+    const MAX = 3000;
+    const FADE = PERIOD * 1.8;
     const hx = new Float32Array(MAX), hy = new Float32Array(MAX), ht = new Float32Array(MAX), hn = new Uint8Array(MAX);
     let head = 0, count = 0, total = 0;
     let W = 1, H = 1, R = 1, cx = 0, cy = 0, px = 1;
     let beam = 0, clock = 0, yaw = 0.5, tilt = 0.5, tiltT = 0.5, rx = 0, ry = 0;
     let raf = 0, visible = true, last = performance.now();
     const cursor = { on: false, x: 0, y: 0 };
-    const dust = Array.from({ length: mini ? 0 : 46 }, () => [(Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6, Math.random() * 1.1, Math.random() * 6]);
+    const dust = Array.from({ length: 46 }, () => [(Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6, Math.random() * 1.1, Math.random() * 6]);
     const B = [[], [], [], [], []];
     let sx = 0, sy = 0;
 
@@ -824,9 +824,9 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = W * dpr; canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      R = W / 2 - (mini ? 4 : 14);
+      R = Math.max(1, W / 2 - 14);
       px = R / RANGE;
-      cx = W / 2; cy = H * (mini ? 0.56 : 0.58);
+      cx = W / 2; cy = H * 0.58;
     }
     // world (meters, z up) to screen, viewed from above at an angle
     let st = Math.sin(tilt), ct = Math.cos(tilt), cyw = 1, syw = 0;
@@ -846,11 +846,12 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       head = (head + 1) % MAX; count = Math.min(MAX, count + 1); total++;
     }
     function sweep(from, to) {
-      const steps = Math.max(1, Math.ceil((to - from) / (mini ? 0.006 : 0.005)));
+      const steps = Math.max(1, Math.ceil((to - from) / 0.005));
       for (let i = 1; i <= steps; i++) record(from + ((to - from) * i) / steps);
     }
 
     function draw(now) {
+      if (W < 60) return; // hidden on small screens
       st = Math.sin(tilt); ct = Math.cos(tilt); cyw = Math.cos(yaw); syw = Math.sin(yaw);
       ctx.clearRect(0, 0, W, H);
 
@@ -866,26 +867,22 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       ctx.restore();
 
       // the rim: a brighter dotted edge with ticks every 15 degrees
-      {
-        const n = Math.round((RANGE * px * 2 * Math.PI) / (mini ? 2.6 : 2.8));
-        for (let i = 0; i < n; i++) {
-          const t = (i / n) * Math.PI * 2;
-          const v = P(rx + Math.cos(t) * RANGE, ry + Math.sin(t) * RANGE, 0);
-          ctx.fillStyle = `rgba(242,168,107,${0.22 - v * 0.04})`;
-          ctx.fillRect(sx - 0.7, sy - 0.7, 1.4, 1.4);
-        }
-        if (!mini) {
-          ctx.fillStyle = "rgba(255,244,230,0.3)";
-          for (let i = 0; i < 24; i++) {
-            const t = (i / 24) * Math.PI * 2;
-            for (let k = 1; k <= 2; k++) { P(rx + Math.cos(t) * (RANGE + k * 0.06), ry + Math.sin(t) * (RANGE + k * 0.06), 0); ctx.fillRect(sx - 0.6, sy - 0.6, 1.2, 1.2); }
-          }
-        }
+      const rimN = Math.round((RANGE * px * 2 * Math.PI) / 2.8);
+      for (let i = 0; i < rimN; i++) {
+        const t = (i / rimN) * Math.PI * 2;
+        const v = P(rx + Math.cos(t) * RANGE, ry + Math.sin(t) * RANGE, 0);
+        ctx.fillStyle = `rgba(242,168,107,${0.22 - v * 0.04})`;
+        ctx.fillRect(sx - 0.7, sy - 0.7, 1.4, 1.4);
+      }
+      ctx.fillStyle = "rgba(255,244,230,0.3)";
+      for (let i = 0; i < 24; i++) {
+        const t = (i / 24) * Math.PI * 2;
+        for (let k = 1; k <= 2; k++) { P(rx + Math.cos(t) * (RANGE + k * 0.06), ry + Math.sin(t) * (RANGE + k * 0.06), 0); ctx.fillRect(sx - 0.6, sy - 0.6, 1.2, 1.2); }
       }
       // inner floor rings, in dots
       ctx.fillStyle = "rgba(255,244,230,0.12)";
       for (let k = 1; k <= 2; k++) {
-        const rr = (RANGE * k) / 3, n = Math.round((rr * px) / (mini ? 3 : 3.4));
+        const rr = (RANGE * k) / 3, n = Math.round((rr * px) / 3.4);
         for (let i = 0; i < n; i++) {
           const t = (i / n) * Math.PI * 2;
           P(rx + Math.cos(t) * rr, ry + Math.sin(t) * rr, 0);
@@ -914,15 +911,14 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       for (let i = 0; i < count; i++) {
         const age = clock - ht[i];
         if (age > FADE || age < 0) continue;
-        // the footer map never fades; it just brightens where the beam has just been
-        const f = mini ? ((((beam - Math.atan2(hy[i] - ry, hx[i] - rx)) % 6.283) + 6.283) % 6.283) / 6.283 * 0.85 : age / FADE;
+        const f = age / FADE;
         const bk = f < 0.025 ? 0 : f < 0.1 ? 1 : f < 0.35 ? 2 : f < 0.65 ? 3 : 4;
         for (let z = 0; z < hn[i]; z++) {
           P(hx[i], hy[i], z * ROW);
           B[Math.min(4, bk + (z === 0 ? 1 : 0))].push(sx, sy);
         }
       }
-      const dot = mini ? 1.3 : 1.7;
+      const dot = 1.7;
       ctx.globalCompositeOperation = "lighter";
       for (let b = 0; b < 5; b++) {
         const L = B[b];
@@ -935,7 +931,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
 
       // Fetch in the middle, a little can of dots with the emitter on top
       P(rx, ry, 0.15);
-      const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, mini ? 8 : 18);
+      const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, 18);
       halo.addColorStop(0, "rgba(255,236,214,0.35)");
       halo.addColorStop(1, "rgba(242,168,107,0)");
       ctx.fillStyle = halo; ctx.fillRect(sx - 20, sy - 20, 40, 40);
@@ -958,10 +954,10 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       const lg = ctx.createLinearGradient(ex, ey, sx, sy);
       lg.addColorStop(0, "rgba(255,244,230,0.9)");
       lg.addColorStop(1, "rgba(242,168,107,0.35)");
-      ctx.strokeStyle = lg; ctx.lineWidth = mini ? 0.8 : 1;
+      ctx.strokeStyle = lg; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(sx, sy); ctx.stroke();
       if (hit) {
-        const fl = ctx.createRadialGradient(sx, sy, 0, sx, sy, mini ? 5 : 9);
+        const fl = ctx.createRadialGradient(sx, sy, 0, sx, sy, 9);
         fl.addColorStop(0, "rgba(255,244,230,0.95)");
         fl.addColorStop(1, "rgba(242,168,107,0)");
         ctx.fillStyle = fl; ctx.fillRect(sx - 10, sy - 10, 20, 20);
@@ -970,12 +966,10 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       ctx.fillStyle = `rgba(255,244,230,${pulse})`;
       ctx.fillRect(ex - 1.3, ey - 1.3, 2.6, 2.6);
 
-      if (!mini) {
-        ctx.font = '10px "Geist Mono", ui-monospace, monospace';
-        ctx.fillStyle = "rgba(163,157,147,0.7)";
-        ctx.textAlign = "left"; ctx.fillText("lidar · mapping", 4, H - 6);
-        ctx.textAlign = "right"; ctx.fillText(`${total.toLocaleString("en-US")} pts`, W - 4, H - 6);
-      }
+      ctx.font = '10px "Geist Mono", ui-monospace, monospace';
+      ctx.fillStyle = "rgba(163,157,147,0.7)";
+      ctx.textAlign = "left"; ctx.fillText("lidar · mapping", 4, H - 6);
+      ctx.textAlign = "right"; ctx.fillText(`${total.toLocaleString("en-US")} pts`, W - 4, H - 6);
     }
 
     function tick(now) {
@@ -983,44 +977,36 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now; clock += dt;
       tilt += (tiltT - tilt) * 0.04;
-      yaw += dt * (Math.PI * 2) / (mini ? 90 : 110); // the whole view turns, very slowly
+      yaw += dt * (Math.PI * 2) / 110; // the whole view turns, very slowly
       const prev = beam;
       beam += (Math.PI * 2 * dt) / PERIOD;
-      if (!mini) {
-        rx = 0.4 * Math.sin(clock * 0.045); ry = 0.3 * Math.sin(clock * 0.033 + 1);
-        sweep(prev, beam);
-      }
+      rx = 0.4 * Math.sin(clock * 0.045); ry = 0.3 * Math.sin(clock * 0.033 + 1);
+      sweep(prev, beam);
       draw(now);
       if (visible) raf = requestAnimationFrame(tick);
     }
     const start = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
 
     size();
-    if (mini) { sweep(0, Math.PI * 2); }
-    else {
-      // start mid-scan: lay down the last sweep and a half with the ages it would have had
-      const span = Math.PI * 3;
-      for (let a = beam - span; a < beam; a += 0.005) { clock = -((beam - a) / (Math.PI * 2)) * PERIOD; record(a); }
-      clock = 0;
-    }
-    if (!mini) {
-      canvas.addEventListener("pointermove", (e) => {
+    // start mid-scan: lay down the last sweep and a half with the ages it would have had
+    for (let a = beam - Math.PI * 3; a < beam; a += 0.005) { clock = -((beam - a) / (Math.PI * 2)) * PERIOD; record(a); }
+    clock = 0;
+    canvas.addEventListener("pointermove", (e) => {
+      const rc = canvas.getBoundingClientRect();
+      const x = e.clientX - rc.left - cx, y = e.clientY - rc.top - cy;
+      const u = x / px, v = -y / (px * st);
+      cursor.on = u * u + v * v < (RANGE - 0.2) * (RANGE - 0.2);
+      cursor.x = rx + u * cyw + v * syw; cursor.y = ry - u * syw + v * cyw;
+    });
+    canvas.addEventListener("pointerleave", () => { cursor.on = false; });
+    const hero = document.querySelector(".hero");
+    if (hero) {
+      hero.addEventListener("pointermove", (e) => {
         const rc = canvas.getBoundingClientRect();
-        const x = e.clientX - rc.left - cx, y = e.clientY - rc.top - cy;
-        const u = x / px, v = -y / (px * st);
-        cursor.on = u * u + v * v < (RANGE - 0.2) * (RANGE - 0.2);
-        cursor.x = rx + u * cyw + v * syw; cursor.y = ry - u * syw + v * cyw;
+        const ny = (e.clientY - (rc.top + rc.height / 2)) / window.innerHeight;
+        tiltT = 0.5 + Math.max(-0.14, Math.min(0.2, -ny * 0.6));
       });
-      canvas.addEventListener("pointerleave", () => { cursor.on = false; });
-      const hero = document.querySelector(".hero");
-      if (hero) {
-        hero.addEventListener("pointermove", (e) => {
-          const rc = canvas.getBoundingClientRect();
-          const ny = (e.clientY - (rc.top + rc.height / 2)) / window.innerHeight;
-          tiltT = 0.5 + Math.max(-0.14, Math.min(0.2, -ny * 0.6));
-        });
-        hero.addEventListener("pointerleave", () => { tiltT = 0.5; });
-      }
+      hero.addEventListener("pointerleave", () => { tiltT = 0.5; });
     }
     if (reduceMotion) {
       draw(performance.now());
@@ -1035,16 +1021,99 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     return { total: () => total };
   }
 
+  // the footer: the same room as the flat map the scan leaves behind, with Fetch driving its route
+  function createGrid(canvas) {
+    const ctx = canvas.getContext("2d");
+    const CELL = 0.1, X0 = -2.35, Y0 = -1.7, NX = 48, NY = 36;
+    const occ = new Uint8Array(NX * NY); // 0 unknown, 1 free, 2 wall
+    const cellAt = (x, y) => {
+      const i = Math.floor((x - X0) / CELL), j = Math.floor((y - Y0) / CELL);
+      return i >= 0 && j >= 0 && i < NX && j < NY ? j * NX + i : -1;
+    };
+    const route = (t) => [0.95 * Math.sin(t), 0.5 * Math.sin(2 * t + 0.6) - 0.2]; // a lazy figure-8
+    for (let k = 0; k < 24; k++) {
+      const [ox, oy] = route((k / 24) * Math.PI * 2);
+      for (let a = 0; a < Math.PI * 2; a += 0.02) {
+        const hit = cast(ox, oy, a, null);
+        const d = hit ? hit[0] : RANGE;
+        for (let st = 0; st < d; st += CELL * 0.5) { const c = cellAt(ox + Math.cos(a) * st, oy + Math.sin(a) * st); if (c >= 0 && !occ[c]) occ[c] = 1; }
+        if (hit) { const c = cellAt(ox + Math.cos(a) * (d + 0.02), oy + Math.sin(a) * (d + 0.02)); if (c >= 0) occ[c] = 2; }
+      }
+    }
+    let W = 1, H = 1, s = 1, gx = 0, gy = 0, raf = 0, visible = true, clock = 0, last = performance.now();
+    const base = document.createElement("canvas");
+    const toX = (x) => gx + ((x - X0) / CELL) * s;
+    const toY = (y) => gy + (NY - (y - Y0) / CELL) * s;
+    function size() {
+      const rc = canvas.getBoundingClientRect();
+      W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      s = Math.min(W / NX, H / NY);
+      gx = (W - NX * s) / 2; gy = (H - NY * s) / 2;
+      // the grid never changes, so paint it once
+      base.width = canvas.width; base.height = canvas.height;
+      const b = base.getContext("2d");
+      b.setTransform(dpr, 0, 0, dpr, 0, 0);
+      for (let j = 0; j < NY; j++) {
+        for (let i = 0; i < NX; i++) {
+          const v = occ[j * NX + i];
+          if (!v) continue;
+          b.fillStyle = v === 2 ? "rgba(242,168,107,0.85)" : "rgba(255,244,230,0.05)";
+          b.fillRect(gx + i * s, gy + (NY - 1 - j) * s, s - 0.5, s - 0.5);
+        }
+      }
+      b.fillStyle = "rgba(242,168,107,0.3)";
+      for (let k = 0; k < 90; k++) {
+        const [x, y] = route((k / 90) * Math.PI * 2);
+        b.fillRect(toX(x) - 0.5, toY(y) - 0.5, 1, 1);
+      }
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.drawImage(base, 0, 0, W, H);
+      const t = (clock / 26) * Math.PI * 2;
+      for (let k = 14; k >= 0; k--) {
+        const [x, y] = route(t - k * 0.035);
+        ctx.fillStyle = `rgba(242,168,107,${0.6 * (1 - k / 15)})`;
+        ctx.fillRect(toX(x) - 1, toY(y) - 1, 2, 2);
+      }
+      const [x, y] = route(t);
+      const fx = toX(x), fy = toY(y);
+      const glow = ctx.createRadialGradient(fx, fy, 0, fx, fy, 9);
+      glow.addColorStop(0, "rgba(255,236,214,0.55)");
+      glow.addColorStop(1, "rgba(242,168,107,0)");
+      ctx.fillStyle = glow; ctx.fillRect(fx - 9, fy - 9, 18, 18);
+      ctx.fillStyle = "#fff4e6"; ctx.fillRect(fx - 1.6, fy - 1.6, 3.2, 3.2);
+    }
+    function tick(now) {
+      raf = 0;
+      clock += Math.min(0.05, (now - last) / 1000); last = now;
+      draw();
+      if (visible) raf = requestAnimationFrame(tick);
+    }
+    size();
+    if (reduceMotion) draw();
+    else {
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible && !raf) { last = performance.now(); raf = requestAnimationFrame(tick); } }).observe(canvas);
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    let rt = 0;
+    window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { size(); draw(); }, 150); });
+  }
+
   const heroCv = document.getElementById("scope");
   const miniCv = document.getElementById("scopeMini");
-  const hero = heroCv && heroCv.getContext ? create(heroCv, false) : null;
-  const mini = miniCv && miniCv.getContext ? create(miniCv, true) : null;
+  const hero = heroCv && heroCv.getContext ? create(heroCv) : null;
+  if (miniCv && miniCv.getContext) createGrid(miniCv);
 
   // the footer keeps the running tally from the hero scan
   const pts = document.querySelector(".js-pts");
   if (pts) {
-    // phones never run the hero scan, so fall back to the footer's own full sweep
-    const upd = () => { pts.textContent = ((hero && hero.total()) || (mini && mini.total()) || 0).toLocaleString("en-US"); };
+    const upd = () => { pts.textContent = (hero ? hero.total() : 0).toLocaleString("en-US"); };
     upd();
     if (hero && !reduceMotion) setInterval(upd, 1000);
   }

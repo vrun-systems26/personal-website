@@ -205,18 +205,45 @@ button { font: inherit; color: inherit; }
 
 /* ---------- blocks ---------- */
 .block { border-top: 1px dashed var(--line-2); padding-top: 24px; }
-.block-head::before {
-  content: "";
+/* section icons: small robotics bits, each moving to its own slow beat */
+.hi {
   display: inline-block;
-  width: 11px; height: 11px;
+  width: 14px; height: 14px;
   margin-right: 10px;
-  vertical-align: -1px;
-  border-radius: 50%;
-  border: 1px solid rgba(242, 168, 107, 0.45);
-  background: conic-gradient(from 0deg, rgba(242, 168, 107, 0.75), rgba(242, 168, 107, 0.12) 22%, transparent 24%);
-  animation: scope-spin 8s linear infinite;
+  vertical-align: -2px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--copper-2);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-@keyframes scope-spin { to { transform: rotate(-360deg); } }
+.hi .f { fill: var(--copper-2); stroke: none; }
+.hi-signal .w1, .hi-signal .w2 { animation: hi-wave 2.4s ease-in-out infinite; }
+.hi-signal .w2 { animation-delay: 0.35s; }
+@keyframes hi-wave { 0%, 100% { opacity: 0.15; } 35% { opacity: 1; } 70% { opacity: 0.15; } }
+.hi-gear .spin { transform-origin: 8px 8px; animation: hi-spin 10s linear infinite; }
+@keyframes hi-spin { to { transform: rotate(360deg); } }
+.hi-servo .horn { transform-origin: 8px 10px; animation: hi-servo 2.8s ease-in-out infinite alternate; }
+@keyframes hi-servo { from { transform: rotate(-55deg); } to { transform: rotate(55deg); } }
+.hi-print .l { stroke-dasharray: 8; stroke-dashoffset: 8; }
+.hi-print .l1 { animation: hi-l1 4.8s linear infinite; }
+.hi-print .l2 { animation: hi-l2 4.8s linear infinite; }
+.hi-print .l3 { animation: hi-l3 4.8s linear infinite; }
+.hi-print .l4 { animation: hi-l4 4.8s linear infinite; }
+@keyframes hi-l1 { 0% { stroke-dashoffset: 8; opacity: 1; } 15%, 86% { stroke-dashoffset: 0; opacity: 1; } 96%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes hi-l2 { 0%, 18% { stroke-dashoffset: 8; opacity: 1; } 33%, 86% { stroke-dashoffset: 0; opacity: 1; } 96%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes hi-l3 { 0%, 36% { stroke-dashoffset: 8; opacity: 1; } 51%, 86% { stroke-dashoffset: 0; opacity: 1; } 96%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes hi-l4 { 0%, 54% { stroke-dashoffset: 8; opacity: 1; } 69%, 86% { stroke-dashoffset: 0; opacity: 1; } 96%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+.hi-print .nozzle { animation: hi-nozzle 0.72s ease-in-out infinite alternate; }
+@keyframes hi-nozzle { from { transform: translateX(-3.5px); } to { transform: translateX(3.5px); } }
+.hi-trace rect { stroke: rgba(242, 168, 107, 0.45); }
+.hi-trace .wave { animation: hi-trace 1.9s linear infinite; }
+@keyframes hi-trace { to { transform: translateX(12px); } }
+.hi-ping .ring { transform-origin: 8px 8px; animation: hi-ping 2.6s ease-out infinite; }
+.hi-ping .r2 { animation-delay: 1.3s; }
+@keyframes hi-ping { from { transform: scale(0.2); opacity: 0.9; } to { transform: scale(1); opacity: 0; } }
+.cta-title .hi { width: 20px; height: 20px; margin-right: 12px; vertical-align: -2px; }
 .block-head {
   margin: 0;
   padding: 8px var(--pad);
