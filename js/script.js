@@ -753,7 +753,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   requestAnimationFrame(tick);
 })();
 
-// ---------- lidar scan: Fetch sweeps a room into a glowing point cloud (hero), and the map it leaves (footer) ----------
+// ---------- lidar scan (hero), the map it leaves (footer), and a small scene for each section ----------
 (function () {
   const RANGE = 3.1;          // meters out to the rim
   const PERIOD = 8;           // seconds per sweep, slow on purpose
@@ -826,7 +826,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       R = Math.max(1, W / 2 - 14);
       px = R / RANGE;
-      cx = W / 2; cy = H * 0.58;
+      cx = W / 2; cy = H * 0.5;
     }
     // world (meters, z up) to screen, viewed from above at an angle
     let st = Math.sin(tilt), ct = Math.cos(tilt), cyw = 1, syw = 0;
@@ -968,8 +968,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
 
       ctx.font = '10px "Geist Mono", ui-monospace, monospace';
       ctx.fillStyle = "rgba(163,157,147,0.7)";
-      ctx.textAlign = "left"; ctx.fillText("lidar · mapping", 4, H - 6);
-      ctx.textAlign = "right"; ctx.fillText(`${total.toLocaleString("en-US")} pts`, W - 4, H - 6);
+      ctx.textAlign = "right"; ctx.fillText(`lidar · mapping · ${total.toLocaleString("en-US")} pts`, W - 4, H - 6);
     }
 
     function tick(now) {
@@ -1021,94 +1020,8 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     return { total: () => total };
   }
 
-  // the footer: the same room as the flat map the scan leaves behind, with Fetch driving its route
-  function createGrid(canvas) {
-    const ctx = canvas.getContext("2d");
-    const CELL = 0.1, X0 = -2.35, Y0 = -1.7, NX = 48, NY = 36;
-    const occ = new Uint8Array(NX * NY); // 0 unknown, 1 free, 2 wall
-    const cellAt = (x, y) => {
-      const i = Math.floor((x - X0) / CELL), j = Math.floor((y - Y0) / CELL);
-      return i >= 0 && j >= 0 && i < NX && j < NY ? j * NX + i : -1;
-    };
-    const route = (t) => [0.95 * Math.sin(t), 0.5 * Math.sin(2 * t + 0.6) - 0.2]; // a lazy figure-8
-    for (let k = 0; k < 24; k++) {
-      const [ox, oy] = route((k / 24) * Math.PI * 2);
-      for (let a = 0; a < Math.PI * 2; a += 0.02) {
-        const hit = cast(ox, oy, a, null);
-        const d = hit ? hit[0] : RANGE;
-        for (let st = 0; st < d; st += CELL * 0.5) { const c = cellAt(ox + Math.cos(a) * st, oy + Math.sin(a) * st); if (c >= 0 && !occ[c]) occ[c] = 1; }
-        if (hit) { const c = cellAt(ox + Math.cos(a) * (d + 0.02), oy + Math.sin(a) * (d + 0.02)); if (c >= 0) occ[c] = 2; }
-      }
-    }
-    let W = 1, H = 1, s = 1, gx = 0, gy = 0, raf = 0, visible = true, clock = 0, last = performance.now();
-    const base = document.createElement("canvas");
-    const toX = (x) => gx + ((x - X0) / CELL) * s;
-    const toY = (y) => gy + (NY - (y - Y0) / CELL) * s;
-    function size() {
-      const rc = canvas.getBoundingClientRect();
-      W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      s = Math.min(W / NX, H / NY);
-      gx = (W - NX * s) / 2; gy = (H - NY * s) / 2;
-      // the grid never changes, so paint it once
-      base.width = canvas.width; base.height = canvas.height;
-      const b = base.getContext("2d");
-      b.setTransform(dpr, 0, 0, dpr, 0, 0);
-      for (let j = 0; j < NY; j++) {
-        for (let i = 0; i < NX; i++) {
-          const v = occ[j * NX + i];
-          if (!v) continue;
-          b.fillStyle = v === 2 ? "rgba(242,168,107,0.85)" : "rgba(255,244,230,0.05)";
-          b.fillRect(gx + i * s, gy + (NY - 1 - j) * s, s - 0.5, s - 0.5);
-        }
-      }
-      b.fillStyle = "rgba(242,168,107,0.3)";
-      for (let k = 0; k < 90; k++) {
-        const [x, y] = route((k / 90) * Math.PI * 2);
-        b.fillRect(toX(x) - 0.5, toY(y) - 0.5, 1, 1);
-      }
-    }
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      ctx.drawImage(base, 0, 0, W, H);
-      const t = (clock / 26) * Math.PI * 2;
-      for (let k = 14; k >= 0; k--) {
-        const [x, y] = route(t - k * 0.035);
-        ctx.fillStyle = `rgba(242,168,107,${0.6 * (1 - k / 15)})`;
-        ctx.fillRect(toX(x) - 1, toY(y) - 1, 2, 2);
-      }
-      const [x, y] = route(t);
-      const fx = toX(x), fy = toY(y);
-      const glow = ctx.createRadialGradient(fx, fy, 0, fx, fy, 9);
-      glow.addColorStop(0, "rgba(255,236,214,0.55)");
-      glow.addColorStop(1, "rgba(242,168,107,0)");
-      ctx.fillStyle = glow; ctx.fillRect(fx - 9, fy - 9, 18, 18);
-      ctx.fillStyle = "#fff4e6"; ctx.fillRect(fx - 1.6, fy - 1.6, 3.2, 3.2);
-    }
-    function tick(now) {
-      raf = 0;
-      clock += Math.min(0.05, (now - last) / 1000); last = now;
-      draw();
-      if (visible) raf = requestAnimationFrame(tick);
-    }
-    size();
-    if (reduceMotion) draw();
-    else {
-      if ("IntersectionObserver" in window) {
-        new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible && !raf) { last = performance.now(); raf = requestAnimationFrame(tick); } }).observe(canvas);
-      }
-      raf = requestAnimationFrame(tick);
-    }
-    let rt = 0;
-    window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { size(); draw(); }, 150); });
-  }
-
   const heroCv = document.getElementById("scope");
-  const miniCv = document.getElementById("scopeMini");
   const hero = heroCv && heroCv.getContext ? create(heroCv) : null;
-  if (miniCv && miniCv.getContext) createGrid(miniCv);
 
   // the footer keeps the running tally from the hero scan
   const pts = document.querySelector(".js-pts");
@@ -1116,5 +1029,473 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     const upd = () => { pts.textContent = (hero ? hero.total() : 0).toLocaleString("en-US"); };
     upd();
     if (hero && !reduceMotion) setInterval(upd, 1000);
+  }
+
+  // ---------- section scenes: each section gets its own small robotics piece, lit like the scan ----------
+  const TAU = Math.PI * 2;
+  const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const SCOLS = ["rgba(255,244,230,0.95)", "rgba(250,210,170,0.8)", "rgba(242,168,107,0.7)", "rgba(224,138,75,0.5)", "rgba(150,92,52,0.32)"];
+  const cu = (a) => `rgba(242,168,107,${a})`;
+  const hot = (a) => `rgba(255,236,214,${a})`;
+
+  function makeScene(canvas, opts, fn) {
+    const real = canvas.getContext("2d");
+    // a do-nothing context, used while measuring how much room the piece takes up
+    const noop = () => {};
+    const grad = { addColorStop: noop };
+    const dummy = { beginPath: noop, moveTo: noop, lineTo: noop, closePath: noop, stroke: noop, fill: noop, fillRect: noop, save: noop, restore: noop, translate: noop, scale: noop, arc: noop, fillText: noop, clearRect: noop, createRadialGradient: () => grad, createLinearGradient: () => grad };
+    let ctx = real;
+    const B = [[], [], [], [], []];
+    const v = { yaw: opts.yaw || 0, pitch: opts.pitch || 0.5 };
+    const dust = Array.from({ length: opts.dust || 0 }, () => [(Math.random() - 0.5) * 4, Math.random() * 1.2, (Math.random() - 0.5) * 4, Math.random() * 6]);
+    let W = 1, H = 1, scale = 1, cx = 0, cy = 0, px = 0, py = 0, pz = 0;
+    let measuring = false, x0 = 0, x1 = 0, y0 = 0, y1 = 0;
+    let form = 1, idx = 0; // form: 0 = empty space, 1 = fully built (driven by scroll)
+    function size() {
+      const rc = canvas.getBoundingClientRect();
+      W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      real.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // run a whole cycle at unit scale and fit what it touches inside the canvas
+      measuring = true; ctx = dummy; scale = 1; cx = 0; cy = 0; form = 1;
+      x0 = y0 = Infinity; x1 = y1 = -Infinity;
+      const keep = [v.yaw, v.pitch];
+      for (let t = 0; t <= 26; t += 0.4) { fn(t, api); B.forEach((L) => (L.length = 0)); }
+      [v.yaw, v.pitch] = keep;
+      measuring = false; ctx = real;
+      const padX = 8, padT = 8, padB = 18;
+      scale = Math.min((W - padX * 2) / (x1 - x0), (H - padT - padB) / (y1 - y0));
+      cx = padX + ((W - padX * 2) - (x1 - x0) * scale) / 2 - x0 * scale;
+      cy = padT + ((H - padT - padB) - (y1 - y0) * scale) / 2 - y0 * scale;
+    }
+    // y is up; the camera sits above and in front, looking down a little
+    function P(x, y, z) {
+      const c = Math.cos(v.yaw), s = Math.sin(v.yaw);
+      const X = x * c - z * s, Z = x * s + z * c;
+      const cp = Math.cos(v.pitch), sp = Math.sin(v.pitch);
+      const Y2 = y * cp + Z * sp, Z2 = Z * cp - y * sp;
+      const k = 7 / (7 + Z2);
+      px = cx + X * scale * k; py = cy - Y2 * scale * k; pz = Z2;
+      if (measuring) { if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; }
+    }
+    const shade = (b) => b * (1 - Math.max(-0.4, Math.min(0.5, pz * 0.09)));
+    function dot(x, y, z, b) {
+      if (form < 1) {
+        const h = hash(++idx * 1.618), lp = Math.min(1, Math.max(0, (form - h * 0.6) / 0.4));
+        if (lp <= 0) return;
+        const u = 1 - lp;
+        x += u * (hash(idx * 3.1) - 0.5) * 1.4; y += u * u * 1.3; z += u * (hash(idx * 5.7) - 0.5) * 1.4;
+        b *= lp;
+      }
+      P(x, y, z);
+      b = shade(b);
+      if (b <= 0.04) return;
+      B[b >= 0.85 ? 0 : b >= 0.62 ? 1 : b >= 0.4 ? 2 : b >= 0.2 ? 3 : 4].push(px, py);
+    }
+    // a path through 3D points: a soft glowing stroke with brighter points riding on it
+    function path(pts, b, closed, every = 2) {
+      if (pts.length < 2) return;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.strokeStyle = cu(Math.min(0.6, b * 0.42));
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      pts.forEach((p, i) => { P(p[0], p[1], p[2]); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+      if (closed) ctx.closePath();
+      ctx.stroke();
+      ctx.globalCompositeOperation = "source-over";
+      for (let i = 0; i < pts.length; i += every) dot(pts[i][0], pts[i][1], pts[i][2], b);
+    }
+    function line(p, q, b, n = 12) {
+      const pts = [];
+      for (let i = 0; i <= n; i++) { const t = i / n; pts.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t]); }
+      path(pts, b, false);
+    }
+    function circle(x, y, z, r, from = 0, to = TAU, n) {
+      const m = n || Math.max(10, Math.round(((to - from) * r) / 0.05));
+      const pts = [];
+      for (let i = 0; i <= m; i++) { const t = from + ((to - from) * i) / m; pts.push([x + Math.cos(t) * r, y, z + Math.sin(t) * r]); }
+      return pts;
+    }
+    function ring(x, y, z, r, b, from, to) { path(circle(x, y, z, r, from, to), b, from === undefined); }
+    function fill(pts, style) {
+      ctx.beginPath();
+      pts.forEach((p, i) => { P(p[0], p[1], p[2]); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+      ctx.closePath();
+      ctx.fillStyle = style;
+      ctx.fill();
+    }
+    function box(x0, y0, z0, x1, y1, z1, b, face = 0) {
+      if (face) {
+        fill([[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]], cu(face));
+        fill([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], cu(face * 0.7));
+        fill([[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]], cu(face * 0.5));
+        fill([[x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0]], cu(face * 0.5));
+      }
+      const X = [x0, x1], Y = [y0, y1], Z = [z0, z1];
+      for (const y of Y) for (const z of Z) line([x0, y, z], [x1, y, z], b, 8);
+      for (const x of X) for (const z of Z) line([x, y0, z], [x, y1, z], b, 6);
+      for (const x of X) for (const y of Y) line([x, y, z0], [x, y, z1], b, 8);
+    }
+    function flare(x, y, z, r, a) {
+      P(x, y, z);
+      const g = ctx.createRadialGradient(px, py, 0, px, py, r);
+      g.addColorStop(0, hot(a));
+      g.addColorStop(1, cu(0));
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = g; ctx.fillRect(px - r, py - r, r * 2, r * 2);
+      ctx.globalCompositeOperation = "source-over";
+    }
+    function beam(p, q, a) {
+      P(p[0], p[1], p[2]); const x0 = px, y0 = py;
+      P(q[0], q[1], q[2]);
+      const g = ctx.createLinearGradient(x0, y0, px, py);
+      g.addColorStop(0, hot(a)); g.addColorStop(1, cu(a * 0.3));
+      ctx.globalCompositeOperation = "lighter";
+      ctx.strokeStyle = g; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(px, py); ctx.stroke();
+      ctx.globalCompositeOperation = "source-over";
+    }
+    // the warm pool of light the piece stands in, laid flat on the floor
+    function floor(r, rings = 3) {
+      P(0, 0, 0);
+      ctx.save();
+      ctx.translate(px, py); ctx.scale(1, Math.max(0.2, Math.sin(v.pitch)) * 1.1);
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r * scale);
+      g.addColorStop(0, cu(0.2)); g.addColorStop(0.55, cu(0.06)); g.addColorStop(1, cu(0));
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(0, 0, r * scale, 0, TAU); ctx.fill();
+      ctx.restore();
+      for (let k = 1; k <= rings; k++) {
+        const rr = (r * k) / rings, n = Math.round((rr * scale * TAU) / 3.2);
+        for (let i = 0; i < n; i++) { const t = (i / n) * TAU; dot(Math.cos(t) * rr, 0, Math.sin(t) * rr, k === rings ? 0.22 : 0.14); }
+      }
+    }
+    function label(left, right) {
+      const l = Math.max(3, cx + x0 * scale), r = Math.min(W - 3, cx + x1 * scale);
+      ctx.font = '9.5px "Geist Mono", ui-monospace, monospace';
+      ctx.fillStyle = "rgba(163,157,147,0.72)";
+      ctx.textAlign = "left"; if (left) ctx.fillText(left, l, H - 5);
+      ctx.textAlign = "right"; if (right) ctx.fillText(right, r, H - 5);
+    }
+    const api = { v, dot, path, line, circle, ring, fill, box, flare, beam, floor, label, hot, cu };
+    function draw(t, f = 1) {
+      if (W < 40) return; // hidden
+      form = f; idx = 0;
+      ctx.clearRect(0, 0, W, H);
+      if (form <= 0.001) return;
+      ctx.globalAlpha = Math.pow(form, 1.5);
+      fn(t, api);
+      for (const d of dust) dot(d[0], d[1] + 0.06 * Math.sin(t * 0.7 + d[3]), d[2], 0.1 + 0.08 * Math.sin(t * 1.3 + d[3]));
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "lighter";
+      for (let b = 0; b < 5; b++) {
+        const L = B[b];
+        if (!L.length) continue;
+        ctx.fillStyle = SCOLS[b];
+        const d = b === 0 ? 1.8 : 1.5;
+        for (let k = 0; k < L.length; k += 2) ctx.fillRect(L[k] - d / 2, L[k + 1] - d / 2, d, d);
+        L.length = 0;
+      }
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = form;
+      if (opts.after) opts.after(t, api);
+      ctx.globalAlpha = 1;
+    }
+    return { size, draw };
+  }
+
+  // how brightly a spot at distance d is lit by rings expanding from the middle
+  const litBy = (fronts, d, w) => fronts.reduce((g, [R, s]) => Math.max(g, s * Math.exp(-(((R - d) / w) ** 2))), 0);
+
+  const SCENES = {
+    // Socials: a lattice mast broadcasting; each node flares and links up as a ring reaches it
+    signal: [{ pitch: 0.3 }, (t, a) => {
+      a.v.yaw = t * 0.12;
+      a.floor(2.4);
+      const H = 0.95, r = 0.18;
+      a.fill(a.circle(0, 0.001, 0, 0.4), a.cu(0.1));
+      const rail = (k, y) => { const th = (k * TAU) / 3, f = 1 - (y / H) * 0.7; return [Math.cos(th) * r * f, y, Math.sin(th) * r * f]; };
+      for (let k = 0; k < 3; k++) {
+        a.line(rail(k, 0), rail(k, H), 0.7, 16);
+        for (let y = 0; y < H - 0.14; y += 0.18) a.line(rail(k, y), rail((k + 1) % 3, y + 0.18), 0.34, 4);
+      }
+      const fronts = [];
+      for (let i = 0; i < 3; i++) {
+        const f = (t / 2.8 + i / 3) % 1, R = 0.25 + f * 2.15;
+        fronts.push([R, 1 - f]);
+        a.ring(0, H, 0, R, (1 - f) * 0.9);
+        a.ring(0, 0.002, 0, R, (1 - f) * 0.25);
+      }
+      const nodes = [[1.9, 0.7], [-1.5, 1.3], [-0.3, -2.0], [1.3, -1.5]];
+      nodes.forEach(([x, z]) => {
+        const g = litBy(fronts, Math.hypot(x, z), 0.28);
+        a.box(x - 0.1, 0, z - 0.1, x + 0.1, 0.18, z + 0.1, 0.35 + 0.6 * g, 0.06 + 0.2 * g);
+        a.line([x, 0.18, z], [x, 0.36, z], 0.5 + 0.4 * g, 5);
+        if (g > 0.25) { a.beam([0, H, 0], [x, 0.36, z], g * 0.55); a.flare(x, 0.36, z, 7, g * 0.8); }
+      });
+      const blink = 0.55 + 0.45 * Math.sin(t * 5);
+      a.flare(0, H + 0.08, 0, 10, 0.55 * blink + 0.2);
+      a.dot(0, H + 0.08, 0, 1);
+    }, { dust: 16, after: (t, a) => a.label("tx · 2.4 GHz", "4 nodes") }],
+
+    // Work: a pair of gears in mesh, faces lit, teeth standing proud
+    gears: [{ pitch: 0.52 }, (t, a) => {
+      a.v.yaw = -0.3 + 0.18 * Math.sin(t * 0.22);
+      a.floor(2.3, 2);
+      const TH = 0.1;
+      const gear = (cx, R, teeth, rot, hubR, spokes) => {
+        const n = Math.round(R * 110), top = [], bot = [];
+        for (let i = 0; i <= n; i++) {
+          const th = (i / n) * TAU;
+          const f = ((((th - rot) * teeth) / TAU) % 1 + 1) % 1;
+          const rr = f < 0.5 ? R + 0.12 : R - 0.03;
+          top.push([cx + Math.cos(th) * rr, TH, Math.sin(th) * rr]);
+          bot.push([cx + Math.cos(th) * rr, -TH, Math.sin(th) * rr]);
+        }
+        a.fill(bot, a.cu(0.05));
+        a.path(bot, 0.3, true, 3);
+        a.fill(top, a.cu(0.13));
+        a.path(top, 0.85, true, 2);
+        for (let k = 0; k < teeth; k++) {
+          const th = rot + ((k + 0.25) * TAU) / teeth;
+          const x = cx + Math.cos(th) * (R + 0.12), z = Math.sin(th) * (R + 0.12);
+          a.line([x, -TH, z], [x, TH, z], 0.55, 3);
+        }
+        a.fill(a.circle(cx, TH + 0.001, 0, hubR), "rgba(11,10,9,0.55)");
+        a.ring(cx, TH, 0, hubR, 0.8);
+        a.ring(cx, TH, 0, 0.07, 0.95);
+        for (let k = 0; k < spokes; k++) {
+          const th = rot + (k * TAU) / spokes;
+          a.line([cx + Math.cos(th) * hubR, TH, Math.sin(th) * hubR], [cx + Math.cos(th) * (R - 0.14), TH, Math.sin(th) * (R - 0.14)], 0.5, 8);
+        }
+        a.line([cx, -0.5, 0], [cx, -TH, 0], 0.3, 5);
+      };
+      const rot = t * 0.45;
+      const xa = -0.85, xb = -0.85 + 1.0 + 0.667 + 0.11;
+      gear(xa, 1.0, 12, rot, 0.26, 5);
+      gear(xb, 0.667, 8, -rot * 1.5, 0.18, 4);
+      a.flare(xa + 1.06, TH, 0, 9, 0.35 + 0.15 * Math.sin(t * 3));
+    }, { dust: 14, after: (t, a) => a.label("12 : 8", `${Math.round(0.45 / TAU * 60 * 10) / 10} rpm`) }],
+
+    // Awards: a servo holding position, then sweeping; its horn leaves a fading wedge like the scan
+    servo: [{ pitch: 0.42 }, (t, a) => {
+      a.v.yaw = -0.6 + 0.3 * Math.sin(t * 0.28);
+      a.floor(1.9, 2);
+      a.box(-0.8, 0, -0.4, 0.8, 0.72, 0.4, 0.6, 0.12);
+      a.box(-1.14, 0.5, -0.4, -0.8, 0.58, 0.4, 0.45, 0.08);
+      a.box(0.8, 0.5, -0.4, 1.14, 0.58, 0.4, 0.45, 0.08);
+      a.fill([[-0.55, 0.12, 0.401], [0.55, 0.12, 0.401], [0.55, 0.5, 0.401], [-0.55, 0.5, 0.401]], a.cu(0.09));
+      a.ring(-0.97, 0.58, 0, 0.06, 0.55); a.ring(0.97, 0.58, 0, 0.06, 0.55);
+      a.ring(-0.4, 0.72, 0, 0.17, 0.75);
+      const ang = (s) => -Math.PI / 2 + 1.05 * Math.sin(s * 1.1);
+      const o = [-0.4, 0.88, 0], L = 1.05, now = ang(t);
+      // the sweep wedge behind the horn
+      for (let k = 1; k <= 10; k++) {
+        const a0 = ang(t - (k - 1) * 0.05), a1 = ang(t - k * 0.05);
+        a.fill([o, [o[0] + Math.cos(a0) * L, 0.88, Math.sin(a0) * L], [o[0] + Math.cos(a1) * L, 0.88, Math.sin(a1) * L]], a.cu(0.16 * (1 - k / 11)));
+      }
+      const dx = Math.cos(now), dz = Math.sin(now), nx = -dz, nz = dx;
+      const hornPts = [
+        [o[0] + nx * 0.12, 0.88, o[2] + nz * 0.12], [o[0] + dx * L + nx * 0.07, 0.88, o[2] + dz * L + nz * 0.07],
+        [o[0] + dx * (L + 0.07), 0.88, o[2] + dz * (L + 0.07)],
+        [o[0] + dx * L - nx * 0.07, 0.88, o[2] + dz * L - nz * 0.07], [o[0] - nx * 0.12, 0.88, o[2] - nz * 0.12],
+      ];
+      a.fill(hornPts, a.cu(0.3));
+      a.path(hornPts, 0.9, true, 1);
+      for (let k = 1; k <= 4; k++) a.dot(o[0] + dx * 0.23 * k, 0.881, o[2] + dz * 0.23 * k, 1);
+      a.flare(o[0], 0.9, o[2], 8, 0.5);
+      for (let w = 0; w < 3; w++) {
+        const pts = [];
+        for (let i = 0; i <= 12; i++) { const s = i / 12; pts.push([0.8 + s * 0.7, 0.16 - s * 0.14 + w * 0.05, s * s * 0.55 - 0.05 + w * 0.02]); }
+        a.path(pts, 0.35, false, 3);
+      }
+    }, {
+      dust: 12,
+      after: (t, a) => {
+        const s = Math.sin(t * 1.1), ms = (1.5 + 0.5 * s).toFixed(2), deg = Math.round(s * 60);
+        a.label(`pwm ${ms} ms`, `${deg > 0 ? "+" : ""}${deg}°`);
+      },
+    }],
+
+    // Stack: a printer laying a vase down one layer at a time
+    printer: [{ pitch: 0.34 }, (t, a) => {
+      a.v.yaw = 0.4 + t * 0.1;
+      a.floor(1.7, 2);
+      a.fill([[-1.05, 0, -1.05], [1.05, 0, -1.05], [1.05, 0, 1.05], [-1.05, 0, 1.05]], a.cu(0.06));
+      for (let x = -1; x <= 1.001; x += 0.25) for (let z = -1; z <= 1.001; z += 0.25) a.dot(x, 0, z, 0.16);
+      a.path([[-1.05, 0, -1.05], [1.05, 0, -1.05], [1.05, 0, 1.05], [-1.05, 0, 1.05]], 0.4, true, 4);
+      const L = 16, CYCLE = 12, u = t % CYCLE;
+      const p = Math.min(1, u / 10) * L, done = Math.floor(p), frac = p - done;
+      const fade = u > 11.2 ? 1 - (u - 11.2) / 0.8 : 1;
+      const rad = (y) => 0.42 + 0.14 * Math.sin(y * 4.6 + 0.6);
+      for (let i = 0; i < done; i++) {
+        const y = i * 0.075, age = (done - i) / L;
+        a.ring(0, y, 0, rad(y), (0.9 - age * 0.45) * fade);
+      }
+      let ny = done * 0.075, nx, nz;
+      if (done < L) {
+        const end = frac * TAU;
+        a.ring(0, ny, 0, rad(ny), 1, 0, end);
+        nx = Math.cos(end) * rad(ny); nz = Math.sin(end) * rad(ny);
+      } else { ny -= 0.075; nx = rad(ny); nz = 0; }
+      const top = ny + 0.08;
+      a.box(nx - 0.09, top + 0.12, nz - 0.09, nx + 0.09, top + 0.26, nz + 0.09, 0.7, 0.25);
+      a.beam([nx, top + 0.12, nz], [nx, top, nz], 0.9);
+      if (done < L) a.flare(nx, top - 0.02, nz, 9, 0.75);
+      a.line([-1.25, top + 0.19, nz], [1.25, top + 0.19, nz], 0.35, 20);
+      a.line([-1.25, 0, 0], [-1.25, 1.45, 0], 0.28, 14);
+      a.line([1.25, 0, 0], [1.25, 1.45, 0], 0.28, 14);
+    }, {
+      dust: 12,
+      after: (t, a) => {
+        const u = t % 12, layer = Math.min(16, Math.floor(Math.min(1, u / 10) * 16) + 1);
+        a.label(`layer ${String(layer).padStart(2, "0")}/16`, "215°C");
+      },
+    }],
+
+    // Commits: activity rolling back into depth, the newest row lit and filled
+    waterfall: [{ pitch: 0.5 }, (t, a) => {
+      a.v.yaw = -0.3;
+      const ROWS = 11, GAP = 0.3, scroll = t * 0.4, base = Math.floor(scroll), frac = scroll - base;
+      const wave = (id, x) => {
+        let y = 0.04 * Math.sin(3 * x + id);
+        for (let j = 0; j < 3; j++) {
+          const c = hash(id * 7 + j) * 4.6 - 2.3, h = 0.15 + 0.6 * hash(id * 13 + j);
+          y += h * Math.exp(-(((x - c) / 0.16) ** 2));
+        }
+        return y;
+      };
+      for (let k = ROWS - 1; k >= 0; k--) {
+        const id = base - k, d = k + frac, z = d * GAP - 1.4;
+        let b = 0.95 * (1 - d / ROWS);
+        if (k === 0) b *= Math.min(1, frac * 4);
+        const pts = [];
+        for (let x = -2.6; x <= 2.601; x += 0.05) pts.push([x, wave(id, x), z]);
+        if (k <= 1) a.fill([[-2.6, 0, z], ...pts, [2.6, 0, z]], a.cu(0.1 * b));
+        a.path(pts, b, false, k <= 1 ? 1 : 2);
+        if (k === 1) for (let j = 0; j < 3; j++) { const c = hash(id * 7 + j) * 4.6 - 2.3; a.flare(c, wave(id, c), z, 7, 0.35 * b); }
+      }
+    }, { dust: 10, after: (t, a) => a.label("commits / day", "live") }],
+
+    // Contact: a sonar dome pinging the floor; whatever the ring touches lights up and pings back
+    sonar: [{ pitch: 0.6 }, (t, a) => {
+      a.v.yaw = t * 0.09;
+      a.floor(2.4);
+      const fronts = [];
+      for (let i = 0; i < 3; i++) {
+        const f = (t / 3.4 + i / 3) % 1, R = 0.35 + f * 2.05;
+        fronts.push([R, 1 - f]);
+        const inner = a.circle(0, 0.004, 0, Math.max(0.3, R - 0.16)).reverse();
+        a.fill(a.circle(0, 0.004, 0, R).concat(inner), a.cu(0.07 * (1 - f)));
+        a.ring(0, 0.006, 0, R, (1 - f) * 0.95);
+      }
+      [[1.5, 0.8, 0.26, 0.3], [-1.3, 1.0, 0.2, 0.5], [0.3, -1.6, 0.24, 0.24], [-1.1, -1.1, 0.16, 0.36]].forEach(([x, z, s, h], i) => {
+        const g = litBy(fronts, Math.hypot(x, z), 0.26);
+        a.box(x - s / 2, 0, z - s / 2, x + s / 2, h, z + s / 2, 0.3 + 0.65 * g, 0.05 + 0.22 * g);
+        if (g > 0.3) { a.flare(x, h, z, 8, g * 0.7); a.ring(x, 0.004, z, 0.2 + (1 - g) * 0.45, g * 0.6); }
+      });
+      const dome = [];
+      for (let i = 0; i <= 24; i++) { const th = (i / 24) * Math.PI; dome.push([Math.cos(th) * 0.3, Math.sin(th) * 0.3, 0]); }
+      a.fill(a.circle(0, 0.003, 0, 0.3), a.cu(0.14));
+      for (let k = 0; k < 6; k++) {
+        const yaw = (k / 6) * Math.PI;
+        a.path(dome.map(([x, y]) => [x * Math.cos(yaw), y, x * Math.sin(yaw)]), 0.55, false, 2);
+      }
+      a.flare(0, 0.34, 0, 11, 0.5 + 0.3 * Math.sin(t * 4));
+      a.dot(0, 0.34, 0, 1);
+    }, { dust: 18, after: (t, a) => a.label("sonar · 40 kHz", "4 contacts") }],
+
+    // Footer: the same room as the flat map the scan leaves behind, with Fetch driving its route
+    map: [{ pitch: 0.78 }, (t, a) => {
+      a.v.yaw = 0.25 * Math.sin(t * 0.12);
+      if (!MAP.ready) buildMap();
+      const { cells, CELL } = MAP;
+      for (const [x, z, occ] of cells) {
+        if (occ) {
+          const e = CELL * 0.82, top = [[x, 0.14, z], [x + e, 0.14, z], [x + e, 0.14, z + e], [x, 0.14, z + e]];
+          a.fill(top, a.cu(0.24));
+          a.path(top, 0.6, true, 1);
+          a.dot(x + e, 0.07, z + e, 0.35); a.dot(x, 0.07, z + e, 0.35);
+        }
+        else a.dot(x + CELL * 0.4, 0, z + CELL * 0.4, 0.16);
+      }
+      const T = (t / 26) * TAU;
+      const trail = [];
+      for (let k = 30; k >= 0; k--) { const [x, z] = MAP.route(T - k * 0.03); trail.push([x, 0.02, z]); }
+      a.path(trail, 0.7, false, 3);
+      const [fx, fz] = MAP.route(T);
+      a.fill(a.circle(fx, 0.18, fz, 0.13), a.cu(0.35));
+      a.ring(fx, 0, fz, 0.13, 0.7); a.ring(fx, 0.18, fz, 0.13, 0.95);
+      a.flare(fx, 0.2, fz, 10, 0.6);
+    }, { dust: 0 }],
+  };
+
+  // occupancy grid of the room, filled in by rays cast from points along Fetch's route
+  const MAP = { ready: false, CELL: 0.2, cells: [], route: (t) => [0.95 * Math.sin(t), 0.5 * Math.sin(2 * t + 0.6) - 0.2] };
+  function buildMap() {
+    const C = MAP.CELL, X0 = -2.4, Y0 = -1.8, NX = 24, NY = 19;
+    const occ = new Uint8Array(NX * NY);
+    const at = (x, y) => { const i = Math.floor((x - X0) / C), j = Math.floor((y - Y0) / C); return i >= 0 && j >= 0 && i < NX && j < NY ? j * NX + i : -1; };
+    for (let k = 0; k < 24; k++) {
+      const [ox, oy] = MAP.route((k / 24) * TAU);
+      for (let ang = 0; ang < TAU; ang += 0.02) {
+        const hit = cast(ox, oy, ang, null), d = hit ? hit[0] : RANGE;
+        for (let s = 0; s < d; s += C * 0.4) { const c = at(ox + Math.cos(ang) * s, oy + Math.sin(ang) * s); if (c >= 0 && !occ[c]) occ[c] = 1; }
+        if (hit) { const c = at(ox + Math.cos(ang) * (d + 0.03), oy + Math.sin(ang) * (d + 0.03)); if (c >= 0) occ[c] = 2; }
+      }
+    }
+    // the map's y axis is the floor's z; flip so it matches the hero's view
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
+      const v = occ[j * NX + i];
+      if (v) MAP.cells.push([X0 + i * C, -(Y0 + (j + 1) * C), v === 2]);
+    }
+    const r = MAP.route;
+    MAP.route = (t) => { const [x, y] = r(t); return [x, -y]; };
+    MAP.ready = true;
+  }
+
+  const live = [];
+  document.querySelectorAll("canvas.scene[data-scene]").forEach((cv) => {
+    const def = SCENES[cv.dataset.scene];
+    if (!def || !cv.getContext) return;
+    const sc = makeScene(cv, Object.assign({}, def[0], def[2] || {}), def[1]);
+    sc.size();
+    live.push({ cv, sc, on: true, form: reduceMotion ? 1 : 0 });
+  });
+  if (live.length) {
+    const t0 = performance.now();
+    if (reduceMotion) live.forEach((l) => l.sc.draw(4));
+    else {
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver((es) => es.forEach((e) => {
+          const l = live.find((x) => x.cv === e.target);
+          if (!l) return;
+          l.on = e.isIntersecting;
+          if (!l.on && e.boundingClientRect.top > 0) l.form = 0; // left out the bottom: start empty again
+        }));
+        live.forEach((l) => { l.on = false; io.observe(l.cv); });
+      }
+      // a scene stays empty until it scrolls past the middle of the screen, then builds itself in
+      // (and comes apart again if you scroll back up); it never rests half-built
+      const BUILD = 1.3;
+      let last = t0;
+      const ease = (x) => x * x * (3 - 2 * x);
+      const loop = (now) => {
+        const t = (now - t0) / 1000, dt = Math.min(0.05, (now - last) / 1000), vh = window.innerHeight;
+        last = now;
+        const atBottom = window.scrollY + vh >= document.documentElement.scrollHeight - 2;
+        for (const l of live) {
+          if (!l.on) continue;
+          const want = atBottom || l.cv.getBoundingClientRect().top < vh * 0.55 ? 1 : 0;
+          l.form = want ? Math.min(1, l.form + dt / BUILD) : Math.max(0, l.form - dt / BUILD);
+          l.sc.draw(t, ease(l.form));
+        }
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    }
+    let srt = 0;
+    window.addEventListener("resize", () => { clearTimeout(srt); srt = setTimeout(() => live.forEach((l) => { l.sc.size(); if (reduceMotion) l.sc.draw(4); }), 150); });
   }
 })();
