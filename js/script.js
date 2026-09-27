@@ -1051,6 +1051,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     let W = 1, H = 1, scale = 1, cx = 0, cy = 0, px = 0, py = 0, pz = 0;
     let measuring = false, x0 = 0, x1 = 0, y0 = 0, y1 = 0;
     let form = 1, idx = 0; // form: 0 = empty space, 1 = fully built (driven by scroll)
+    const LB = 24; // band kept clear at the bottom for the readout
     function size() {
       const rc = canvas.getBoundingClientRect();
       W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
@@ -1064,7 +1065,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       for (let t = 0; t <= 26; t += 0.4) { fn(t, api); B.forEach((L) => (L.length = 0)); }
       [v.yaw, v.pitch] = keep;
       measuring = false; ctx = real;
-      const padX = 8, padT = 8, padB = 18;
+      const padX = 8, padT = 8, padB = opts.after ? LB + 6 : 8;
       scale = Math.min((W - padX * 2) / (x1 - x0), (H - padT - padB) / (y1 - y0));
       cx = padX + ((W - padX * 2) - (x1 - x0) * scale) / 2 - x0 * scale;
       cy = padT + ((H - padT - padB) - (y1 - y0) * scale) / 2 - y0 * scale;
@@ -1171,12 +1172,17 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
         for (let i = 0; i < n; i++) { const t = (i / n) * TAU; dot(Math.cos(t) * rr, 0, Math.sin(t) * rr, k === rings ? 0.22 : 0.14); }
       }
     }
+    // readouts sit in their own band under the piece; if the two would crowd, they spread to the edges
     function label(left, right) {
-      const l = Math.max(3, cx + x0 * scale), r = Math.min(W - 3, cx + x1 * scale);
       ctx.font = '9.5px "Geist Mono", ui-monospace, monospace';
+      const lw = left ? ctx.measureText(left).width : 0, rw = right ? ctx.measureText(right).width : 0;
+      let l = Math.max(4, cx + x0 * scale), r = Math.min(W - 4, cx + x1 * scale);
+      if (l + lw + 16 > r - rw) { l = 4; r = W - 4; }
+      const both = !!right && l + lw + 16 <= r - rw;
+      const y = H - 12;
       ctx.fillStyle = "rgba(163,157,147,0.72)";
-      ctx.textAlign = "left"; if (left) ctx.fillText(left, l, H - 5);
-      ctx.textAlign = "right"; if (right) ctx.fillText(right, r, H - 5);
+      ctx.textAlign = "left"; if (left) ctx.fillText(left, l, y);
+      ctx.textAlign = "right"; if (both) ctx.fillText(right, r, y);
     }
     const api = { v, dot, path, line, circle, ring, fill, box, flare, beam, floor, label, hot, cu };
     function draw(t, f = 1) {
@@ -1185,6 +1191,8 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       ctx.clearRect(0, 0, W, H);
       if (form <= 0.001) return;
       ctx.globalAlpha = Math.pow(form, 1.5);
+      ctx.save();
+      if (opts.after) { ctx.beginPath(); ctx.rect(0, 0, W, H - LB); ctx.clip(); }
       fn(t, api);
       for (const d of dust) dot(d[0], d[1] + 0.06 * Math.sin(t * 0.7 + d[3]), d[2], 0.1 + 0.08 * Math.sin(t * 1.3 + d[3]));
       ctx.globalAlpha = 1;
@@ -1197,6 +1205,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
         for (let k = 0; k < L.length; k += 2) ctx.fillRect(L[k] - d / 2, L[k + 1] - d / 2, d, d);
         L.length = 0;
       }
+      ctx.restore();
       ctx.globalCompositeOperation = "source-over";
       ctx.globalAlpha = form;
       if (opts.after) opts.after(t, api);
