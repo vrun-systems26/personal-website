@@ -145,26 +145,42 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   if (!sheet || !body || typeof sheet.showModal !== "function") return;
   let lastTrigger = null;
 
-  function buildShots(container) {
+  let model = null;
+  // the first view is the build as a spinning dot model; photos sit behind the thumbnails
+  function buildShots(container, name) {
     const imgs = Array.from(container.querySelectorAll("img"));
-    if (!imgs.length) return;
-    const main = imgs[0].cloneNode();
-    main.className = "shot-main";
+    const main = imgs.length ? imgs[0].cloneNode() : null;
     container.innerHTML = "";
-    container.appendChild(main);
-    if (imgs.length < 2) return;
+    const stage = document.createElement("div");
+    stage.className = "shot-model";
+    stage.innerHTML = '<canvas aria-label="3D dot model, drag to rotate"></canvas><span class="shot-hint">drag to rotate</span>';
+    container.appendChild(stage);
+    if (main) { main.className = "shot-main"; main.hidden = true; container.appendChild(main); }
+    model = DotModels.mount(stage.querySelector("canvas"), name);
+    if (!imgs.length) return;
     const thumbs = document.createElement("div");
     thumbs.className = "shot-thumbs";
+    const pick = (b) => thumbs.querySelectorAll("button").forEach((x) => x.classList.toggle("is-on", x === b));
+    const mb = document.createElement("button");
+    mb.type = "button";
+    mb.className = "thumb-3d is-on";
+    mb.setAttribute("aria-label", "Show the 3D dot model");
+    mb.textContent = "3D";
+    mb.addEventListener("click", () => {
+      stage.hidden = false; main.hidden = true; pick(mb);
+      if (model) model.resume();
+    });
+    thumbs.appendChild(mb);
     imgs.forEach((img, i) => {
       const b = document.createElement("button");
       b.type = "button";
       b.setAttribute("aria-label", `Show photo ${i + 1}: ${img.alt}`);
-      if (i === 0) b.classList.add("is-on");
       b.appendChild(img.cloneNode());
       b.addEventListener("click", () => {
         main.src = img.src;
         main.alt = img.alt;
-        thumbs.querySelectorAll("button").forEach((x) => x.classList.toggle("is-on", x === b));
+        main.hidden = false; stage.hidden = true; pick(b);
+        if (model) model.pause();
       });
       thumbs.appendChild(b);
     });
@@ -179,7 +195,8 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     kicker.textContent = src.dataset.kicker || "";
     body.innerHTML = src.innerHTML;
     const shots = body.querySelector(".shots");
-    if (shots) buildShots(shots);
+    if (model) { model.stop(); model = null; }
+    if (shots) buildShots(shots, name);
     body.scrollTop = 0;
     sheet.showModal();
     cleaned = false;
@@ -194,6 +211,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   function cleanup() {
     if (cleaned) return;
     cleaned = true;
+    if (model) { model.stop(); model = null; }
     document.body.classList.remove("sheet-open");
     if (lastTrigger) lastTrigger.focus();
   }
@@ -205,7 +223,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   // clicking the dimmed backdrop (the dialog box itself, outside the inner panel) closes it
   sheet.addEventListener("click", (e) => { if (e.target === sheet) close(); });
   sheet.addEventListener("cancel", cleanup); // Esc
-  sheet.addEventListener("close", cleanup);
+  sheet.addEventListener("close", () => { if (!sheet.open) cleanup(); }); // ignore a late close from the previous sheet
 })();
 
 // ---------- the name banner: type set in dots, each one on a spring ----------
@@ -751,4 +769,401 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     drawCeres(t);
   }
   requestAnimationFrame(tick);
+})();
+
+// ---------- hero: a small black hole in dots, next to the headline ----------
+(function () {
+  const wrap = document.querySelector(".hole");
+  const canvas = document.getElementById("hole");
+  const hero = document.querySelector(".hero");
+  if (!wrap || !canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+
+  const N = 1400, RIN = 1.45, ROUT = 3.7;
+  const r = new Float32Array(N), a = new Float32Array(N), h = new Float32Array(N), s = new Float32Array(N);
+  const spawn = (i, anywhere) => {
+    r[i] = anywhere ? RIN + Math.pow(Math.random(), 1.6) * (ROUT - RIN) : ROUT - Math.random() * 0.4;
+    a[i] = Math.random() * Math.PI * 2;
+    h[i] = (Math.random() - 0.5) * 0.09 * r[i];
+    s[i] = Math.random();
+  };
+  for (let i = 0; i < N; i++) spawn(i, true);
+  const stars = Array.from({ length: 34 }, () => [Math.random(), Math.random(), Math.random() * 6]);
+
+  let W = 0, H = 0, S = 30, cx = 0, cy = 0;
+  let tilt = 0.2, roll = -0.12, tiltT = 0.2, rollT = -0.12, boost = 1, boostT = 1;
+  let raf = 0, visible = true, last = performance.now();
+
+  function size() {
+    const rect = canvas.getBoundingClientRect();
+    W = Math.max(1, Math.round(rect.width)); H = Math.max(1, Math.round(rect.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    S = Math.min(W, H) / 8.4;
+    cx = W / 2; cy = H / 2;
+  }
+
+  // colour buckets: outer embers to white-hot inner edge
+  const COLS = ["rgba(150,92,52,0.55)", "rgba(224,138,75,0.8)", "rgba(242,168,107,0.95)", "rgba(250,214,178,1)", "rgba(255,244,230,1)"];
+  const B = [[], [], [], [], []];
+  const put = (x, y, v) => B[v < 0.3 ? 0 : v < 0.52 ? 1 : v < 0.72 ? 2 : v < 0.9 ? 3 : 4].push(x, y);
+
+  function draw(now) {
+    raf = 0;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    tilt += (tiltT - tilt) * 0.05; roll += (rollT - roll) * 0.05; boost += (boostT - boost) * 0.04;
+    const st = Math.sin(tilt), ct = Math.cos(tilt);
+    B.forEach((b) => (b.length = 0));
+    const front = [];
+
+    for (let i = 0; i < N; i++) {
+      if (!reduceMotion) {
+        a[i] += dt * boost * 1.9 * Math.pow(r[i], -1.5);
+        r[i] -= dt * boost * 0.018 * (1 + s[i]);
+        if (r[i] < RIN) spawn(i, false);
+      }
+      const X = r[i] * Math.cos(a[i]), Z = r[i] * Math.sin(a[i]);
+      const sx = X * S, sy = (-Z * st + h[i] * ct) * S;
+      // brighter toward the hot inner edge and on the side swinging toward you
+      const heat = 1 - (r[i] - RIN) / (ROUT - RIN);
+      const beam = 0.5 - 0.5 * Math.cos(a[i]) * 0.9;
+      const v = Math.min(1, heat * 0.62 + beam * 0.38 + s[i] * 0.12);
+      if (Z > 0) {
+        // far side: hidden behind the shadow, but its light bends up and over the top
+        if (sx * sx + sy * sy > S * S * 1.05) put(sx, sy, v * 0.9);
+        if (i % 2 === 0) {
+          const th = Math.acos(Math.max(-1, Math.min(1, X / r[i])));
+          const rho = S * (1.12 + (r[i] - RIN) * 0.16);
+          put(rho * Math.cos(th), -rho * Math.sin(th) * (0.92 + ct * 0.08), v * 0.95);
+        }
+      } else {
+        front.push(sx, sy, v);
+        if (i % 5 === 0) {
+          const th = Math.acos(Math.max(-1, Math.min(1, X / r[i])));
+          const rho = S * (1.1 + (r[i] - RIN) * 0.1);
+          put(rho * Math.cos(th), rho * Math.sin(th) * 0.9, v * 0.5);
+        }
+      }
+    }
+
+    ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    // faint far-off stars
+    for (const [u, w, p] of stars) {
+      ctx.globalAlpha = 0.18 + 0.14 * Math.sin(now / 900 + p);
+      ctx.fillStyle = "#f7f3ec";
+      ctx.fillRect(u * W, w * H, 1.2, 1.2);
+    }
+    ctx.globalAlpha = 1;
+    ctx.translate(cx, cy);
+    ctx.rotate(roll);
+    // soft glow the whole thing sits in
+    const g = ctx.createRadialGradient(0, 0, S * 0.9, 0, 0, S * 3.4);
+    g.addColorStop(0, "rgba(242,168,107,0.16)");
+    g.addColorStop(1, "rgba(242,168,107,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(-S * 4, -S * 4, S * 8, S * 8);
+    const dot = 1.7;
+    const paint = () => {
+      for (let b = 0; b < 5; b++) {
+        const L = B[b];
+        if (!L.length) continue;
+        ctx.fillStyle = COLS[b];
+        for (let k = 0; k < L.length; k += 2) ctx.fillRect(L[k] - dot / 2, L[k + 1] - dot / 2, dot, dot);
+        L.length = 0;
+      }
+    };
+    paint();
+    // the shadow, with a thin photon ring
+    ctx.fillStyle = "#070605";
+    ctx.beginPath(); ctx.arc(0, 0, S, 0, Math.PI * 2); ctx.fill();
+    const ring = 120;
+    for (let k = 0; k < ring; k++) {
+      const t = (k / ring) * Math.PI * 2 + now / 2600;
+      const c = -Math.cos(t);
+      put(Math.cos(t) * S * 1.03, Math.sin(t) * S * 1.03, 0.55 + c * 0.4);
+    }
+    for (let k = 0; k < front.length; k += 3) put(front[k], front[k + 1], front[k + 2]);
+    paint();
+
+    if (!reduceMotion && visible) raf = requestAnimationFrame(draw);
+  }
+  const start = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(draw); } };
+
+  // the cursor anywhere over the intro leans the disk; getting close spins it up
+  if (hero) {
+    hero.addEventListener("pointermove", (e) => {
+      const rc = canvas.getBoundingClientRect();
+      const nx = (e.clientX - (rc.left + rc.width / 2)) / window.innerWidth;
+      const ny = (e.clientY - (rc.top + rc.height / 2)) / window.innerHeight;
+      tiltT = 0.2 + Math.max(-0.12, Math.min(0.26, ny * 0.6));
+      rollT = -0.12 + Math.max(-0.14, Math.min(0.14, nx * 0.4));
+      const d = Math.hypot(e.clientX - (rc.left + rc.width / 2), e.clientY - (rc.top + rc.height / 2));
+      boostT = d < rc.width * 0.55 ? 2.6 : 1;
+    });
+    hero.addEventListener("pointerleave", () => { tiltT = 0.2; rollT = -0.12; boostT = 1; });
+  }
+
+  size();
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible && !reduceMotion) start(); }).observe(wrap);
+  }
+  if (reduceMotion) draw(performance.now()); else start();
+  let rt = 0;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { size(); if (reduceMotion) draw(performance.now()); }, 150); });
+})();
+
+// ---------- project models: each build as a small cloud of dots you can spin ----------
+const DotModels = (function () {
+  const STEP = 0.045;
+  function shape() {
+    const P = [];
+    const add = (x, y, z) => P.push(x, y, z);
+    const line = (a, b, step = STEP) => {
+      const d = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+      const n = Math.max(1, Math.round(d / step));
+      for (let i = 0; i <= n; i++) { const t = i / n; add(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t); }
+    };
+    // point on a circle around an axis
+    const circ = (ax, c, r, t) => {
+      const u = Math.cos(t) * r, v = Math.sin(t) * r;
+      return ax === "x" ? [c[0], c[1] + u, c[2] + v] : ax === "y" ? [c[0] + u, c[1], c[2] + v] : [c[0] + u, c[1] + v, c[2]];
+    };
+    const ring = (ax, c, r, step = STEP) => {
+      const n = Math.max(8, Math.round((Math.PI * 2 * r) / step));
+      for (let i = 0; i < n; i++) add(...circ(ax, c, r, (i / n) * Math.PI * 2));
+    };
+    const shift = (ax, c, d) => ax === "x" ? [c[0] + d, c[1], c[2]] : ax === "y" ? [c[0], c[1] + d, c[2]] : [c[0], c[1], c[2] + d];
+    // cylinder along an axis: end rings, a few lengthwise lines, optional spokes
+    const cyl = (ax, c, r, len, lines = 8, spokes = 0) => {
+      const c0 = shift(ax, c, -len / 2), c1 = shift(ax, c, len / 2);
+      ring(ax, c0, r); ring(ax, c1, r);
+      for (let i = 0; i < lines; i++) { const t = (i / lines) * Math.PI * 2; line(circ(ax, c0, r, t), circ(ax, c1, r, t)); }
+      for (let i = 0; i < spokes; i++) { const t = (i / spokes) * Math.PI * 2; line(c1, circ(ax, c1, r, t)); }
+    };
+    // tapered tube along y (cans, lampshades)
+    const cone = (c, r0, r1, h, lines = 12, rings = 2) => {
+      for (let k = 0; k < rings; k++) { const t = k / (rings - 1); ring("y", [c[0], c[1] + h * t, c[2]], r0 + (r1 - r0) * t); }
+      for (let i = 0; i < lines; i++) { const t = (i / lines) * Math.PI * 2; line(circ("y", c, r0, t), circ("y", [c[0], c[1] + h, c[2]], r1, t)); }
+    };
+    const box = (c, w, hh, d, face = 0) => {
+      const [x0, x1, y0, y1, z0, z1] = [c[0] - w / 2, c[0] + w / 2, c[1] - hh / 2, c[1] + hh / 2, c[2] - d / 2, c[2] + d / 2];
+      const E = [[[x0, y0, z0], [x1, y0, z0]], [[x0, y1, z0], [x1, y1, z0]], [[x0, y0, z1], [x1, y0, z1]], [[x0, y1, z1], [x1, y1, z1]],
+        [[x0, y0, z0], [x0, y1, z0]], [[x1, y0, z0], [x1, y1, z0]], [[x0, y0, z1], [x0, y1, z1]], [[x1, y0, z1], [x1, y1, z1]],
+        [[x0, y0, z0], [x0, y0, z1]], [[x1, y0, z0], [x1, y0, z1]], [[x0, y1, z0], [x0, y1, z1]], [[x1, y1, z0], [x1, y1, z1]]];
+      E.forEach(([p, q]) => line(p, q));
+      if (face) for (let x = x0 + face; x < x1; x += face) for (let z = z0 + face; z < z1; z += face) add(x, y1, z);
+    };
+    const blob = (c, rx, ry, rz, n, minY = -Infinity) => {
+      for (let i = 0; i < n; i++) {
+        const y = 1 - (2 * (i + 0.5)) / n, rr = Math.sqrt(1 - y * y), t = i * 2.39996;
+        const p = [c[0] + Math.cos(t) * rr * rx, c[1] + y * ry, c[2] + Math.sin(t) * rr * rz];
+        if (p[1] >= minY) add(...p);
+      }
+    };
+    return { P, add, line, ring, cyl, cone, box, blob };
+  }
+
+  const BUILD = {
+    fetch(m) {
+      m.box([0, 0.22, 0], 1.0, 0.26, 0.86, 0.12);
+      [[-0.58, 0.3], [0.58, 0.3], [-0.58, -0.3], [0.58, -0.3]].forEach(([x, z]) => m.cyl("x", [x, 0.18, z], 0.18, 0.13, 10, 6));
+      m.cone([0, 0.36, 0], 0.4, 0.46, 1.2, 22, 3);
+      m.ring("y", [0, 0.98, 0], 0.475); m.ring("y", [0, 1.02, 0], 0.48);
+      m.box([0, 1.3, 0.5], 0.36, 0.11, 0.08);
+      m.ring("z", [0, 1.3, 0.55], 0.035);
+      m.ring("z", [-0.08, 1.0, 0.5], 0.035); m.ring("z", [0.08, 1.0, 0.5], 0.035);
+      m.ring("x", [-0.49, 1.0, 0], 0.03); m.ring("x", [0.49, 1.0, 0], 0.03);
+    },
+    ceres(m) {
+      m.box([0, 0.3, 0], 0.78, 0.09, 1.2, 0.12);
+      [[-0.5, 0.36], [0.5, 0.36], [-0.5, -0.36], [0.5, -0.36]].forEach(([x, z]) => m.cyl("x", [x, 0.23, z], 0.23, 0.14, 10, 6));
+      m.box([0, 0.39, -0.05], 0.55, 0.06, 0.8);
+      m.box([0.16, 0.44, 0.28], 0.28, 0.04, 0.24);
+      m.cyl("y", [0, 0.68, -0.15], 0.03, 0.56, 4);
+      m.box([0, 0.99, -0.15], 0.28, 0.13, 0.14);
+      m.ring("z", [0, 0.99, -0.07], 0.04);
+      m.box([0, 0.5, 0.6], 0.07, 0.34, 0.06);
+      m.line([0.06, 0.66, 0.62], [0.06, 0.06, 0.62]);
+      m.line([0.07, 0.06, 0.62], [0.07, -0.06, 0.62]);
+      // the plant it rolls up to
+      m.line([0, -0.02, 1.05], [0, 0.45, 1.05]);
+      m.line([0, 0.25, 1.05], [0.14, 0.33, 1.08]); m.line([0, 0.34, 1.05], [-0.13, 0.42, 1.02]);
+    },
+    sweeper(m) {
+      m.box([0, 0.34, 0], 0.64, 0.36, 0.58, 0.12);
+      m.cyl("x", [-0.4, 0.22, 0.05], 0.22, 0.08, 10, 6);
+      m.cyl("x", [0.4, 0.22, 0.05], 0.22, 0.08, 10, 6);
+      m.blob([0, 0.06, -0.24], 0.06, 0.06, 0.06, 40);
+      m.box([0, 0.78, -0.05], 0.3, 0.52, 0.04);
+      m.ring("z", [0.07, 0.95, -0.02], 0.03);
+      m.box([0, 0.08, 0.4], 0.66, 0.08, 0.14);
+      for (let x = -0.3; x <= 0.31; x += 0.1) m.line([x, 0.04, 0.47], [x, -0.02, 0.52]);
+    },
+    arm(m) {
+      m.cyl("y", [0, 0.05, 0], 0.34, 0.1, 12);
+      m.cyl("y", [0, 0.16, 0], 0.24, 0.12, 10);
+      m.box([-0.09, 0.32, 0], 0.04, 0.26, 0.16); m.box([0.09, 0.32, 0], 0.04, 0.26, 0.16);
+      // 4-bar: two parallel links up to the elbow
+      [[-0.09, 0], [0.09, 0], [-0.09, 0.12], [0.09, 0.12]].forEach(([x, dz]) => {
+        [[-0.018, -0.018], [0.018, -0.018], [-0.018, 0.018], [0.018, 0.018]].forEach(([ox, oz]) => m.line([x + ox, 0.42, dz + oz], [x + ox, 1.1, 0.36 + dz + oz]));
+      });
+      m.cyl("x", [0, 1.12, 0.42], 0.07, 0.24, 6);
+      m.box([0, 1.02, 0.8], 0.14, 0.1, 0.72, 0.06);
+      m.box([0, 1.02, 0.8], 0.1, 0.06, 0.72);
+      m.ring("z", [0, 0.98, 1.17], 0.1);
+      [0, 2.09, 4.19].forEach((t) => {
+        const bx = Math.cos(t) * 0.09, by = 0.98 + Math.sin(t) * 0.09;
+        m.line([bx, by, 1.17], [bx * 1.3, by + (by - 0.98) * 0.3, 1.36]);
+        m.line([bx * 1.3, by + (by - 0.98) * 0.3, 1.36], [bx * 0.5, 0.98 + (by - 0.98) * 0.5, 1.5]);
+      });
+    },
+    eclipse(m) {
+      m.cyl("y", [0, 0.03, 0], 0.36, 0.06, 12);
+      m.cyl("y", [0, 0.6, 0], 0.025, 1.1, 3);
+      m.cone([0, 1.02, 0], 0.52, 0.26, 0.5, 18, 3);
+      m.ring("y", [0, 1.02, 0], 0.5);
+      // shutter blades and the camera tucked under the shade
+      for (let i = 0; i < 6; i++) { const t = (i / 6) * Math.PI * 2; m.line([Math.cos(t) * 0.1, 1.08, Math.sin(t) * 0.1], [Math.cos(t + 0.9) * 0.4, 1.08, Math.sin(t + 0.9) * 0.4]); }
+      m.box([0, 1.16, 0], 0.14, 0.08, 0.1);
+      m.ring("y", [0, 1.12, 0], 0.035);
+    },
+    maglift(m) {
+      m.box([0, 0.04, 0], 0.9, 0.08, 0.9, 0.15);
+      m.box([0, 0.7, 0], 0.14, 1.24, 0.14);
+      for (let y = 0.1; y < 1.25; y += 0.14) { m.line([-0.07, y, 0.07], [0.07, y + 0.14, 0.07]); m.line([-0.07, y, -0.07], [0.07, y + 0.14, -0.07]); }
+      m.box([0.34, 1.36, 0], 1.2, 0.1, 0.1);
+      for (let x = -0.2; x < 0.9; x += 0.13) m.line([x, 1.31, 0.05], [x + 0.13, 1.41, 0.05]);
+      m.box([-0.3, 1.26, 0], 0.18, 0.16, 0.16);
+      m.line([0.8, 1.31, 0], [0.8, 0.6, 0]);
+      m.cyl("y", [0.8, 0.55, 0], 0.13, 0.08, 10);
+      m.box([0.8, 0.2, 0.05], 0.16, 0.16, 0.16);
+      m.box([-0.3, 0.12, 0.3], 0.16, 0.08, 0.12);
+      m.line([-0.3, 0.16, 0.3], [-0.3, 0.3, 0.3]);
+    },
+    mars(m) {
+      m.cyl("y", [0, 0.06, 0], 0.4, 0.12, 12);
+      m.box([-0.26, 0.4, 0], 0.2, 0.2, 0.2); m.box([0.26, 0.4, 0], 0.2, 0.2, 0.2);
+      // herringbone reduction: two big toothed rings on the shoulder
+      [-0.06, 0.06].forEach((x, k) => {
+        m.ring("x", [x, 0.62, 0], 0.3);
+        for (let i = 0; i < 34; i++) { const t = (i / 34) * Math.PI * 2; m.line([x, 0.62 + Math.cos(t) * 0.3, Math.sin(t) * 0.3], [x + (k ? 0.04 : -0.04), 0.62 + Math.cos(t + 0.09) * 0.34, Math.sin(t + 0.09) * 0.34], 0.03); }
+      });
+      m.box([0, 1.02, 0.28], 0.18, 0.72, 0.16);
+      m.box([0, 1.36, 0.72], 0.14, 0.12, 0.8);
+      m.cyl("x", [0, 1.36, 0.3], 0.1, 0.22, 6);
+    },
+    mouse(m) {
+      m.blob([0, 0.02, 0], 0.4, 0.28, 0.64, 1100, 0.0);
+      m.line([0, 0.27, 0.12], [0, 0.18, 0.6]);
+      m.ring("x", [0, 0.29, 0.2], 0.07);
+      [[-0.43, 0.1, 0.1], [-0.43, 0.1, -0.06], [-0.43, 0.2, 0.02], [-0.43, 0.0, 0.02]].forEach((c) => m.box(c, 0.03, 0.06, 0.08));
+      m.ring("y", [0, 0.0, 0], 0.39);
+    },
+  };
+
+  const cache = {};
+  function points(name) {
+    if (cache[name]) return cache[name];
+    const m = shape();
+    (BUILD[name] || BUILD.fetch)(m);
+    const P = m.P;
+    // center it and scale to a unit-ish radius
+    let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9, minZ = 1e9, maxZ = -1e9;
+    for (let i = 0; i < P.length; i += 3) {
+      minX = Math.min(minX, P[i]); maxX = Math.max(maxX, P[i]);
+      minY = Math.min(minY, P[i + 1]); maxY = Math.max(maxY, P[i + 1]);
+      minZ = Math.min(minZ, P[i + 2]); maxZ = Math.max(maxZ, P[i + 2]);
+    }
+    const mx = (minX + maxX) / 2, my = (minY + maxY) / 2, mz = (minZ + maxZ) / 2;
+    const sc = 1 / Math.max(maxX - minX, maxY - minY, maxZ - minZ) * 1.9;
+    const out = new Float32Array(P.length);
+    for (let i = 0; i < P.length; i += 3) { out[i] = (P[i] - mx) * sc; out[i + 1] = (P[i + 1] - my) * sc; out[i + 2] = (P[i + 2] - mz) * sc; }
+    return (cache[name] = { p: out, floor: (minY - my) * sc });
+  }
+
+  const COLS = ["rgba(111,106,98,0.55)", "rgba(163,120,86,0.75)", "rgba(224,138,75,0.9)", "rgba(242,168,107,1)", "rgba(255,236,214,1)"];
+
+  function mount(canvas, name) {
+    const ctx = canvas.getContext("2d");
+    const { p, floor } = points(name);
+    let W = 1, H = 1, raf = 0, alive = true;
+    let yaw = -0.6, pitch = 0.32, spin = 0.5, drag = null, last = performance.now();
+    const B = [[], [], [], [], []];
+    function size() {
+      const rc = canvas.getBoundingClientRect();
+      W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function frame(now) {
+      raf = 0;
+      if (!alive) return;
+      // the sheet may not have been laid out yet when this mounted
+      if (canvas.clientWidth && (canvas.clientWidth !== W || canvas.clientHeight !== H)) size();
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      if (!drag && !reduceMotion) { spin += (0.5 - spin) * 0.03; yaw += spin * dt; pitch += (0.32 - pitch) * 0.02; }
+      const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+      const R = Math.min(W, H) * 0.36, F = 4.6, ox = W / 2, oy = H / 2 + H * 0.04;
+      const proj = (x, y, z) => {
+        const x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
+        const y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+        const k = F / (F + z2);
+        return [ox + x1 * k * R, oy - y2 * k * R, z2];
+      };
+      ctx.clearRect(0, 0, W, H);
+      // a dotted floor ring to stand on
+      ctx.fillStyle = "rgba(255,244,230,0.12)";
+      for (let i = 0; i < 90; i++) {
+        const t = (i / 90) * Math.PI * 2;
+        const q = proj(Math.cos(t) * 0.95, floor - 0.04, Math.sin(t) * 0.95);
+        ctx.fillRect(q[0] - 0.8, q[1] - 0.8, 1.6, 1.6);
+      }
+      for (let i = 0; i < p.length; i += 3) {
+        const q = proj(p[i], p[i + 1], p[i + 2]);
+        const v = 0.5 - q[2] * 0.42; // nearer is brighter
+        B[v < 0.2 ? 0 : v < 0.38 ? 1 : v < 0.56 ? 2 : v < 0.8 ? 3 : 4].push(q[0], q[1]);
+      }
+      const d = Math.max(1.5, Math.min(2.2, W / 360));
+      for (let b = 0; b < 5; b++) {
+        const L = B[b];
+        ctx.fillStyle = COLS[b];
+        for (let k = 0; k < L.length; k += 2) ctx.fillRect(L[k] - d / 2, L[k + 1] - d / 2, d, d);
+        L.length = 0;
+      }
+      if (!reduceMotion || drag) raf = requestAnimationFrame(frame);
+    }
+    const kick = () => { if (!raf && alive) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+    canvas.addEventListener("pointerdown", (e) => {
+      drag = { x: e.clientX, y: e.clientY, t: performance.now() };
+      canvas.setPointerCapture(e.pointerId);
+      kick();
+    });
+    canvas.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const now = performance.now(), dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      yaw += dx * 0.012;
+      pitch = Math.max(-0.2, Math.min(1.1, pitch + dy * 0.008));
+      spin = (dx * 0.012) / Math.max(0.016, (now - drag.t) / 1000);
+      spin = Math.max(-6, Math.min(6, spin));
+      drag = { x: e.clientX, y: e.clientY, t: now };
+      if (reduceMotion) kick();
+    });
+    const end = () => { drag = null; };
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+    size();
+    if (reduceMotion) frame(performance.now()); else kick();
+    const onResize = () => { size(); kick(); };
+    window.addEventListener("resize", onResize);
+    return {
+      stop() { alive = false; cancelAnimationFrame(raf); raf = 0; window.removeEventListener("resize", onResize); },
+      pause() { cancelAnimationFrame(raf); raf = 0; },
+      resume() { size(); kick(); },
+    };
+  }
+  return { mount };
 })();
