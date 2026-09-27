@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=406">
+<link rel="stylesheet" href="css/style.css?v=408">
 <script>document.documentElement.classList.add("js");</script>
 
 <script type="application/ld+json">
@@ -67,10 +67,6 @@
   <header class="bar">
     <a href="#top" class="logo" aria-label="Varun Chilukuri, back to top">VC</a>
     <div class="bar-right">
-      <button type="button" class="chip chip-music" id="musicBtn" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange, instrumental">
-        <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="music-label" id="musicLabel">recommended: play music for a better experience</span>
-      </button>
       <span class="chip chip-clock"><span class="led" aria-hidden="true"></span>San Jose <b id="clock">--:--</b></span>
       <a class="chip chip-gh" href="https://github.com/vrun-systems26" target="_blank" rel="noopener" aria-label="GitHub, contributions in the last year">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -97,6 +93,10 @@
         San Jose, CA
       </span>
       <span class="meta-pill">Mechatronics &bull; Embedded Systems &bull; Robotics &bull; CAD</span>
+      <button type="button" class="music-tip" id="musicBtn" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange, instrumental">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span id="musicLabel">recommended: play music for a better experience</span>
+      </button>
     </div>
   </section>
 
@@ -217,16 +217,16 @@
   <section class="block" id="stack" aria-labelledby="stack-h">
     <h2 class="block-head" id="stack-h">Stack</h2>
     <div class="stack">
-      <div class="stack-row"><span class="stack-label">01 Compute</span><ul class="chips"><li>Raspberry Pi 4</li><li>Raspberry Pi 5</li><li>Raspberry Pi Pico</li><li>Arduino Uno R4</li><li>Arduino Mega</li><li>Arduino Nano</li><li>ESP32</li><li>ESP-WROOM-32</li><li>XIAO ESP32-S3</li><li>ESP8266</li><li>STM32</li><li>Teensy</li></ul></div>
-      <div class="stack-row"><span class="stack-label">02 Motors</span><ul class="chips"><li>NEMA 17 steppers</li><li>DC gear motors</li><li>N20 micro motors</li><li>MG996R</li><li>SG90</li><li>MG90S</li><li>Spektrum A330</li><li>Continuous-rotation servos</li><li>Brushless motors</li></ul></div>
-      <div class="stack-row"><span class="stack-label">03 Drivers</span><ul class="chips"><li>L298N</li><li>TB6612FNG</li><li>TB6600</li><li>A4988</li><li>DRV8825</li><li>PCA9685</li><li>ESCs</li><li>Relays</li><li>MOSFETs</li></ul></div>
-      <div class="stack-row"><span class="stack-label">04 Sensors</span><ul class="chips"><li>24GHz mmWave radar</li><li>HC-SR04 ultrasonic</li><li>VL53L0X ToF</li><li>MPU6050 IMU</li><li>PMW optical</li><li>STEMMA soil</li><li>Rotary encoders</li><li>Limit switches</li><li>IR sensors</li><li>Pi Camera</li><li>USB webcams</li><li>Joysticks</li><li>Touch pads</li></ul></div>
-      <div class="stack-row"><span class="stack-label">05 Power</span><ul class="chips"><li>LiPo packs</li><li>18650 cells</li><li>Buck converters</li><li>Boost converters</li><li>LM2596</li><li>AMS1117 / 7805</li><li>BMS boards</li><li>Bench supply</li></ul></div>
-      <div class="stack-row"><span class="stack-label">06 Mechanisms</span><ul class="chips"><li>Mecanum wheels</li><li>4-bar linkages</li><li>Rack &amp; pinion</li><li>GT2 belts &amp; pulleys</li><li>Lead screws</li><li>V-slot extrusion</li><li>Bearings</li><li>Spur gears</li><li>Helical gears</li><li>Herringbone gears</li><li>Differentials</li><li>Pan-tilt turrets</li></ul></div>
-      <div class="stack-row"><span class="stack-label">07 Fabrication</span><ul class="chips"><li>Fusion 360</li><li>Onshape</li><li>Tinkercad</li><li>3D printing</li><li>Ender 3</li><li>PLA / PETG / TPU</li><li>Cura</li><li>Heat-set inserts</li><li>Laser cutting</li><li>Drill press</li><li>Dremel</li><li>Hand &amp; power tools</li></ul></div>
-      <div class="stack-row"><span class="stack-label">08 Electronics</span><ul class="chips"><li>Soldering</li><li>PCB design</li><li>KiCad</li><li>EasyEDA</li><li>Perfboard</li><li>Breadboarding</li><li>JST / Dupont crimping</li><li>Heat shrink</li><li>Multimeter</li><li>Oscilloscope</li><li>Logic analyzer</li></ul></div>
-      <div class="stack-row"><span class="stack-label">09 Software</span><ul class="chips"><li>Python</li><li>C / C++</li><li>Arduino IDE</li><li>PlatformIO</li><li>MicroPython</li><li>Flask</li><li>OpenCV</li><li>AprilTags</li><li>VLMs</li><li>Linux</li><li>bash</li><li>SSH</li><li>Git</li><li>GitHub</li></ul></div>
-      <div class="stack-row"><span class="stack-label">10 Protocols</span><ul class="chips"><li>UART</li><li>I2C</li><li>SPI</li><li>PWM</li><li>BLE</li><li>WiFi</li><li>Serial</li><li>HTTP</li></ul></div>
+      <div class="stack-row"><span class="stack-label">01 Compute</span><ul class="stack-items"><li>Raspberry Pi 4</li><li>Arduino Uno R4</li><li>ESP32</li><li>Raspberry Pi 5</li><li>Raspberry Pi Pico</li><li>Arduino Mega</li><li>Arduino Nano</li><li>ESP-WROOM-32</li><li>XIAO ESP32-S3</li><li>ESP8266</li><li>STM32</li><li>Teensy</li></ul></div>
+      <div class="stack-row"><span class="stack-label">02 Motors</span><ul class="stack-items"><li>NEMA 17</li><li>MG996R</li><li>DC gear motors</li><li>SG90</li><li>MG90S</li><li>N20 micro motors</li><li>Spektrum A330</li><li>Continuous-rotation servos</li><li>Brushless motors</li></ul></div>
+      <div class="stack-row"><span class="stack-label">03 Drivers</span><ul class="stack-items"><li>L298N</li><li>PCA9685</li><li>TB6600</li><li>TB6612FNG</li><li>A4988</li><li>DRV8825</li><li>ESCs</li><li>Relays</li><li>MOSFETs</li></ul></div>
+      <div class="stack-row"><span class="stack-label">04 Sensors</span><ul class="stack-items"><li>mmWave radar</li><li>HC-SR04</li><li>Pi Camera</li><li>VL53L0X ToF</li><li>MPU6050 IMU</li><li>PMW optical</li><li>STEMMA soil</li><li>Rotary encoders</li><li>Limit switches</li><li>IR sensors</li><li>USB webcams</li><li>Joysticks</li><li>Touch pads</li></ul></div>
+      <div class="stack-row"><span class="stack-label">05 Power</span><ul class="stack-items"><li>LiPo packs</li><li>Buck converters</li><li>18650 cells</li><li>Boost converters</li><li>LM2596</li><li>AMS1117 / 7805</li><li>BMS boards</li><li>Bench supply</li></ul></div>
+      <div class="stack-row"><span class="stack-label">06 Mechanisms</span><ul class="stack-items"><li>Mecanum wheels</li><li>4-bar linkages</li><li>Rack &amp; pinion</li><li>GT2 belts &amp; pulleys</li><li>Lead screws</li><li>V-slot extrusion</li><li>Bearings</li><li>Spur gears</li><li>Helical gears</li><li>Herringbone gears</li><li>Differentials</li><li>Pan-tilt turrets</li></ul></div>
+      <div class="stack-row"><span class="stack-label">07 Fabrication</span><ul class="stack-items"><li>3D printing</li><li>Fusion 360</li><li>Ender 3</li><li>Onshape</li><li>Tinkercad</li><li>PLA / PETG / TPU</li><li>Cura</li><li>Heat-set inserts</li><li>Laser cutting</li><li>Drill press</li><li>Dremel</li><li>Hand &amp; power tools</li></ul></div>
+      <div class="stack-row"><span class="stack-label">08 Electronics</span><ul class="stack-items"><li>Soldering</li><li>PCB design</li><li>Multimeter</li><li>KiCad</li><li>EasyEDA</li><li>Perfboard</li><li>Breadboarding</li><li>JST / Dupont crimping</li><li>Heat shrink</li><li>Oscilloscope</li><li>Logic analyzer</li></ul></div>
+      <div class="stack-row"><span class="stack-label">09 Software</span><ul class="stack-items"><li>Python</li><li>C / C++</li><li>Flask</li><li>Arduino IDE</li><li>PlatformIO</li><li>MicroPython</li><li>OpenCV</li><li>AprilTags</li><li>VLMs</li><li>Linux</li><li>bash</li><li>SSH</li><li>Git</li><li>GitHub</li></ul></div>
+      <div class="stack-row"><span class="stack-label">10 Protocols</span><ul class="stack-items"><li>UART</li><li>I2C</li><li>BLE</li><li>SPI</li><li>PWM</li><li>WiFi</li><li>Serial</li><li>HTTP</li></ul></div>
     </div>
   </section>
 
@@ -349,6 +349,6 @@
   </article>
 </div>
 
-<script src="js/script.js?v=406"></script>
+<script src="js/script.js?v=409"></script>
 </body>
 </html>

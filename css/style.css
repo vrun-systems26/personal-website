@@ -323,24 +323,38 @@ button { font: inherit; color: inherit; }
 .award b { display: block; font-weight: 500; font-size: 14.5px; line-height: 1.35; }
 .award small { display: block; margin-top: 3px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
-/* ---------- stack ---------- */
+/* ---------- stack: compact, one line per topic, "+N" to expand ---------- */
+.stack { display: grid; grid-template-columns: 1fr 1fr; }
 .stack-row {
-  display: flex; align-items: center; gap: 16px;
-  padding: 14px var(--pad);
+  display: flex; align-items: baseline; gap: 10px;
+  min-width: 0;
+  padding: 9px 16px;
   border-bottom: 1px solid var(--line);
 }
-.stack-row:last-child { border-bottom: 0; }
-.stack-label { flex: 0 0 132px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; color: var(--muted); }
-.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.chips li {
-  padding: 3px 10px;
-  border: 1px dashed var(--line-2);
-  border-radius: 7px;
-  font-size: 13px;
-  color: var(--muted);
-  transition: color 0.2s, border-color 0.2s;
+.stack-row:nth-child(odd) { border-right: 1px solid var(--line); }
+.stack-row:nth-last-child(-n+2) { border-bottom: 0; }
+.stack-label { flex: 0 0 92px; font-family: var(--mono); font-size: 10.5px; color: var(--faint); }
+.stack-items {
+  flex: 1; min-width: 0;
+  list-style: none; margin: 0; padding: 0;
+  font-size: 13px; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.chips li:hover { color: var(--fg); border-color: rgba(224, 138, 75, 0.55); }
+.stack-items li { display: inline; }
+.stack-items li + li::before { content: "  B7  "; color: var(--faint); }
+.stack-items li.is-extra { display: none; }
+.stack-more[hidden] { display: none; }
+.stack-row.is-open { align-items: flex-start; }
+.stack-row.is-open .stack-items { white-space: normal; line-height: 1.6; }
+.stack-more {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border: 1px dashed var(--line-2); border-radius: 5px;
+  background: none; cursor: pointer;
+  font-family: var(--mono); font-size: 10px; color: var(--copper-2);
+  transition: border-color 0.2s, color 0.2s;
+}
+.stack-more:hover { border-color: var(--copper); color: var(--fg); }
 
 /* ---------- building + heatmap ---------- */
 
@@ -547,8 +561,9 @@ body.sheet-open { overflow: hidden; }
   .row-desc { order: 5; flex: 1 1 100%; white-space: normal; font-size: 13px; }
   .row-cat { display: none; }
   .tag { margin-left: 0; }
-  .stack-row { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .stack-label { flex: none; }
+  .stack { grid-template-columns: 1fr; }
+  .stack-row:nth-child(odd) { border-right: 0; }
+  .stack-row:nth-last-child(2) { border-bottom: 1px solid var(--line); }
   .sig { width: 140px; }
   .foot-tip { flex-basis: 100%; order: 3; text-align: left; }
   .sheet { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 92vh; margin: 0; border-width: 1px 0 0; border-radius: 16px 16px 0 0; }
@@ -556,15 +571,20 @@ body.sheet-open { overflow: hidden; }
 }
 
 /* ---------- music: top-bar chip + now-playing card ---------- */
-.chip-music { cursor: pointer; background: none; transition: border-color 0.2s, color 0.2s; }
-.chip-music:hover { border-color: var(--copper); color: var(--fg); }
-.chip-music.is-playing { color: var(--copper-2); border-color: rgba(224, 138, 75, 0.5); }
-.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+.music-tip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font-family: var(--mono); font-size: 10px; color: var(--faint);
+  transition: color 0.2s;
+}
+.music-tip:hover { color: var(--copper-2); }
+.music-tip.is-playing { color: var(--copper-2); }
+.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 9px; }
 .eq i { width: 2px; height: 3px; border-radius: 1px; background: currentColor; }
-.chip-music.is-playing .eq i, .eq.is-on i { animation: eq 0.9s ease-in-out infinite; }
+.music-tip.is-playing .eq i, .eq.is-on i { animation: eq 0.9s ease-in-out infinite; }
 .eq i:nth-child(2) { animation-delay: -0.3s !important; }
 .eq i:nth-child(3) { animation-delay: -0.6s !important; }
-@keyframes eq { 0%, 100% { height: 3px; } 50% { height: 11px; } }
+@keyframes eq { 0%, 100% { height: 2px; } 50% { height: 9px; } }
 
 .np {
   position: fixed;
@@ -598,7 +618,6 @@ body.sheet-open { overflow: hidden; }
 .np-player iframe { display: block; width: 100%; height: 100%; border: 0; }
 
 @media (max-width: 720px) {
-  .music-label { display: none; }
   .chip-clock { display: none; }
   .np { right: 8px; bottom: 8px; }
 }

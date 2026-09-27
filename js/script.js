@@ -72,6 +72,51 @@ document.querySelectorAll(".js-year").forEach((el) => (el.textContent = new Date
   counts.forEach((el) => io.observe(el));
 })();
 
+// ---------- stack: each row shows what fits on one line, "+N" reveals the rest ----------
+(function () {
+  const rows = Array.from(document.querySelectorAll(".stack-row"));
+  const setups = rows.map((row) => {
+    const list = row.querySelector(".stack-items");
+    const items = Array.from(list.querySelectorAll("li"));
+    const more = document.createElement("button");
+    more.type = "button";
+    more.className = "stack-more";
+    more.setAttribute("aria-expanded", "false");
+    row.appendChild(more);
+    const topic = row.querySelector(".stack-label").textContent;
+
+    function fit() {
+      if (row.classList.contains("is-open")) return;
+      items.forEach((li) => li.classList.remove("is-extra"));
+      more.hidden = false;
+      let shown = Math.min(3, items.length);
+      const apply = () => items.forEach((li, i) => li.classList.toggle("is-extra", i >= shown));
+      apply();
+      while (shown > 1 && list.scrollWidth > list.clientWidth + 1) { shown--; apply(); }
+      const rest = items.length - shown;
+      more.hidden = rest <= 0;
+      more.textContent = `+${rest}`;
+      more.setAttribute("aria-label", `Show ${rest} more in ${topic}`);
+    }
+    more.addEventListener("click", () => {
+      const open = row.classList.toggle("is-open");
+      more.setAttribute("aria-expanded", String(open));
+      if (open) {
+        items.forEach((li) => li.classList.remove("is-extra"));
+        more.textContent = "less";
+      } else {
+        fit();
+      }
+    });
+    return fit;
+  });
+  const fitAll = () => setups.forEach((f) => f());
+  fitAll();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+  let t = 0;
+  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(fitAll, 150); });
+})();
+
 // ---------- copy email ----------
 document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   btn.addEventListener("click", async () => {
@@ -369,14 +414,18 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   const update = () => {
     ticking = false;
     const r = sig.getBoundingClientRect(), vh = window.innerHeight;
-    const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.3)));
+    // fully written once the whole signature is on screen, and always by the bottom of the page
+    const atBottom = window.scrollY + vh >= document.documentElement.scrollHeight - 4;
+    const p = atBottom ? 1 : Math.min(1, Math.max(0, (vh - r.top) / (r.height + 40)));
     strokes.forEach((path, i) => {
       const [a, b] = spans[i];
       const local = Math.min(1, Math.max(0, (p - a) / (b - a)));
       path.style.strokeDashoffset = lens[i] * (1 - local);
     });
   };
-  window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
   update();
 })();
 
@@ -388,7 +437,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   const closeBtn = document.getElementById("npClose");
   if (!btn || !card) return;
   const VIDEO = "d8NRvNm5RXk";
-  const VOLUME = 12;      // faint: sits under everything, but you can hear it
+  const VOLUME = 20;      // quiet, sits under everything, but clearly there
   const FADE_IN = 4000;
   const FADE_OUT = 1100;
   let player = null, fadeTimer = 0, level = 0;
@@ -417,7 +466,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   function setState(on) {
     btn.classList.toggle("is-playing", on);
     btn.setAttribute("aria-pressed", String(on));
-    if (label) label.textContent = on ? "Champagne Coast" : "recommended: play music for a better experience";
+    if (label) label.textContent = on ? "now playing: Champagne Coast (click to stop)" : "recommended: play music for a better experience";
   }
   async function play() {
     card.hidden = false;
