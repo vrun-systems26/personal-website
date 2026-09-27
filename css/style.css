@@ -20,9 +20,8 @@
 
   --frame-w: 1180px;
   --pad: 24px;
-  --sans: "DM Sans", system-ui, sans-serif;
-  --mono: "Geist Mono", ui-monospace, monospace;
-  --serif: "Instrument Serif", Georgia, serif;
+  --sans: "Space Grotesk", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -172,10 +171,10 @@ button { font: inherit; color: inherit; }
 .hello { margin: 0 0 26px; font-family: var(--mono); font-size: 17px; font-weight: 600; letter-spacing: 0.02em; }
 .headline {
   margin: 0;
-  font-size: clamp(28px, 3.2vw, 46px);
+  font-size: clamp(28px, 2.9vw, 42px);
   font-weight: 600;
   line-height: 1.12;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 .headline span { display: block; }
@@ -186,6 +185,8 @@ button { font: inherit; color: inherit; }
   text-underline-offset: 5px;
 }
 .lead { margin: 38px 0 0; max-width: 30em; font-size: 16px; line-height: 1.65; color: var(--muted); }
+.proof { margin: 22px 0 0; max-width: 34em; text-wrap: balance; font-family: var(--mono); font-size: 13px; line-height: 1.7; color: var(--muted); }
+.proof b { font-weight: 500; color: var(--copper-2); }
 /* ---------- blocks ---------- */
 .block { padding-top: 24px; }
 /* each section head carries its own small scene on the right */
@@ -204,6 +205,7 @@ button { font: inherit; color: inherit; }
 .dot-title { display: block; flex: 0 0 auto; }
 .dot-title-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .block-foot { margin: 0; padding: 12px var(--pad) 4px; }
+.tools { margin: 0 0 8px; padding: 0 var(--pad); font-family: var(--mono); font-size: 13px; line-height: 1.7; color: var(--muted); }
 .block-foot a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--mono); font-size: 13px; color: var(--muted); text-decoration: none; }
 .block-foot a:hover { color: var(--copper-2); }
 

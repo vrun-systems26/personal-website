@@ -174,7 +174,7 @@ function dotWord(canvas, WORD, opts = {}) {
     off.width = W; off.height = H;
     const o = off.getContext("2d");
     let fs = H * 1.3;
-    const font = (s) => `800 ${s}px "DM Sans", sans-serif`;
+    const font = (s) => `700 ${s}px "Space Grotesk", sans-serif`;
     o.font = font(fs);
     let m = o.measureText(WORD);
     fs *= Math.min((W * 0.99) / (m.actualBoundingBoxLeft + m.actualBoundingBoxRight), (H * 0.98) / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent));
@@ -266,7 +266,7 @@ function dotWord(canvas, WORD, opts = {}) {
   let rt = 0;
   window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { build(); start(); }, 180); });
 
-  const ready = document.fonts && document.fonts.load ? document.fonts.load('800 100px "DM Sans"').catch(() => {}) : Promise.resolve();
+  const ready = document.fonts && document.fonts.load ? document.fonts.load('700 100px "Space Grotesk"').catch(() => {}) : Promise.resolve();
   ready.then(() => { if (opts.beforeBuild) opts.beforeBuild(); build(); start(); });
   return { build, start };
 }
@@ -286,7 +286,7 @@ dotWord(document.getElementById("field"), "VARUN");
       const fs = parseFloat(getComputedStyle(span.parentNode).fontSize) || 40;
       const h = Math.round(fs * 0.98);
       const o = document.createElement("canvas").getContext("2d");
-      o.font = `800 ${h}px "DM Sans", sans-serif`;
+      o.font = `700 ${h}px "Space Grotesk", sans-serif`;
       const m = o.measureText(text);
       const scale = (h * 0.98) / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent);
       cv.style.width = Math.ceil((m.actualBoundingBoxLeft + m.actualBoundingBoxRight) * scale / 0.99) + 6 + "px";
