@@ -1,313 +1,75 @@
 // =========================================================
-// Varun Chilukuri — portfolio interactions
+// Varun Chilukuri, portfolio interactions
 // =========================================================
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// ---------- year + drawing revision ----------
-(function () {
-  const now = new Date();
-  document.querySelectorAll(".js-year").forEach((el) => (el.textContent = now.getFullYear()));
-  document.querySelectorAll(".js-rev").forEach((el) => {
-    el.textContent = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, "0")}`;
-  });
-})();
+// ---------- year ----------
+document.querySelectorAll(".js-year").forEach((el) => (el.textContent = new Date().getFullYear()));
 
 // ---------- local clock (San Jose) ----------
 (function () {
   const el = document.getElementById("clock");
   if (!el) return;
   const fmt = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Los_Angeles",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
+    timeZone: "America/Los_Angeles", hour: "2-digit", minute: "2-digit", hour12: false,
   });
   const tick = () => (el.textContent = fmt.format(new Date()));
   tick();
   setInterval(tick, 15000);
 })();
 
-// ---------- top bar hairline once you leave the top ----------
+// ---------- blocks fade up as they arrive ----------
 (function () {
-  const bar = document.getElementById("topbar");
-  if (!bar) return;
-  const onScroll = () => bar.classList.toggle("is-scrolled", window.scrollY > 8);
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
-})();
-
-// ---------- scroll reveals ----------
-(function () {
-  const items = document.querySelectorAll(".reveal");
-  // grid children come in one after another rather than all at once
-  document.querySelectorAll(".stack .cell, .builds .build").forEach((el, i, list) => {
-    const siblings = Array.from(el.parentElement.children);
-    el.style.setProperty("--stagger", `${siblings.indexOf(el) * 70}ms`);
-  });
+  const blocks = document.querySelectorAll(".block");
   if (reduceMotion || !("IntersectionObserver" in window)) {
-    items.forEach((el) => el.classList.add("is-in"));
+    blocks.forEach((b) => b.classList.add("is-in"));
     return;
   }
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-in");
-          io.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.05, rootMargin: "0px 0px 8% 0px" }
-  );
-  items.forEach((el) => io.observe(el));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.04, rootMargin: "0px 0px 8% 0px" });
+  blocks.forEach((b) => io.observe(b));
 })();
 
-// ---------- scrollspy: nav, section index numbers, project list ----------
+// ---------- section ruler on the left edge ----------
 (function () {
-  if (!("IntersectionObserver" in window)) return;
-  const navLinks = document.querySelectorAll(".nav a[data-spy]");
-  const sections = document.querySelectorAll(".sec[id]");
-  const sectionIO = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const id = entry.target.id;
-        sections.forEach((s) => s.classList.toggle("is-current", s === entry.target));
-        navLinks.forEach((a) => a.classList.toggle("is-active", a.dataset.spy === id));
-      });
-    },
-    { rootMargin: "-40% 0px -55% 0px" }
-  );
-  sections.forEach((s) => sectionIO.observe(s));
-
-  const tocLinks = document.querySelectorAll(".sec-toc a[data-proj]");
-  const projIO = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        tocLinks.forEach((a) => a.classList.toggle("is-active", a.dataset.proj === entry.target.id));
-      });
-    },
-    { rootMargin: "-35% 0px -60% 0px" }
-  );
-  document.querySelectorAll(".proj[id]").forEach((p) => projIO.observe(p));
+  const links = document.querySelectorAll(".ruler a[data-spy]");
+  if (!links.length || !("IntersectionObserver" in window)) return;
+  const targets = [["top", document.querySelector(".hero")]];
+  document.querySelectorAll(".block[id]").forEach((b) => targets.push([b.id, b]));
+  const byEl = new Map(targets.map(([id, el]) => [el, id]));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const id = byEl.get(e.target);
+      links.forEach((a) => a.classList.toggle("is-active", a.dataset.spy === id));
+    });
+  }, { rootMargin: "-42% 0px -52% 0px" });
+  targets.forEach(([, el]) => el && io.observe(el));
 })();
 
 // ---------- stat counters ----------
 (function () {
   const counts = document.querySelectorAll(".count[data-to]");
-  if (!counts.length) return;
   const run = (el) => {
     if (reduceMotion) { el.textContent = el.dataset.to; el.dataset.done = "1"; return; }
-    const start = performance.now();
-    const dur = 1300;
+    const start = performance.now(), dur = 1200;
     const step = (t) => {
-      // read the target every frame, so a live number arriving mid-count still lands
-      const to = +el.dataset.to;
+      const to = +el.dataset.to; // read each frame so a live value can land mid-count
       const p = Math.min(1, (t - start) / dur);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(to * eased);
-      if (p < 1) requestAnimationFrame(step);
-      else el.dataset.done = "1";
+      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(step); else el.dataset.done = "1";
     };
     requestAnimationFrame(step);
   };
   if (!("IntersectionObserver" in window)) { counts.forEach(run); return; }
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          run(entry.target);
-          io.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.6 }
-  );
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
+  }, { threshold: 0.5 });
   counts.forEach((el) => io.observe(el));
-})();
-
-// ---------- the name field: type set in dots, each one on a spring ----------
-(function () {
-  const wrap = document.querySelector(".field");
-  const canvas = document.getElementById("field");
-  const nodesOut = document.getElementById("fNodes");
-  if (!wrap || !canvas || !canvas.getContext) return;
-  const ctx = canvas.getContext("2d");
-
-  const WORD = "VARUN";
-  const K = 0.055;        // spring stiffness pulling each dot home
-  const DAMP = 0.86;      // velocity kept per frame
-  const PUSH = 3.4;       // how hard the cursor shoves
-  let W = 0, H = 0, dpr = 1, gap = 6, radius = 110;
-  let pts = [];           // flat arrays for speed
-  let hx, hy, x, y, vx, vy;
-  const pointer = { x: -9999, y: -9999, active: false, last: 0 };
-  let running = false, visible = true, raf = 0, t0 = performance.now();
-
-  function build() {
-    const rect = canvas.getBoundingClientRect();
-    W = Math.max(1, Math.round(rect.width));
-    H = Math.max(1, Math.round(rect.height));
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    gap = W > 1100 ? 6 : W > 700 ? 5 : 4;
-    radius = Math.max(70, Math.min(140, W * 0.1));
-
-    // rasterize the word offscreen, then sample it on a grid
-    const off = document.createElement("canvas");
-    off.width = W; off.height = H;
-    const o = off.getContext("2d");
-    let fs = H * 1.3;
-    o.font = `800 ${fs}px "Schibsted Grotesk", sans-serif`;
-    let m = o.measureText(WORD);
-    const inkW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
-    const inkH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
-    const scale = Math.min((W * 0.995) / inkW, (H * 0.96) / inkH);
-    fs *= scale;
-    o.font = `800 ${fs}px "Schibsted Grotesk", sans-serif`;
-    m = o.measureText(WORD);
-    const asc = m.actualBoundingBoxAscent, desc = m.actualBoundingBoxDescent;
-    o.fillStyle = "#fff";
-    o.fillText(WORD, m.actualBoundingBoxLeft, (H - (asc + desc)) / 2 + asc);
-
-    const data = o.getImageData(0, 0, W, H).data;
-    const homes = [];
-    for (let py = Math.floor(gap / 2); py < H; py += gap) {
-      for (let px = Math.floor(gap / 2); px < W; px += gap) {
-        if (data[(py * W + px) * 4 + 3] > 140) homes.push(px, py);
-      }
-    }
-    const n = homes.length / 2;
-    hx = new Float32Array(n); hy = new Float32Array(n);
-    x = new Float32Array(n); y = new Float32Array(n);
-    vx = new Float32Array(n); vy = new Float32Array(n);
-    for (let i = 0; i < n; i++) {
-      hx[i] = homes[i * 2];
-      hy[i] = homes[i * 2 + 1];
-      if (reduceMotion) {
-        x[i] = hx[i]; y[i] = hy[i];
-      } else {
-        // start loosely scattered, then spring into the letters
-        x[i] = hx[i] + (Math.random() - 0.5) * 70;
-        y[i] = hy[i] + 30 + Math.random() * 90;
-      }
-    }
-    pts = { n };
-    if (nodesOut) nodesOut.textContent = n.toLocaleString();
-    wrap.classList.add("is-live");
-  }
-
-  // four colour buckets from resting cream to hot copper
-  const COLORS = [
-    "rgba(236, 230, 216, 0.92)",
-    "rgba(240, 206, 170, 0.95)",
-    "rgba(243, 170, 110, 1)",
-    "rgba(224, 138, 75, 1)",
-  ];
-  const buckets = [[], [], [], []];
-
-  function frame(now) {
-    raf = 0;
-    const n = pts.n || 0;
-    const size = Math.max(1.6, gap * 0.42);
-    const R2 = radius * radius;
-
-    // with no one moving through it, a ghost cursor keeps it breathing
-    let mx = pointer.x, my = pointer.y;
-    if (!pointer.active || now - pointer.last > 2600) {
-      const t = (now - t0) / 1000;
-      mx = W * (0.5 + 0.46 * Math.sin(t * 0.42));
-      my = H * (0.5 + 0.42 * Math.sin(t * 0.97 + 1.2));
-    }
-
-    let energy = 0;
-    buckets[0].length = buckets[1].length = buckets[2].length = buckets[3].length = 0;
-    for (let i = 0; i < n; i++) {
-      const dx = x[i] - mx, dy = y[i] - my;
-      const d2 = dx * dx + dy * dy;
-      if (d2 < R2 && d2 > 0.01) {
-        const d = Math.sqrt(d2);
-        const f = (1 - d / radius) * PUSH;
-        vx[i] += (dx / d) * f;
-        vy[i] += (dy / d) * f;
-      }
-      vx[i] = (vx[i] + (hx[i] - x[i]) * K) * DAMP;
-      vy[i] = (vy[i] + (hy[i] - y[i]) * K) * DAMP;
-      x[i] += vx[i];
-      y[i] += vy[i];
-      const ox = x[i] - hx[i], oy = y[i] - hy[i];
-      const disp = ox * ox + oy * oy;
-      energy += vx[i] * vx[i] + vy[i] * vy[i];
-      buckets[disp < 4 ? 0 : disp < 60 ? 1 : disp < 260 ? 2 : 3].push(i);
-    }
-
-    ctx.clearRect(0, 0, W, H);
-    for (let b = 0; b < 4; b++) {
-      const list = buckets[b];
-      if (!list.length) continue;
-      ctx.fillStyle = COLORS[b];
-      for (let j = 0; j < list.length; j++) {
-        const i = list[j];
-        ctx.fillRect(x[i] - size / 2, y[i] - size / 2, size, size);
-      }
-    }
-
-    if (visible && running) raf = requestAnimationFrame(frame);
-  }
-
-  function start() {
-    if (reduceMotion) { frame(performance.now()); return; }
-    running = true;
-    if (!raf) raf = requestAnimationFrame(frame);
-  }
-  function stop() {
-    running = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-  }
-
-  window.addEventListener(
-    "pointermove",
-    (e) => {
-      const r = canvas.getBoundingClientRect();
-      const px = e.clientX - r.left, py = e.clientY - r.top;
-      const inside = px > -radius && px < r.width + radius && py > -radius && py < r.height + radius;
-      pointer.active = inside;
-      if (inside) {
-        pointer.x = px;
-        pointer.y = py;
-        pointer.last = performance.now();
-      }
-    },
-    { passive: true }
-  );
-  canvas.addEventListener("pointerleave", () => (pointer.active = false));
-
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver((entries) => {
-      visible = entries[0].isIntersecting;
-      if (visible) start(); else stop();
-    }).observe(canvas);
-  }
-
-  let resizeT = 0;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeT);
-    resizeT = setTimeout(() => { build(); start(); }, 180);
-  });
-
-  const fontReady = document.fonts && document.fonts.load
-    ? document.fonts.load('800 100px "Schibsted Grotesk"').catch(() => {})
-    : Promise.resolve();
-  fontReady.then(() => {
-    build();
-    start();
-  });
 })();
 
 // ---------- copy email ----------
@@ -329,48 +91,229 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   });
 });
 
+// ---------- project sheet: rows stay compact, details open on click ----------
+(function () {
+  const sheet = document.getElementById("sheet");
+  const body = document.getElementById("sheetBody");
+  const title = document.getElementById("sheetTitle");
+  const kicker = document.getElementById("sheetKicker");
+  if (!sheet || !body || typeof sheet.showModal !== "function") return;
+  let lastTrigger = null;
+
+  function buildShots(container) {
+    const imgs = Array.from(container.querySelectorAll("img"));
+    if (!imgs.length) return;
+    const main = imgs[0].cloneNode();
+    main.className = "shot-main";
+    container.innerHTML = "";
+    container.appendChild(main);
+    if (imgs.length < 2) return;
+    const thumbs = document.createElement("div");
+    thumbs.className = "shot-thumbs";
+    imgs.forEach((img, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-label", `Show photo ${i + 1}: ${img.alt}`);
+      if (i === 0) b.classList.add("is-on");
+      b.appendChild(img.cloneNode());
+      b.addEventListener("click", () => {
+        main.src = img.src;
+        main.alt = img.alt;
+        thumbs.querySelectorAll("button").forEach((x) => x.classList.toggle("is-on", x === b));
+      });
+      thumbs.appendChild(b);
+    });
+    container.appendChild(thumbs);
+  }
+
+  function open(name, trigger) {
+    const src = document.querySelector(`.details article[data-proj="${name}"]`);
+    if (!src) return;
+    lastTrigger = trigger || null;
+    title.textContent = src.dataset.title || "";
+    kicker.textContent = src.dataset.kicker || "";
+    body.innerHTML = src.innerHTML;
+    const shots = body.querySelector(".shots");
+    if (shots) buildShots(shots);
+    body.scrollTop = 0;
+    sheet.showModal();
+    cleaned = false;
+    document.body.classList.add("sheet-open");
+  }
+
+  document.querySelectorAll(".row[data-open]").forEach((row) => {
+    row.addEventListener("click", () => open(row.dataset.open, row));
+  });
+  // cleanup runs directly rather than waiting on the dialog's own close event
+  let cleaned = true;
+  function cleanup() {
+    if (cleaned) return;
+    cleaned = true;
+    document.body.classList.remove("sheet-open");
+    if (lastTrigger) lastTrigger.focus();
+  }
+  function close() {
+    if (sheet.open) sheet.close();
+    cleanup();
+  }
+  sheet.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", close));
+  // clicking the dimmed backdrop (the dialog box itself, outside the inner panel) closes it
+  sheet.addEventListener("click", (e) => { if (e.target === sheet) close(); });
+  sheet.addEventListener("cancel", cleanup); // Esc
+  sheet.addEventListener("close", cleanup);
+})();
+
+// ---------- the name banner: type set in dots, each one on a spring ----------
+(function () {
+  const wrap = document.querySelector(".field");
+  const canvas = document.getElementById("field");
+  if (!wrap || !canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+
+  const WORD = "VARUN";
+  const K = 0.06, DAMP = 0.85, PUSH = 3;
+  let W = 0, H = 0, gap = 4, radius = 60, n = 0, wordW = 0;
+  let hx, hy, x, y, vx, vy;
+  const pointer = { x: -9999, y: -9999, active: false, last: 0 };
+  let running = false, raf = 0;
+  const t0 = performance.now();
+
+  function build() {
+    const rect = canvas.getBoundingClientRect();
+    W = Math.max(1, Math.round(rect.width));
+    H = Math.max(1, Math.round(rect.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    gap = H > 90 ? 4 : 3;
+    radius = Math.max(44, Math.min(80, H * 0.7));
+
+    const off = document.createElement("canvas");
+    off.width = W; off.height = H;
+    const o = off.getContext("2d");
+    let fs = H * 1.3;
+    const font = (s) => `800 ${s}px "DM Sans", sans-serif`;
+    o.font = font(fs);
+    let m = o.measureText(WORD);
+    fs *= Math.min((W * 0.99) / (m.actualBoundingBoxLeft + m.actualBoundingBoxRight), (H * 0.98) / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent));
+    o.font = font(fs);
+    m = o.measureText(WORD);
+    wordW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
+    o.fillStyle = "#fff";
+    o.fillText(WORD, m.actualBoundingBoxLeft, (H - (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)) / 2 + m.actualBoundingBoxAscent);
+
+    const data = o.getImageData(0, 0, W, H).data;
+    const homes = [];
+    for (let py = 1; py < H; py += gap) {
+      for (let px = 1; px < W; px += gap) {
+        if (data[(py * W + px) * 4 + 3] > 140) homes.push(px, py);
+      }
+    }
+    n = homes.length / 2;
+    hx = new Float32Array(n); hy = new Float32Array(n);
+    x = new Float32Array(n); y = new Float32Array(n);
+    vx = new Float32Array(n); vy = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      hx[i] = homes[i * 2]; hy[i] = homes[i * 2 + 1];
+      x[i] = reduceMotion ? hx[i] : hx[i] + (Math.random() - 0.5) * 40;
+      y[i] = reduceMotion ? hy[i] : hy[i] + 20 + Math.random() * 50;
+    }
+  }
+
+  const COLORS = ["rgba(247,243,236,0.9)", "rgba(245,208,172,0.95)", "rgba(242,168,107,1)", "rgba(224,138,75,1)"];
+  const buckets = [[], [], [], []];
+
+  function frame(now) {
+    raf = 0;
+    const size = gap * 0.55;
+    let mx = pointer.x, my = pointer.y, push = PUSH, rad = radius;
+    if (!pointer.active || now - pointer.last > 2600) {
+      const t = (now - t0) / 1000;
+      // idle: a slow, gentle ghost cursor keeps the word breathing without breaking it up
+      mx = wordW * (0.5 + 0.55 * Math.sin(t * 0.45));
+      my = H * (0.5 + 0.35 * Math.sin(t * 0.9 + 1));
+      push = PUSH * 0.35;
+      rad = radius * 0.55;
+    }
+    const R2i = rad * rad;
+    buckets.forEach((b) => (b.length = 0));
+    for (let i = 0; i < n; i++) {
+      const dx = x[i] - mx, dy = y[i] - my, d2 = dx * dx + dy * dy;
+      if (d2 < R2i && d2 > 0.01) {
+        const d = Math.sqrt(d2), f = (1 - d / rad) * push;
+        vx[i] += (dx / d) * f; vy[i] += (dy / d) * f;
+      }
+      vx[i] = (vx[i] + (hx[i] - x[i]) * K) * DAMP;
+      vy[i] = (vy[i] + (hy[i] - y[i]) * K) * DAMP;
+      x[i] += vx[i]; y[i] += vy[i];
+      const ox = x[i] - hx[i], oy = y[i] - hy[i], disp = ox * ox + oy * oy;
+      buckets[disp < 7 ? 0 : disp < 55 ? 1 : disp < 200 ? 2 : 3].push(i);
+    }
+    ctx.clearRect(0, 0, W, H);
+    for (let b = 0; b < 4; b++) {
+      const list = buckets[b];
+      if (!list.length) continue;
+      ctx.fillStyle = COLORS[b];
+      for (let j = 0; j < list.length; j++) {
+        const i = list[j];
+        ctx.fillRect(x[i] - size / 2, y[i] - size / 2, size, size);
+      }
+    }
+    if (running) raf = requestAnimationFrame(frame);
+  }
+
+  const start = () => {
+    if (reduceMotion) { frame(performance.now()); return; }
+    running = true;
+    if (!raf) raf = requestAnimationFrame(frame);
+  };
+  const stop = () => { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; };
+
+  window.addEventListener("pointermove", (e) => {
+    const r = canvas.getBoundingClientRect();
+    const px = e.clientX - r.left, py = e.clientY - r.top;
+    const inside = px > -radius && px < r.width + radius && py > -radius && py < r.height + radius;
+    pointer.active = inside;
+    if (inside) { pointer.x = px; pointer.y = py; pointer.last = performance.now(); }
+  }, { passive: true });
+
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((entries) => (entries[0].isIntersecting ? start() : stop())).observe(canvas);
+  }
+  let rt = 0;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { build(); start(); }, 180); });
+
+  const ready = document.fonts && document.fonts.load ? document.fonts.load('800 100px "DM Sans"').catch(() => {}) : Promise.resolve();
+  ready.then(() => { build(); start(); });
+})();
+
 // ---------- commit heatmap: live from GitHub, saved snapshot as fallback ----------
 (function () {
   const grid = document.getElementById("heatGrid");
   const months = document.getElementById("heatMonths");
   const tip = document.getElementById("heatTip");
-  const totalOut = document.getElementById("actTotal");
   if (!grid || !months) return;
-
   const LIVE = "https://github-contributions-api.jogruber.de/v4/vrun-systems26?y=last";
   const SNAPSHOT = "data/contributions.json";
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  const ordinal = (n) => {
-    const s = ["th", "st", "nd", "rd"], v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
+  const ordinal = (n) => { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
 
   function render(data) {
     const days = (data && data.contributions) || [];
     if (!days.length) return;
-    if (data.total) {
-      const t = data.total.lastYear ?? Object.values(data.total)[0];
-      if (t != null) {
-        if (totalOut) totalOut.textContent = t;
-        const stat = document.getElementById("statCommits");
-        if (stat) {
-          stat.dataset.to = t;
-          if (stat.dataset.done) stat.textContent = t;
-        }
-      }
+    const total = data.total && (data.total.lastYear ?? Object.values(data.total)[0]);
+    if (total != null) {
+      document.querySelectorAll(".js-commits").forEach((el) => (el.textContent = total));
+      document.querySelectorAll(".js-commits-count").forEach((el) => {
+        el.dataset.to = total;
+        if (el.dataset.done) el.textContent = total;
+      });
     }
     grid.innerHTML = "";
     months.innerHTML = "";
-
-    // pad the first column so every row is the same weekday (Sunday on top)
-    const first = new Date(days[0].date + "T12:00:00");
-    const pad = first.getDay();
-    for (let i = 0; i < pad; i++) {
-      const c = document.createElement("i");
-      c.className = "is-pad";
-      grid.appendChild(c);
-    }
+    const pad = new Date(days[0].date + "T12:00:00").getDay();
+    for (let i = 0; i < pad; i++) { const c = document.createElement("i"); c.className = "is-pad"; grid.appendChild(c); }
     let lastMonth = -1;
     days.forEach((d, i) => {
       const date = new Date(d.date + "T12:00:00");
@@ -378,7 +321,6 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       if (d.level > 0) c.className = "l" + Math.min(4, d.level);
       c.dataset.label = `${date.toLocaleString("en-US", { month: "long" })} ${ordinal(date.getDate())}, ${date.getFullYear()}: ${d.count} contribution${d.count === 1 ? "" : "s"}`;
       grid.appendChild(c);
-
       const col = Math.floor((i + pad) / 7);
       if (date.getMonth() !== lastMonth && date.getDate() <= 7) {
         const m = document.createElement("span");
@@ -407,14 +349,11 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     grid.addEventListener("mouseleave", () => (tip.hidden = true));
   }
 
-  const get = (url) => fetch(url, { cache: "no-store" }).then((r) => {
-    if (!r.ok) throw new Error(r.status);
-    return r.json();
-  });
+  const get = (url) => fetch(url, { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
   get(LIVE).then(render).catch(() => get(SNAPSHOT).then(render).catch(() => {}));
 })();
 
-// ---------- signature writes itself as you scroll to it ----------
+// ---------- signature writes itself as you reach the bottom ----------
 (function () {
   const sig = document.getElementById("sig");
   if (!sig) return;
@@ -425,23 +364,18 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     p.style.strokeDashoffset = reduceMotion ? 0 : lens[i];
   });
   if (reduceMotion) return;
-
-  // main word takes the first 80% of the run, the underline the rest
   const spans = [[0, 0.8], [0.8, 1]];
   let ticking = false;
   const update = () => {
     ticking = false;
-    const r = sig.getBoundingClientRect();
-    const vh = window.innerHeight;
-    const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.32)));
+    const r = sig.getBoundingClientRect(), vh = window.innerHeight;
+    const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.3)));
     strokes.forEach((path, i) => {
-      const [a, b] = spans[i] || [0, 1];
+      const [a, b] = spans[i];
       const local = Math.min(1, Math.max(0, (p - a) / (b - a)));
       path.style.strokeDashoffset = lens[i] * (1 - local);
     });
   };
-  window.addEventListener("scroll", () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(update); }
-  }, { passive: true });
+  window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
   update();
 })();
