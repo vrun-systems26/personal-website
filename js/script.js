@@ -416,12 +416,15 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   const ctx = canvas.getContext("2d");
   const TAU = Math.PI * 2;
   const YAW = -0.62, PITCH = 0.8; // camera: looking down at the gears from the front left
-  const THICK = 0.27;              // how deep the gears are
+  const THICK = 0.32;              // how deep the gears are
   const SPEED = 0.32;              // radians per second for the big gear
 
   // two gears with the same tooth pitch, so they mesh
   const A = { R: 1, teeth: 20, h: 0.12, holes: 7 };
   const B = { R: 0.8, teeth: 16, h: 0.12, holes: 6 };
+  // helical teeth: the bottom of each tooth trails the top; the pair twist in opposite hands so they still mesh
+  A.twist = 0.5 * (TAU / A.teeth);
+  B.twist = -A.twist * (A.R / B.R);
   const PHI = 0.95; // where B sits around A, radians
   const D = A.R + B.R + A.h * 0.35;
   A.x = -Math.cos(PHI) * D / 2; A.z = -Math.sin(PHI) * D / 2;
@@ -477,6 +480,10 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     ctx.fill(); ctx.stroke();
   }
 
+  function twistDown(g, pt) {
+    const dx = pt[0] - g.x, dz = pt[1] - g.z, c = Math.cos(-g.twist), s = Math.sin(-g.twist);
+    return [g.x + dx * c - dz * s, g.z + dx * s + dz * c];
+  }
   function drawGear(g, r) {
     const out = outline(g, r), hs = holes(g, r);
     // soft shadow the gear casts below itself
@@ -489,11 +496,13 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     for (let i = 0; i < out.length; i++) {
       const p = out[i], q = out[(i + 1) % out.length];
       const ex = q[0] - p[0], ez = q[1] - p[1], len = Math.hypot(ex, ez) || 1;
+      // the same point of the tooth, one thickness down, sits turned back by the twist
+      const pb = twistDown(g, p), qb = twistDown(g, q);
       P((p[0] + q[0]) / 2, -THICK / 2, (p[1] + q[1]) / 2);
-      walls.push([sz, p, q, wallColor(ez / len, -ex / len, false)]);
+      walls.push([sz, p, q, pb, qb, wallColor(ez / len, -ex / len, false)]);
     }
     walls.sort((u, v) => v[0] - u[0]);
-    for (const [, p, q, col] of walls) quad([p[0], 0, p[1]], [q[0], 0, q[1]], [q[0], -THICK, q[1]], [p[0], -THICK, p[1]], col);
+    for (const [, p, q, pb, qb, col] of walls) quad([p[0], 0, p[1]], [q[0], 0, q[1]], [qb[0], -THICK, qb[1]], [pb[0], -THICK, pb[1]], col);
     // inner walls of the holes (the top face covers the near halves)
     for (const [hx, hz, hr] of hs) {
       const m = Math.max(24, Math.round(hr * 90));

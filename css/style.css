@@ -184,7 +184,7 @@ button { font: inherit; color: inherit; }
 }
 .lead { margin: 38px 0 0; max-width: 30em; font-size: 16px; line-height: 1.65; color: var(--muted); }
 /* ---------- blocks ---------- */
-.block { padding-top: 96px; }
+.block { padding-top: 44px; }
 /* each section head carries its own small scene on the right */
 .block-head .scene { flex: 0 0 auto; display: block; width: 460px; height: 176px; margin: 0 -14px 0 0; }
 .block-head {
