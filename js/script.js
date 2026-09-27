@@ -380,16 +380,30 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   update();
 })();
 
-// ---------- music: opt-in, quiet, looping ----------
+// ---------- music: opt-in, very quiet, fades in and out ----------
 (function () {
   const btn = document.getElementById("musicBtn");
+  const label = document.getElementById("musicLabel");
   const card = document.getElementById("np");
   const closeBtn = document.getElementById("npClose");
   if (!btn || !card) return;
   const VIDEO = "uKnUvd4mPkI";
-  const VOLUME = 30; // faint, but you can hear it
-  let player = null;
+  const VOLUME = 12;      // faint: sits under everything, but you can hear it
+  const FADE_IN = 4000;
+  const FADE_OUT = 1100;
+  let player = null, fadeTimer = 0, level = 0;
 
+  function fadeTo(target, ms, done) {
+    clearInterval(fadeTimer);
+    const from = level, steps = Math.max(1, Math.round(ms / 50));
+    let i = 0;
+    fadeTimer = setInterval(() => {
+      i++;
+      level = from + (target - from) * (i / steps);
+      if (player && player.setVolume) player.setVolume(Math.round(level));
+      if (i >= steps) { clearInterval(fadeTimer); if (done) done(); }
+    }, 50);
+  }
   function loadApi() {
     if (window.YT && window.YT.Player) return Promise.resolve();
     return new Promise((resolve) => {
@@ -400,38 +414,44 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       document.head.appendChild(s);
     });
   }
-  function setState(playing) {
-    btn.classList.toggle("is-playing", playing);
-    btn.setAttribute("aria-pressed", String(playing));
+  function setState(on) {
+    btn.classList.toggle("is-playing", on);
+    btn.setAttribute("aria-pressed", String(on));
+    if (label) label.textContent = on ? "Champagne Coast" : "recommended: play music";
   }
   async function play() {
     card.hidden = false;
+    setState(true);
     if (player && player.playVideo) {
-      player.setVolume(VOLUME);
+      player.setVolume(0); level = 0;
       player.playVideo();
+      fadeTo(VOLUME, FADE_IN);
       return;
     }
     await loadApi();
+    if (!btn.classList.contains("is-playing") || player) return; // stopped (or already built) while loading
     player = new YT.Player("ytPlayer", {
       videoId: VIDEO,
-      width: "100%",
-      height: "100%",
-      playerVars: { autoplay: 1, loop: 1, playlist: VIDEO, controls: 1, rel: 0, playsinline: 1 },
+      width: "200",
+      height: "200",
+      playerVars: { autoplay: 1, loop: 1, playlist: VIDEO, controls: 0, rel: 0, playsinline: 1, disablekb: 1, iv_load_policy: 3 },
       events: {
-        onReady: (e) => { e.target.setVolume(VOLUME); e.target.playVideo(); },
-        onStateChange: (e) => {
-          const playing = e.data === YT.PlayerState.PLAYING;
-          if (playing) e.target.setVolume(VOLUME);
-          setState(playing);
+        onReady: (e) => {
+          e.target.setVolume(0); level = 0;
+          if (!btn.classList.contains("is-playing")) return; // stopped before it was ready
+          e.target.playVideo();
+          fadeTo(VOLUME, FADE_IN);
         },
       },
     });
   }
   function stop() {
-    if (player && player.pauseVideo) player.pauseVideo();
-    card.hidden = true;
     setState(false);
+    fadeTo(0, FADE_OUT, () => {
+      if (player && player.pauseVideo) player.pauseVideo();
+      card.hidden = true;
+    });
   }
-  btn.addEventListener("click", () => (card.hidden ? play() : stop()));
+  btn.addEventListener("click", () => (btn.classList.contains("is-playing") ? stop() : play()));
   if (closeBtn) closeBtn.addEventListener("click", stop);
 })();
