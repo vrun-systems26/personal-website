@@ -137,15 +137,11 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   sheet.addEventListener("close", () => { if (!sheet.open) cleanup(); }); // ignore a late close from the previous sheet
 })();
 
-// ---------- the name banner: type set in dots, each one on a spring ----------
-(function () {
-  const wrap = document.querySelector(".field");
-  const canvas = document.getElementById("field");
-  if (!wrap || !canvas || !canvas.getContext) return;
+// ---------- words set in dots, each dot on a spring (the name, and the section titles) ----------
+function dotWord(canvas, WORD, opts = {}) {
+  if (!canvas || !canvas.getContext) return null;
   const ctx = canvas.getContext("2d");
-
-  const WORD = "VARUN";
-  const K = 0.06, DAMP = 0.85, PUSH = 3;
+  const K = 0.06, DAMP = 0.85, PUSH = opts.push || 3;
   let W = 0, H = 0, gap = 4, radius = 60, n = 0, wordW = 0, wordX = 0;
   let hx, hy, x, y, vx, vy;
   const pointer = { x: -9999, y: -9999, active: false, last: 0 };
@@ -161,7 +157,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     gap = H > 90 ? 4 : 3;
-    radius = Math.max(44, Math.min(80, H * 0.7));
+    radius = opts.radius ? opts.radius(H) : Math.max(44, Math.min(80, H * 0.7));
 
     const off = document.createElement("canvas");
     off.width = W; off.height = H;
@@ -260,59 +256,35 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { build(); start(); }, 180); });
 
   const ready = document.fonts && document.fonts.load ? document.fonts.load('800 100px "DM Sans"').catch(() => {}) : Promise.resolve();
-  ready.then(() => { build(); start(); });
-})();
+  ready.then(() => { if (opts.beforeBuild) opts.beforeBuild(); build(); start(); });
+  return { build, start };
+}
+dotWord(document.getElementById("field"), "VARUN");
 
-// ---------- section titles set in dots, like the name, but still ----------
+// ---------- section titles: the same dots as the name, smaller, with a gentler cursor ----------
 (function () {
-  const spans = document.querySelectorAll(".block-head > span:first-child");
-  if (!spans.length) return;
-  const items = Array.from(spans).map((span) => {
+  document.querySelectorAll(".block-head > span:first-child").forEach((span) => {
     const cv = document.createElement("canvas");
     cv.className = "dot-title";
     cv.setAttribute("aria-hidden", "true");
     span.classList.add("dot-title-text"); // the real words stay for screen readers and search
     span.parentNode.insertBefore(cv, span);
-    return { span, cv };
-  });
-  const COLS = ["rgba(247,243,236,0.92)", "rgba(245,208,172,0.95)", "rgba(242,168,107,1)", "rgba(224,138,75,1)"];
-  const pick = (i) => { const x = Math.sin(i * 12.9898) * 43758.5453; const f = x - Math.floor(x); return f < 0.5 ? 0 : f < 0.72 ? 1 : f < 0.9 ? 2 : 3; };
-  function render() {
-    for (const { span, cv } of items) {
+    const text = span.textContent.trim();
+    // size the canvas so the word fills its height, like the name fills its box
+    const fit = () => {
       const fs = parseFloat(getComputedStyle(span.parentNode).fontSize) || 40;
-      const text = span.textContent.trim();
-      const off = document.createElement("canvas").getContext("2d");
-      const font = `800 ${Math.round(fs * 1.08)}px "DM Sans", sans-serif`;
-      off.font = font;
-      const m = off.measureText(text);
-      const w = Math.ceil(m.actualBoundingBoxLeft + m.actualBoundingBoxRight) + 6;
-      const h = Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) + 6;
-      off.canvas.width = w; off.canvas.height = h;
-      off.font = font; off.fillStyle = "#fff";
-      off.fillText(text, m.actualBoundingBoxLeft + 3, m.actualBoundingBoxAscent + 3);
-      const data = off.getImageData(0, 0, w, h).data;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      cv.width = w * dpr; cv.height = h * dpr;
-      cv.style.width = w + "px"; cv.style.height = h + "px";
-      const c = cv.getContext("2d");
-      c.setTransform(dpr, 0, 0, dpr, 0, 0);
-      c.clearRect(0, 0, w, h);
-      const gap = fs > 44 ? 3.4 : 3, size = gap * 0.58;
-      let k = 0;
-      for (let y = 1; y < h; y += gap) {
-        for (let x = 1; x < w; x += gap) {
-          if (data[((y | 0) * w + (x | 0)) * 4 + 3] > 140) {
-            c.fillStyle = COLS[pick(k++)];
-            c.fillRect(x - size / 2, y - size / 2, size, size);
-          }
-        }
-      }
-    }
-  }
-  render();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
-  let rt = 0;
-  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(render, 150); });
+      const h = Math.round(fs * 0.98);
+      const o = document.createElement("canvas").getContext("2d");
+      o.font = `800 ${h}px "DM Sans", sans-serif`;
+      const m = o.measureText(text);
+      const scale = (h * 0.98) / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent);
+      cv.style.width = Math.ceil((m.actualBoundingBoxLeft + m.actualBoundingBoxRight) * scale / 0.99) + 6 + "px";
+      cv.style.height = h + "px";
+    };
+    dotWord(cv, text, { push: 1.6, radius: (H) => Math.max(16, H * 0.45), beforeBuild: fit });
+    let rt = 0;
+    window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(fit, 60); });
+  });
 })();
 
 // ---------- signature writes itself as you reach the bottom ----------
@@ -680,53 +652,8 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { size(); draw(); }, 150); });
 })();
 
-// ---------- a small scene for each section, plus the footer map of the room Fetch scanned ----------
+// ---------- a small scene for each section ----------
 (function () {
-  const RANGE = 3.1;          // meters a scan reaches
-
-  // the room, in meters: walls with a doorway, a table, a couch, a bin, chair legs
-  const segs = [];
-  const poly = (pts, hgt, gapAt = -1) => {
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[i], b = pts[(i + 1) % pts.length];
-      if (i === gapAt) {
-        const m1 = [a[0] + (b[0] - a[0]) * 0.38, a[1] + (b[1] - a[1]) * 0.38];
-        const m2 = [a[0] + (b[0] - a[0]) * 0.62, a[1] + (b[1] - a[1]) * 0.62];
-        segs.push([a, m1, hgt], [m2, b, hgt]);
-      } else segs.push([a, b, hgt]);
-    }
-  };
-  const sc = (pts) => pts.map(([x, y]) => [x * 0.78, y * 0.78]);
-  poly(sc([[-2.8, -2.0], [1.6, -2.0], [1.6, -1.25], [2.9, -1.25], [2.9, 2.2], [-0.4, 2.2], [-0.4, 1.6], [-2.8, 1.6]]), 7, 4);
-  poly(sc([[0.7, 0.55], [1.55, 0.55], [1.55, 1.25], [0.7, 1.25]]), 3);
-  poly(sc([[-2.75, -0.9], [-2.25, -0.9], [-2.25, 0.9], [-2.75, 0.9]]), 3);
-  const circles = [[-1.75, -1.25, 0.24, 4], [0.45, 0.4, 0.05, 2], [0.45, 1.45, 0.05, 2], [1.85, 0.4, 0.05, 2], [1.85, 1.45, 0.05, 2], [2.3, -0.7, 0.16, 3]]
-    .map(([x, y, r, h]) => [x * 0.78, y * 0.78, r, h]);
-
-  // one ray: distance to the first thing it hits and how tall that thing is (in dot rows)
-  function cast(ox, oy, ang, extra) {
-    const dx = Math.cos(ang), dy = Math.sin(ang);
-    let best = RANGE, tall = 0;
-    for (const [a, b, hgt] of segs) {
-      const ex = b[0] - a[0], ey = b[1] - a[1];
-      const den = dx * ey - dy * ex;
-      if (Math.abs(den) < 1e-9) continue;
-      const t = ((a[0] - ox) * ey - (a[1] - oy) * ex) / den;
-      const u = ((a[0] - ox) * dy - (a[1] - oy) * dx) / den;
-      if (t > 0 && t < best && u >= 0 && u <= 1) { best = t; tall = hgt; }
-    }
-    const list = extra ? circles.concat([extra]) : circles;
-    for (const [qx, qy, r, hgt] of list) {
-      const fx = ox - qx, fy = oy - qy;
-      const b = fx * dx + fy * dy, c = fx * fx + fy * fy - r * r, disc = b * b - c;
-      if (disc < 0) continue;
-      const t = -b - Math.sqrt(disc);
-      if (t > 0 && t < best) { best = t; tall = hgt; }
-    }
-    return best < RANGE ? [best, tall] : null;
-  }
-
-  // ---------- section scenes: each section gets its own small robotics piece, lit like the scan ----------
   const TAU = Math.PI * 2;
   const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
   const SCOLS = ["rgba(255,244,230,0.95)", "rgba(250,210,170,0.8)", "rgba(242,168,107,0.7)", "rgba(224,138,75,0.5)", "rgba(150,92,52,0.32)"];
@@ -970,54 +897,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       a.line([-1.1, top + 0.19, nz], [1.1, top + 0.19, nz], 0.25, 20);
     }, { dust: 6 }],
 
-    // Footer: the same room as the flat map the scan leaves behind, with Fetch driving its route
-    map: [{ pitch: 0.78 }, (t, a) => {
-      a.v.yaw = 0.25 * Math.sin(t * 0.12);
-      if (!MAP.ready) buildMap();
-      const { cells, CELL } = MAP;
-      for (const [x, z, occ] of cells) {
-        if (occ) {
-          const e = CELL * 0.82, top = [[x, 0.14, z], [x + e, 0.14, z], [x + e, 0.14, z + e], [x, 0.14, z + e]];
-          a.fill(top, a.cu(0.24));
-          a.path(top, 0.6, true, 1);
-          a.dot(x + e, 0.07, z + e, 0.35); a.dot(x, 0.07, z + e, 0.35);
-        }
-        else a.dot(x + CELL * 0.4, 0, z + CELL * 0.4, 0.1);
-      }
-      const T = (t / 26) * TAU;
-      const trail = [];
-      for (let k = 30; k >= 0; k--) { const [x, z] = MAP.route(T - k * 0.03); trail.push([x, 0.02, z]); }
-      a.path(trail, 0.7, false, 3);
-      const [fx, fz] = MAP.route(T);
-      a.fill(a.circle(fx, 0.18, fz, 0.13), a.cu(0.35));
-      a.ring(fx, 0, fz, 0.13, 0.7); a.ring(fx, 0.18, fz, 0.13, 0.95);
-      a.flare(fx, 0.2, fz, 10, 0.6);
-    }, { dust: 0 }],
   };
-
-  // occupancy grid of the room, filled in by rays cast from points along Fetch's route
-  const MAP = { ready: false, CELL: 0.2, cells: [], route: (t) => [0.95 * Math.sin(t), 0.5 * Math.sin(2 * t + 0.6) - 0.2] };
-  function buildMap() {
-    const C = MAP.CELL, X0 = -2.4, Y0 = -1.8, NX = 24, NY = 19;
-    const occ = new Uint8Array(NX * NY);
-    const at = (x, y) => { const i = Math.floor((x - X0) / C), j = Math.floor((y - Y0) / C); return i >= 0 && j >= 0 && i < NX && j < NY ? j * NX + i : -1; };
-    for (let k = 0; k < 24; k++) {
-      const [ox, oy] = MAP.route((k / 24) * TAU);
-      for (let ang = 0; ang < TAU; ang += 0.02) {
-        const hit = cast(ox, oy, ang, null), d = hit ? hit[0] : RANGE;
-        for (let s = 0; s < d; s += C * 0.4) { const c = at(ox + Math.cos(ang) * s, oy + Math.sin(ang) * s); if (c >= 0 && !occ[c]) occ[c] = 1; }
-        if (hit) { const c = at(ox + Math.cos(ang) * (d + 0.03), oy + Math.sin(ang) * (d + 0.03)); if (c >= 0) occ[c] = 2; }
-      }
-    }
-    // the map's y axis is the floor's z; flip so it matches the hero's view
-    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
-      const v = occ[j * NX + i];
-      if (v) MAP.cells.push([X0 + i * C, -(Y0 + (j + 1) * C), v === 2]);
-    }
-    const r = MAP.route;
-    MAP.route = (t) => { const [x, y] = r(t); return [x, -y]; };
-    MAP.ready = true;
-  }
 
   const live = [];
   document.querySelectorAll("canvas.scene[data-scene]").forEach((cv) => {
