@@ -181,6 +181,8 @@ img { display: block; max-width: 100%; }
     position: absolute; top: 0; bottom: 0; left: calc(var(--i, 0) * var(--pw));
     width: var(--pw); overflow-y: auto; overscroll-behavior: contain;
     scrollbar-width: thin; scrollbar-color: #2c2c31 transparent;
+    /* keep the scrollbar's space reserved, so it showing up never rewraps the text (which could keep it stuck on) */
+    scrollbar-gutter: stable;
     border-right: 1px solid var(--rule);
   }
   .pane-in { min-height: 100%; display: flex; flex-direction: column; }
