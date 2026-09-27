@@ -263,6 +263,58 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   ready.then(() => { build(); start(); });
 })();
 
+// ---------- section titles set in dots, like the name, but still ----------
+(function () {
+  const spans = document.querySelectorAll(".block-head > span:first-child");
+  if (!spans.length) return;
+  const items = Array.from(spans).map((span) => {
+    const cv = document.createElement("canvas");
+    cv.className = "dot-title";
+    cv.setAttribute("aria-hidden", "true");
+    span.classList.add("dot-title-text"); // the real words stay for screen readers and search
+    span.parentNode.insertBefore(cv, span);
+    return { span, cv };
+  });
+  const COLS = ["rgba(247,243,236,0.92)", "rgba(245,208,172,0.95)", "rgba(242,168,107,1)", "rgba(224,138,75,1)"];
+  const pick = (i) => { const x = Math.sin(i * 12.9898) * 43758.5453; const f = x - Math.floor(x); return f < 0.5 ? 0 : f < 0.72 ? 1 : f < 0.9 ? 2 : 3; };
+  function render() {
+    for (const { span, cv } of items) {
+      const fs = parseFloat(getComputedStyle(span.parentNode).fontSize) || 40;
+      const text = span.textContent.trim();
+      const off = document.createElement("canvas").getContext("2d");
+      const font = `800 ${Math.round(fs * 1.08)}px "DM Sans", sans-serif`;
+      off.font = font;
+      const m = off.measureText(text);
+      const w = Math.ceil(m.actualBoundingBoxLeft + m.actualBoundingBoxRight) + 6;
+      const h = Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) + 6;
+      off.canvas.width = w; off.canvas.height = h;
+      off.font = font; off.fillStyle = "#fff";
+      off.fillText(text, m.actualBoundingBoxLeft + 3, m.actualBoundingBoxAscent + 3);
+      const data = off.getImageData(0, 0, w, h).data;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = w * dpr; cv.height = h * dpr;
+      cv.style.width = w + "px"; cv.style.height = h + "px";
+      const c = cv.getContext("2d");
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      c.clearRect(0, 0, w, h);
+      const gap = fs > 44 ? 3.4 : 3, size = gap * 0.58;
+      let k = 0;
+      for (let y = 1; y < h; y += gap) {
+        for (let x = 1; x < w; x += gap) {
+          if (data[((y | 0) * w + (x | 0)) * 4 + 3] > 140) {
+            c.fillStyle = COLS[pick(k++)];
+            c.fillRect(x - size / 2, y - size / 2, size, size);
+          }
+        }
+      }
+    }
+  }
+  render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  let rt = 0;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(render, 150); });
+})();
+
 // ---------- signature writes itself as you reach the bottom ----------
 (function () {
   const sig = document.getElementById("sig");
@@ -409,24 +461,25 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   }));
 })();
 
-// ---------- hero: two solid gears turning in mesh, white faces and dark sides, lit from the upper left ----------
+// ---------- hero: two brushed-steel helical gears turning in mesh ----------
 (function () {
   const canvas = document.getElementById("gears");
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext("2d");
   const TAU = Math.PI * 2;
   const YAW = -0.62, PITCH = 0.8; // camera: looking down at the gears from the front left
-  const THICK = 0.32;              // how deep the gears are
-  const SPEED = 0.32;              // radians per second for the big gear
+  const THICK = 0.3;               // how deep the gears are
+  const BANDS = 3;                 // wall slices, so the twist reads as a curve
+  const SPEED = 0.26;              // radians per second for the big gear
 
-  // two gears with the same tooth pitch, so they mesh
-  const A = { R: 1, teeth: 20, h: 0.12, holes: 7 };
-  const B = { R: 0.8, teeth: 16, h: 0.12, holes: 6 };
-  // helical teeth: the bottom of each tooth trails the top; the pair twist in opposite hands so they still mesh
-  A.twist = 0.5 * (TAU / A.teeth);
+  // same tooth pitch on both, so they mesh
+  const A = { R: 1, teeth: 28, h: 0.15, holes: 6 };
+  const B = { R: 22 / 28, teeth: 22, h: 0.15, holes: 5 };
+  // helical: each tooth winds a full pitch down the face; the pair wind in opposite hands
+  A.twist = 1.0 * (TAU / A.teeth);
   B.twist = -A.twist * (A.R / B.R);
-  const PHI = 0.95; // where B sits around A, radians
-  const D = A.R + B.R + A.h * 0.35;
+  const PHI = 0.95; // where B sits around A
+  const D = A.R + B.R + A.h * 0.3;
   A.x = -Math.cos(PHI) * D / 2; A.z = -Math.sin(PHI) * D / 2;
   B.x = A.x + Math.cos(PHI) * D; B.z = A.z + Math.sin(PHI) * D;
   // phase so a tooth of one always sits in a gap of the other where they meet
@@ -441,33 +494,40 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     const k = 9 / (9 + Z2);
     sx = cx + X * S * k; sy = cy - Y2 * S * k; sz = Z2;
   }
+  // how much a flat direction points away from the camera (positive = hidden side)
+  const away = (nx, nz) => (nx * syw + nz * cyw) * cp;
 
-  // gear outline in world space: rounded, flat-topped teeth
+  // tooth profile: a wide rounded root tapering to a narrow point, curved all the way
   function outline(g, r) {
-    const n = g.teeth * 16, pts = [];
+    const n = g.teeth * 12, pts = [];
     for (let i = 0; i < n; i++) {
       const th = (i / n) * TAU;
-      const s = Math.cos(g.teeth * (th - r));
-      const rr = g.R - g.h / 2 + g.h * Math.min(1, Math.max(0, 0.5 + 0.85 * s));
-      pts.push([g.x + Math.cos(th) * rr, g.z + Math.sin(th) * rr, th]);
+      const s = 0.5 + 0.5 * Math.cos(g.teeth * (th - r));
+      const rr = g.R - g.h * 0.55 + g.h * Math.pow(s, 2.2);
+      pts.push([g.x + Math.cos(th) * rr, g.z + Math.sin(th) * rr]);
     }
     return pts;
   }
   function holes(g, r) {
-    const list = [[g.x, g.z, g.R * 0.3]];
+    const list = [[g.x, g.z, g.R * 0.24]];
     for (let k = 0; k < g.holes; k++) {
       const a = r + (k * TAU) / g.holes;
-      list.push([g.x + Math.cos(a) * g.R * 0.63, g.z + Math.sin(a) * g.R * 0.63, g.R * 0.13]);
+      list.push([g.x + Math.cos(a) * g.R * 0.58, g.z + Math.sin(a) * g.R * 0.58, g.R * 0.16]);
     }
     return list;
   }
+  // a point on the gear, turned back by the twist at depth fraction f
+  function wind(g, pt, f) {
+    const a = -g.twist * f, c = Math.cos(a), s = Math.sin(a), dx = pt[0] - g.x, dz = pt[1] - g.z;
+    return [g.x + dx * c - dz * s, g.z + dx * s + dz * c];
+  }
 
-  // walls: dark, warmer where they face the light
+  // steel: cool greys, bright where a face turns toward the light
   const LX = -0.75, LZ = -0.66;
-  function wallColor(nx, nz, inner) {
+  function steel(nx, nz, inner) {
     const lit = Math.max(0, nx * LX + nz * LZ);
-    const v = inner ? 0.35 + 0.35 * lit : 0.45 + 0.55 * lit;
-    return `rgb(${Math.round(22 + 70 * v)},${Math.round(17 + 50 * v)},${Math.round(14 + 38 * v)})`;
+    const v = inner ? 0.1 + 0.34 * Math.pow(lit, 1.3) : 0.08 + 0.92 * Math.pow(lit, 1.7);
+    return `rgb(${Math.round(34 + 214 * v)},${Math.round(37 + 214 * v)},${Math.round(43 + 212 * v)})`;
   }
   function quad(a, b, c, d, fill) {
     ctx.beginPath();
@@ -480,55 +540,89 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     ctx.fill(); ctx.stroke();
   }
 
-  function twistDown(g, pt) {
-    const dx = pt[0] - g.x, dz = pt[1] - g.z, c = Math.cos(-g.twist), s = Math.sin(-g.twist);
-    return [g.x + dx * c - dz * s, g.z + dx * s + dz * c];
-  }
   function drawGear(g, r) {
     const out = outline(g, r), hs = holes(g, r);
-    // soft shadow the gear casts below itself
+    // soft shadow below
     P(g.x, -THICK - 0.35, g.z);
     const sh = ctx.createRadialGradient(sx, sy, 0, sx, sy, g.R * S * 1.1);
-    sh.addColorStop(0, "rgba(0,0,0,0.45)"); sh.addColorStop(1, "rgba(0,0,0,0)");
+    sh.addColorStop(0, "rgba(0,0,0,0.5)"); sh.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = sh; ctx.fillRect(sx - g.R * S * 1.2, sy - g.R * S * 1.2, g.R * S * 2.4, g.R * S * 2.4);
-    // outer side walls, farthest first so tooth flanks overlap correctly
+
+    // helical flanks: only the ones facing us, sliced into bands, farthest first
     const walls = [];
     for (let i = 0; i < out.length; i++) {
       const p = out[i], q = out[(i + 1) % out.length];
       const ex = q[0] - p[0], ez = q[1] - p[1], len = Math.hypot(ex, ez) || 1;
-      // the same point of the tooth, one thickness down, sits turned back by the twist
-      const pb = twistDown(g, p), qb = twistDown(g, q);
-      P((p[0] + q[0]) / 2, -THICK / 2, (p[1] + q[1]) / 2);
-      walls.push([sz, p, q, pb, qb, wallColor(ez / len, -ex / len, false)]);
-    }
-    walls.sort((u, v) => v[0] - u[0]);
-    for (const [, p, q, pb, qb, col] of walls) quad([p[0], 0, p[1]], [q[0], 0, q[1]], [qb[0], -THICK, qb[1]], [pb[0], -THICK, pb[1]], col);
-    // inner walls of the holes (the top face covers the near halves)
-    for (const [hx, hz, hr] of hs) {
-      const m = Math.max(24, Math.round(hr * 90));
-      for (let i = 0; i < m; i++) {
-        const a0 = (i / m) * TAU, a1 = ((i + 1) / m) * TAU;
-        const p = [hx + Math.cos(a0) * hr, hz + Math.sin(a0) * hr], q = [hx + Math.cos(a1) * hr, hz + Math.sin(a1) * hr];
-        const am = (a0 + a1) / 2;
-        quad([p[0], 0, p[1]], [q[0], 0, q[1]], [q[0], -THICK, q[1]], [p[0], -THICK, p[1]], wallColor(-Math.cos(am), -Math.sin(am), true));
+      const nx = ez / len, nz = -ex / len;
+      if (away(nx, nz) > 0.02) continue;
+      const col = steel(nx, nz, false);
+      for (let b = 0; b < BANDS; b++) {
+        const f0 = b / BANDS, f1 = (b + 1) / BANDS;
+        const p0 = wind(g, p, f0), q0 = wind(g, q, f0), p1 = wind(g, p, f1), q1 = wind(g, q, f1);
+        P((p0[0] + q1[0]) / 2, -THICK * (f0 + f1) / 2, (p0[1] + q1[1]) / 2);
+        walls.push([sz, p0, q0, q1, p1, -THICK * f0, -THICK * f1, col]);
       }
     }
-    // the white top face, holes cut out
+    walls.sort((u, v) => v[0] - u[0]);
+    for (const [, p0, q0, q1, p1, y0, y1, col] of walls) quad([p0[0], y0, p0[1]], [q0[0], y0, q0[1]], [q1[0], y1, q1[1]], [p1[0], y1, p1[1]], col);
+
+    // inner walls of the holes: only the far halves show through the openings
+    for (const [hx, hz, hr] of hs) {
+      const m = Math.max(28, Math.round(hr * 110));
+      for (let i = 0; i < m; i++) {
+        const a0 = (i / m) * TAU, a1 = ((i + 1) / m) * TAU, am = (a0 + a1) / 2;
+        const nx = -Math.cos(am), nz = -Math.sin(am);
+        if (away(nx, nz) > 0.05) continue;
+        const p = [hx + Math.cos(a0) * hr, hz + Math.sin(a0) * hr], q = [hx + Math.cos(a1) * hr, hz + Math.sin(a1) * hr];
+        quad([p[0], 0, p[1]], [q[0], 0, q[1]], [q[0], -THICK, q[1]], [p[0], -THICK, p[1]], steel(nx, nz, true));
+      }
+    }
+
+    // the brushed-steel top face, holes cut out
     ctx.beginPath();
-    out.forEach((p, i) => { P(p[0], 0, p[1]); if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy); });
+    out.forEach((pt, i) => { P(pt[0], 0, pt[1]); if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy); });
     ctx.closePath();
     for (const [hx, hz, hr] of hs) {
-      const m = Math.max(24, Math.round(hr * 90));
+      const m = Math.max(28, Math.round(hr * 110));
       for (let i = 0; i <= m; i++) { const a = (i / m) * TAU; P(hx + Math.cos(a) * hr, 0, hz + Math.sin(a) * hr); if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy); }
       ctx.closePath();
     }
-    P(g.x - g.R, 0, g.z - g.R); const gx0 = sx, gy0 = sy;
-    P(g.x + g.R, 0, g.z + g.R);
-    const face = ctx.createLinearGradient(gx0, gy0, sx, sy);
-    face.addColorStop(0, "#fbf8f3"); face.addColorStop(0.55, "#efeae2"); face.addColorStop(1, "#d8d1c6");
+    P(g.x, 0, g.z); const gcx = sx, gcy = sy;
+    let face;
+    if (ctx.createConicGradient) {
+      // turned steel: bright and dark sectors that stay fixed to the light as the gear spins
+      face = ctx.createConicGradient(-0.55, gcx, gcy);
+      [[0, "#eef1f4"], [0.07, "#8d96a0"], [0.16, "#fbfcfd"], [0.29, "#6f7882"], [0.41, "#e3e7eb"], [0.53, "#99a2ac"],
+       [0.64, "#ffffff"], [0.77, "#7a838d"], [0.89, "#d9dee3"], [1, "#eef1f4"]].forEach(([o, c]) => face.addColorStop(o, c));
+    } else {
+      P(g.x - g.R, 0, g.z - g.R); const gx0 = sx, gy0 = sy;
+      P(g.x + g.R, 0, g.z + g.R);
+      face = ctx.createLinearGradient(gx0, gy0, sx, sy);
+      face.addColorStop(0, "#f2f4f6"); face.addColorStop(0.4, "#9ea6af"); face.addColorStop(0.7, "#f7f9fb"); face.addColorStop(1, "#8a929c");
+    }
     ctx.fillStyle = face;
     ctx.fill("evenodd");
-    ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = 0.8;
+    ctx.save();
+    ctx.clip("evenodd");
+    // a soft sweep of light across the face, and a hot specular spot toward the light
+    const rs = g.R * S;
+    const sweep = ctx.createLinearGradient(gcx - rs, gcy - rs * 0.6, gcx + rs, gcy + rs * 0.6);
+    sweep.addColorStop(0, "rgba(255,255,255,0.28)"); sweep.addColorStop(0.45, "rgba(255,255,255,0)");
+    sweep.addColorStop(0.7, "rgba(20,24,30,0.22)"); sweep.addColorStop(1, "rgba(20,24,30,0.05)");
+    ctx.fillStyle = sweep; ctx.fillRect(gcx - rs * 1.2, gcy - rs * 1.2, rs * 2.4, rs * 2.4);
+    const hx0 = gcx - rs * 0.38, hy0 = gcy - rs * 0.3;
+    const spot = ctx.createRadialGradient(hx0, hy0, 0, hx0, hy0, rs * 0.55);
+    spot.addColorStop(0, "rgba(255,255,255,0.7)"); spot.addColorStop(0.35, "rgba(255,255,255,0.18)"); spot.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.globalCompositeOperation = "screen";
+    ctx.fillStyle = spot; ctx.fillRect(hx0 - rs, hy0 - rs, rs * 2, rs * 2);
+    ctx.restore();
+    // a bright machined rim
+    ctx.strokeStyle = "rgba(255,255,255,0.9)"; ctx.lineWidth = 1;
+    ctx.stroke();
+    // a faint ring turned into the face, for a machined look
+    ctx.beginPath();
+    for (let i = 0; i <= 72; i++) { const a = (i / 72) * TAU; P(g.x + Math.cos(a) * g.R * 0.8, 0, g.z + Math.sin(a) * g.R * 0.8); if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy); }
+    ctx.strokeStyle = "rgba(70,78,88,0.35)"; ctx.lineWidth = 1;
     ctx.stroke();
   }
 
@@ -559,7 +653,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
         }
       }
     }
-    const pad = 8;
+    const pad = Math.min(W, H) * 0.07; // a little breathing room around the pair
     S = Math.min((W - pad * 2) / (x1 - x0), (H - pad * 2) / (y1 - y0));
     cx = W / 2 - ((x0 + x1) / 2) * S;
     cy = H / 2 - ((y0 + y1) / 2) * S;
@@ -567,7 +661,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
 
   function tick(now) {
     raf = 0;
-    rot += (Math.min(0.05, (now - last) / 1000)) * SPEED;
+    rot += Math.min(0.05, (now - last) / 1000) * SPEED;
     last = now;
     draw();
     if (visible) raf = requestAnimationFrame(tick);

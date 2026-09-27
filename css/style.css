@@ -196,6 +196,8 @@ button { font: inherit; color: inherit; }
   letter-spacing: -0.035em;
   line-height: 1.05;
 }
+.dot-title { display: block; flex: 0 0 auto; }
+.dot-title-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .block-foot { margin: 0; padding: 12px var(--pad) 4px; }
 .block-foot a { font-family: var(--mono); font-size: 13px; color: var(--muted); text-decoration: none; }
 .block-foot a:hover { color: var(--copper-2); }
