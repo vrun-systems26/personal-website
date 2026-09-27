@@ -30,6 +30,13 @@ document.querySelectorAll(".js-year").forEach((el) => (el.textContent = new Date
     const set = (open) => { toggle.setAttribute("aria-expanded", String(open)); panel.classList.toggle("is-open", open); };
     toggle.addEventListener("click", () => set(toggle.getAttribute("aria-expanded") !== "true"));
     panel.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => set(false)));
+    // Escape or a tap anywhere else closes the menu
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") { set(false); toggle.focus(); }
+    });
+    document.addEventListener("click", (e) => {
+      if (toggle.getAttribute("aria-expanded") === "true" && !panel.contains(e.target) && !toggle.contains(e.target)) set(false);
+    });
   }
   const links = document.querySelectorAll(".nav-links a[data-spy]");
   if (!links.length || !("IntersectionObserver" in window)) return;
@@ -40,7 +47,11 @@ document.querySelectorAll(".js-year").forEach((el) => (el.textContent = new Date
     entries.forEach((e) => {
       if (!e.isIntersecting) return;
       const id = byEl.get(e.target);
-      links.forEach((a) => a.classList.toggle("is-active", a.dataset.spy === id));
+      links.forEach((a) => {
+        const on = a.dataset.spy === id;
+        a.classList.toggle("is-active", on);
+        if (on) a.setAttribute("aria-current", "location"); else a.removeAttribute("aria-current");
+      });
     });
   }, { rootMargin: "-42% 0px -52% 0px" });
   targets.forEach(([, el]) => el && io.observe(el));
@@ -350,7 +361,7 @@ dotWord(document.getElementById("field"), "VARUN");
       const label = b.querySelector(".music-label");
       if (label) label.textContent = text || (on ? "now playing: Champagne Coast (click to stop)" : "recommended: play music for a better experience");
       const short = b.querySelector(".music-short");
-      if (short) short.textContent = on ? "Blood Orange" : "music"; // with the credit link under it, this names the artist
+      if (short) short.textContent = on ? "stop" : "music"; // the credit under the bar names the artist
     });
     if (on) credits.forEach((c) => (c.hidden = false));
   }
@@ -433,7 +444,7 @@ dotWord(document.getElementById("field"), "VARUN");
   }));
 })();
 
-// ---------- hero: two helical gears turning in mesh, a copper tint with a darker orange border ----------
+// ---------- hero: two solid helical gears turning in mesh, a light copper tint with a border ----------
 (function () {
   const canvas = document.getElementById("gears");
   if (!canvas || !canvas.getContext) return;
@@ -441,7 +452,6 @@ dotWord(document.getElementById("field"), "VARUN");
   const TAU = Math.PI * 2;
   const YAW = -0.62, PITCH = 0.8; // camera: looking down at the gears from the front left
   const THICK = 0.3;               // how deep the gears are
-  const SLICES = 30;               // the body is stacked from thin slices, bottom up, so nothing ever needs sorting
   const SPEED = 0.26;              // radians per second for the big gear
 
   // same tooth pitch on both, so they mesh
@@ -456,11 +466,6 @@ dotWord(document.getElementById("field"), "VARUN");
   B.x = A.x + Math.cos(PHI) * D; B.z = A.z + Math.sin(PHI) * D;
   // phase so a tooth of one always sits in a gap of the other where they meet
   const PHASE = ((PHI * (A.teeth + B.teeth)) / TAU + B.teeth / 2 - 0.5) * TAU / B.teeth;
-
-  // the old award pill: copper tint over the page for the fill, half copper for the border
-  const FILL = "rgb(37,25,17)";
-  const SIDE = "rgb(24,17,12)";
-  const EDGE = "rgba(224,138,75,0.5)";
 
   let W = 1, H = 1, S = 1, cx = 0, cy = 0, raf = 0, visible = true, last = performance.now(), rot = 0.4;
   let sx = 0, sy = 0;
@@ -492,6 +497,13 @@ dotWord(document.getElementById("field"), "VARUN");
     }
     return list;
   }
+  // solid gears in a light copper tint; only the edges you can actually see are drawn
+  const TOP = "rgb(58,44,31)";      // light copper over the page, for the top face
+  const BODY = "rgb(43,33,24)";     // a shade darker for the sides
+  const EDGE = "rgba(246,178,120,0.85)";
+  const EDGE_2 = "rgba(246,178,120,0.5)";
+  const SLICES = 30; // the body is stacked from thin slices, bottom up; each covers what is hidden behind it
+
   // one level of the gear: the outline turned by the twist at depth f (0 = top, 1 = bottom), straight holes cut out
   function level(g, out, hs, f) {
     const y = -THICK * f, a = -g.twist * f, c = Math.cos(a), s = Math.sin(a);
@@ -507,21 +519,36 @@ dotWord(document.getElementById("field"), "VARUN");
       ctx.closePath();
     }
   }
+  // a tooth tip at depth f
+  function tip(g, pt, f) {
+    const a = -g.twist * f, c = Math.cos(a), s = Math.sin(a), dx = pt[0] - g.x, dz = pt[1] - g.z;
+    P(g.x + dx * c - dz * s, -THICK * f, g.z + dx * s + dz * c);
+  }
 
   function drawGear(g, r) {
     const out = outline(g, r), hs = holes(g, r);
     ctx.lineJoin = "round";
-    // bottom edge: the border, so the underside reads too
+    // the bottom edge first; the slices above hide whatever part of it is out of sight
     level(g, out, hs, 1);
-    ctx.fillStyle = SIDE; ctx.fill("evenodd");
-    ctx.strokeStyle = EDGE; ctx.lineWidth = 1.2; ctx.stroke();
-    // the body, stacked upward; each slice covers the one below
-    ctx.fillStyle = SIDE;
-    for (let s = SLICES - 1; s >= 1; s--) { level(g, out, hs, s / SLICES); ctx.fill("evenodd"); }
-    // the top face: tinted fill with the border
+    ctx.fillStyle = BODY; ctx.fill("evenodd");
+    ctx.strokeStyle = EDGE_2; ctx.lineWidth = 2.4; ctx.stroke();
+    for (let s = SLICES - 1; s >= 0; s--) {
+      const f = s / SLICES, f0 = (s + 1) / SLICES;
+      // the edge running down each tooth tip, one slice at a time, so the next slice hides the back ones
+      ctx.beginPath();
+      for (let k = 0; k < g.teeth; k++) {
+        tip(g, out[k * 12], f0); ctx.moveTo(sx, sy);
+        tip(g, out[k * 12], f); ctx.lineTo(sx, sy);
+      }
+      ctx.strokeStyle = EDGE_2; ctx.lineWidth = 1.6; ctx.stroke();
+      level(g, out, hs, f);
+      ctx.fillStyle = s ? BODY : TOP;
+      ctx.fill("evenodd");
+    }
+    // the top face's border
     level(g, out, hs, 0);
-    ctx.fillStyle = FILL; ctx.fill("evenodd");
-    ctx.strokeStyle = EDGE; ctx.lineWidth = 1.4; ctx.stroke();
+    ctx.strokeStyle = EDGE; ctx.lineWidth = 1.3;
+    ctx.stroke();
   }
 
   function draw() {
@@ -579,12 +606,11 @@ dotWord(document.getElementById("field"), "VARUN");
 })();
 
 // ---------- a small scene for each section ----------
+// drawn like the hero gears: see-through shapes with a light copper tint and a light copper border
 (function () {
   const TAU = Math.PI * 2;
-  const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-  const SCOLS = ["rgba(255,244,230,0.95)", "rgba(250,210,170,0.8)", "rgba(242,168,107,0.7)", "rgba(224,138,75,0.5)", "rgba(150,92,52,0.32)"];
-  const cu = (a) => `rgba(242,168,107,${a})`;
-  const hot = (a) => `rgba(255,236,214,${a})`;
+  const cu = (a) => `rgba(246,178,120,${a})`;
+  const hot = cu;
 
   function makeScene(canvas, opts, fn) {
     const real = canvas.getContext("2d");
@@ -593,13 +619,9 @@ dotWord(document.getElementById("field"), "VARUN");
     const grad = { addColorStop: noop };
     const dummy = { beginPath: noop, moveTo: noop, lineTo: noop, closePath: noop, stroke: noop, fill: noop, fillRect: noop, save: noop, restore: noop, translate: noop, scale: noop, arc: noop, fillText: noop, clearRect: noop, createRadialGradient: () => grad, createLinearGradient: () => grad };
     let ctx = real;
-    const B = [[], [], [], [], []];
     const v = { yaw: opts.yaw || 0, pitch: opts.pitch || 0.5 };
-    const dust = Array.from({ length: opts.dust || 0 }, () => [(Math.random() - 0.5) * 4, Math.random() * 1.2, (Math.random() - 0.5) * 4, Math.random() * 6]);
-    let W = 1, H = 1, scale = 1, cx = 0, cy = 0, px = 0, py = 0, pz = 0;
+    let W = 1, H = 1, scale = 1, cx = 0, cy = 0, px = 0, py = 0;
     let measuring = false, x0 = 0, x1 = 0, y0 = 0, y1 = 0;
-    let form = 1, idx = 0; // form: 0 = empty space, 1 = fully built (driven by scroll)
-    const LB = 24; // band kept clear at the bottom for the readout
     function size() {
       const rc = canvas.getBoundingClientRect();
       W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
@@ -607,16 +629,16 @@ dotWord(document.getElementById("field"), "VARUN");
       canvas.width = W * dpr; canvas.height = H * dpr;
       real.setTransform(dpr, 0, 0, dpr, 0, 0);
       // run a whole cycle at unit scale and fit what it touches inside the canvas
-      measuring = true; ctx = dummy; scale = 1; cx = 0; cy = 0; form = 1;
+      measuring = true; ctx = dummy; scale = 1; cx = 0; cy = 0;
       x0 = y0 = Infinity; x1 = y1 = -Infinity;
       const keep = [v.yaw, v.pitch];
-      for (let t = 0; t <= 26; t += 0.4) { fn(t, api); B.forEach((L) => (L.length = 0)); }
+      for (let t = 0; t <= 26; t += 0.4) fn(t, api);
       [v.yaw, v.pitch] = keep;
       measuring = false; ctx = real;
-      const padX = 8, padT = 8, padB = opts.after ? LB + 6 : 8;
-      scale = Math.min((W - padX * 2) / (x1 - x0), (H - padT - padB) / (y1 - y0));
-      cx = padX + ((W - padX * 2) - (x1 - x0) * scale) / 2 - x0 * scale;
-      cy = padT + ((H - padT - padB) - (y1 - y0) * scale) / 2 - y0 * scale;
+      const pad = 8;
+      scale = Math.min((W - pad * 2) / (x1 - x0), (H - pad * 2) / (y1 - y0));
+      cx = pad + ((W - pad * 2) - (x1 - x0) * scale) / 2 - x0 * scale;
+      cy = pad + ((H - pad * 2) - (y1 - y0) * scale) / 2 - y0 * scale;
     }
     // y is up; the camera sits above and in front, looking down a little
     function P(x, y, z) {
@@ -625,41 +647,23 @@ dotWord(document.getElementById("field"), "VARUN");
       const cp = Math.cos(v.pitch), sp = Math.sin(v.pitch);
       const Y2 = y * cp + Z * sp, Z2 = Z * cp - y * sp;
       const k = 7 / (7 + Z2);
-      px = cx + X * scale * k; py = cy - Y2 * scale * k; pz = Z2;
+      px = cx + X * scale * k; py = cy - Y2 * scale * k;
       if (measuring) { if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; }
     }
-    const shade = (b) => b * (1 - Math.max(-0.4, Math.min(0.5, pz * 0.09)));
-    function dot(x, y, z, b) {
-      if (form < 1) {
-        const h = hash(++idx * 1.618), lp = Math.min(1, Math.max(0, (form - h * 0.6) / 0.4));
-        if (lp <= 0) return;
-        const u = 1 - lp;
-        x += u * (hash(idx * 3.1) - 0.5) * 1.4; y += u * u * 1.3; z += u * (hash(idx * 5.7) - 0.5) * 1.4;
-        b *= lp;
-      }
-      P(x, y, z);
-      b = shade(b);
-      if (b <= 0.04) return;
-      B[b >= 0.85 ? 0 : b >= 0.62 ? 1 : b >= 0.4 ? 2 : b >= 0.2 ? 3 : 4].push(px, py);
-    }
-    // a path through 3D points: a soft glowing stroke with brighter points riding on it
-    function path(pts, b, closed, every = 2) {
-      if (pts.length < 2) return;
-      ctx.globalCompositeOperation = "lighter";
-      ctx.strokeStyle = cu(Math.min(0.6, b * 0.42));
-      ctx.lineWidth = 1;
-      ctx.beginPath();
+    function trace(pts, closed) {
       pts.forEach((p, i) => { P(p[0], p[1], p[2]); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
       if (closed) ctx.closePath();
+    }
+    // an edge through 3D points; b is how strong it is
+    function path(pts, b, closed) {
+      if (pts.length < 2 || b <= 0.01) return;
+      ctx.beginPath();
+      trace(pts, closed);
+      ctx.strokeStyle = cu(Math.min(0.9, 0.12 + b * 0.72));
+      ctx.lineWidth = 1.2;
       ctx.stroke();
-      ctx.globalCompositeOperation = "source-over";
-      for (let i = 0; i < pts.length; i += every) dot(pts[i][0], pts[i][1], pts[i][2], b);
     }
-    function line(p, q, b, n = 12) {
-      const pts = [];
-      for (let i = 0; i <= n; i++) { const t = i / n; pts.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t]); }
-      path(pts, b, false);
-    }
+    function line(p, q, b) { path([p, q], b, false); }
     function circle(x, y, z, r, from = 0, to = TAU, n) {
       const m = n || Math.max(10, Math.round(((to - from) * r) / 0.05));
       const pts = [];
@@ -669,95 +673,55 @@ dotWord(document.getElementById("field"), "VARUN");
     function ring(x, y, z, r, b, from, to) { path(circle(x, y, z, r, from, to), b, from === undefined); }
     function fill(pts, style) {
       ctx.beginPath();
-      pts.forEach((p, i) => { P(p[0], p[1], p[2]); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
-      ctx.closePath();
+      trace(pts, true);
       ctx.fillStyle = style;
       ctx.fill();
     }
+    // a see-through box: tinted faces, every edge outlined
     function box(x0, y0, z0, x1, y1, z1, b, face = 0) {
       if (face) {
-        fill([[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]], cu(face));
-        fill([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], cu(face * 0.7));
-        fill([[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]], cu(face * 0.5));
-        fill([[x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0]], cu(face * 0.5));
+        const faces = [
+          [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]],
+          [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]],
+          [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0]],
+          [[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]],
+          [[x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0]],
+        ];
+        for (const f of faces) fill(f, cu(face * 0.45));
       }
       const X = [x0, x1], Y = [y0, y1], Z = [z0, z1];
-      for (const y of Y) for (const z of Z) line([x0, y, z], [x1, y, z], b, 8);
-      for (const x of X) for (const z of Z) line([x, y0, z], [x, y1, z], b, 6);
-      for (const x of X) for (const y of Y) line([x, y, z0], [x, y, z1], b, 8);
+      for (const y of Y) for (const z of Z) line([x0, y, z], [x1, y, z], b);
+      for (const x of X) for (const z of Z) line([x, y0, z], [x, y1, z], b);
+      for (const x of X) for (const y of Y) line([x, y, z0], [x, y, z1], b);
     }
+    // a small lit point: a tinted disc with its border
     function flare(x, y, z, r, a) {
+      if (a <= 0.02) return;
       P(x, y, z);
-      const g = ctx.createRadialGradient(px, py, 0, px, py, r);
-      g.addColorStop(0, hot(a));
-      g.addColorStop(1, cu(0));
-      ctx.globalCompositeOperation = "lighter";
-      ctx.fillStyle = g; ctx.fillRect(px - r, py - r, r * 2, r * 2);
-      ctx.globalCompositeOperation = "source-over";
+      ctx.beginPath(); ctx.arc(px, py, Math.max(2.5, r * 0.4), 0, TAU);
+      ctx.fillStyle = cu(a * 0.3); ctx.fill();
+      ctx.strokeStyle = cu(Math.min(0.9, a)); ctx.lineWidth = 1.2; ctx.stroke();
     }
-    function beam(p, q, a) {
-      P(p[0], p[1], p[2]); const x0 = px, y0 = py;
-      P(q[0], q[1], q[2]);
-      const g = ctx.createLinearGradient(x0, y0, px, py);
-      g.addColorStop(0, hot(a)); g.addColorStop(1, cu(a * 0.3));
-      ctx.globalCompositeOperation = "lighter";
-      ctx.strokeStyle = g; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(px, py); ctx.stroke();
-      ctx.globalCompositeOperation = "source-over";
+    function beam(p, q, a) { line(p, q, a); }
+    // the floor the piece stands on: a flat tinted plate with a border
+    function floor(r) {
+      const pts = circle(0, 0, 0, r, 0, TAU, 72);
+      fill(pts, cu(0.04));
+      path(pts, 0.14, true);
     }
-    // the warm pool of light the piece stands in, laid flat on the floor
-    function floor(r, rings = 3) {
-      P(0, 0, 0);
-      ctx.save();
-      ctx.translate(px, py); ctx.scale(1, Math.max(0.2, Math.sin(v.pitch)) * 1.1);
-      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r * scale);
-      g.addColorStop(0, cu(0.2)); g.addColorStop(0.55, cu(0.06)); g.addColorStop(1, cu(0));
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(0, 0, r * scale, 0, TAU); ctx.fill();
-      ctx.restore();
-      for (let k = 1; k <= rings; k++) {
-        const rr = (r * k) / rings, n = Math.round((rr * scale * TAU) / 3.2);
-        for (let i = 0; i < n; i++) { const t = (i / n) * TAU; dot(Math.cos(t) * rr, 0, Math.sin(t) * rr, k === rings ? 0.22 : 0.14); }
-      }
-    }
-    // readouts sit in their own band under the piece; if the two would crowd, they spread to the edges
-    function label(left, right) {
-      ctx.font = '9.5px "Geist Mono", ui-monospace, monospace';
-      const lw = left ? ctx.measureText(left).width : 0, rw = right ? ctx.measureText(right).width : 0;
-      let l = Math.max(4, cx + x0 * scale), r = Math.min(W - 4, cx + x1 * scale);
-      if (l + lw + 16 > r - rw) { l = 4; r = W - 4; }
-      const both = !!right && l + lw + 16 <= r - rw;
-      const y = H - 12;
-      ctx.fillStyle = "rgba(163,157,147,0.72)";
-      ctx.textAlign = "left"; if (left) ctx.fillText(left, l, y);
-      ctx.textAlign = "right"; if (both) ctx.fillText(right, r, y);
-    }
-    const api = { v, dot, path, line, circle, ring, fill, box, flare, beam, floor, label, hot, cu };
+    const dot = (x, y, z) => P(x, y, z);
+    const api = { v, dot, path, line, circle, ring, fill, box, flare, beam, floor, hot, cu };
     function draw(t, f = 1) {
       if (W < 40) return; // hidden
-      form = f; idx = 0;
       ctx.clearRect(0, 0, W, H);
-      if (form <= 0.001) return;
-      ctx.globalAlpha = Math.pow(form, 1.5);
+      if (f <= 0.001) return;
+      // builds in by fading up and settling into place
       ctx.save();
-      if (opts.after) { ctx.beginPath(); ctx.rect(0, 0, W, H - LB); ctx.clip(); }
+      ctx.globalAlpha = Math.pow(f, 1.5);
+      ctx.translate(0, (1 - f) * 16);
+      ctx.lineJoin = "round";
       fn(t, api);
-      for (const d of dust) dot(d[0], d[1] + 0.06 * Math.sin(t * 0.7 + d[3]), d[2], 0.1 + 0.08 * Math.sin(t * 1.3 + d[3]));
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = "lighter";
-      for (let b = 0; b < 5; b++) {
-        const L = B[b];
-        if (!L.length) continue;
-        ctx.fillStyle = SCOLS[b];
-        const d = b === 0 ? 1.8 : 1.5;
-        for (let k = 0; k < L.length; k += 2) ctx.fillRect(L[k] - d / 2, L[k + 1] - d / 2, d, d);
-        L.length = 0;
-      }
       ctx.restore();
-      ctx.globalCompositeOperation = "source-over";
-      ctx.globalAlpha = form;
-      if (opts.after) opts.after(t, api);
-      ctx.globalAlpha = 1;
     }
     return { size, draw };
   }
@@ -766,49 +730,51 @@ dotWord(document.getElementById("field"), "VARUN");
   const litBy = (fronts, d, w) => fronts.reduce((g, [R, s]) => Math.max(g, s * Math.exp(-(((R - d) / w) ** 2))), 0);
 
   const SCENES = {
-    // Socials: a lattice mast broadcasting; each node flares and links up as a ring reaches it
+    // Socials: a lattice mast broadcasting; each node lights up as a ring reaches it
     signal: [{ pitch: 0.3 }, (t, a) => {
       a.v.yaw = t * 0.12;
-      a.floor(2.4, 0);
+      a.floor(2.4);
       const H = 0.95, r = 0.18;
       a.fill(a.circle(0, 0.001, 0, 0.4), a.cu(0.1));
+      a.ring(0, 0.001, 0, 0.4, 0.5);
       const rail = (k, y) => { const th = (k * TAU) / 3, f = 1 - (y / H) * 0.7; return [Math.cos(th) * r * f, y, Math.sin(th) * r * f]; };
       for (let k = 0; k < 3; k++) {
-        a.line(rail(k, 0), rail(k, H), 0.7, 16);
-        for (let y = 0; y < H - 0.2; y += 0.24) a.line(rail(k, y), rail((k + 1) % 3, y + 0.24), 0.3, 4);
+        a.line(rail(k, 0), rail(k, H), 0.8);
+        for (let y = 0; y < H - 0.2; y += 0.24) a.line(rail(k, y), rail((k + 1) % 3, y + 0.24), 0.4);
       }
       const fronts = [];
       for (let i = 0; i < 3; i++) {
         const f = (t / 2.8 + i / 3) % 1, R = 0.25 + f * 2.15;
         fronts.push([R, 1 - f]);
-        a.ring(0, H, 0, R, (1 - f) * 0.9);
+        const pts = a.circle(0, H, 0, R);
+        a.fill(pts, a.cu((1 - f) * 0.05));
+        a.path(pts, (1 - f) * 0.8, true);
       }
       const nodes = [[1.9, 0.7], [-1.5, 1.3], [-0.3, -2.0], [1.3, -1.5]];
       nodes.forEach(([x, z]) => {
         const g = litBy(fronts, Math.hypot(x, z), 0.28);
-        a.box(x - 0.1, 0, z - 0.1, x + 0.1, 0.18, z + 0.1, 0.35 + 0.6 * g, 0.06 + 0.2 * g);
-        a.line([x, 0.18, z], [x, 0.36, z], 0.5 + 0.4 * g, 5);
-        if (g > 0.25) { a.beam([0, H, 0], [x, 0.36, z], g * 0.55); a.flare(x, 0.36, z, 7, g * 0.8); }
+        a.box(x - 0.1, 0, z - 0.1, x + 0.1, 0.18, z + 0.1, 0.45 + 0.5 * g, 0.12 + 0.25 * g);
+        a.line([x, 0.18, z], [x, 0.36, z], 0.5 + 0.4 * g);
+        if (g > 0.25) { a.beam([0, H, 0], [x, 0.36, z], g * 0.6); a.flare(x, 0.36, z, 9, g); }
       });
-      const blink = 0.55 + 0.45 * Math.sin(t * 5);
-      a.flare(0, H + 0.08, 0, 10, 0.55 * blink + 0.2);
-      a.dot(0, H + 0.08, 0, 1);
-    }, { dust: 6 }],
+      a.flare(0, H + 0.08, 0, 11, 0.55 + 0.35 * Math.sin(t * 5));
+    }],
 
     // Work: a printer laying a vase down one layer at a time
     printer: [{ pitch: 0.4 }, (t, a) => {
       a.v.yaw = 0.55; // a fixed view: only the print grows
-      a.floor(1.7, 0);
-      a.fill([[-1.05, 0, -1.05], [1.05, 0, -1.05], [1.05, 0, 1.05], [-1.05, 0, 1.05]], a.cu(0.06));
-      for (let x = -0.875; x <= 0.876; x += 0.35) for (let z = -0.875; z <= 0.876; z += 0.35) a.dot(x, 0, z, 0.14);
-      a.path([[-1.05, 0, -1.05], [1.05, 0, -1.05], [1.05, 0, 1.05], [-1.05, 0, 1.05]], 0.4, true, 4);
+      a.floor(1.7);
+      const bed = [[-1.05, 0, -1.05], [1.05, 0, -1.05], [1.05, 0, 1.05], [-1.05, 0, 1.05]];
+      a.fill(bed, a.cu(0.08));
+      a.path(bed, 0.5, true);
       const L = 16, CYCLE = 12, u = t % CYCLE;
       const p = Math.min(1, u / 10) * L, done = Math.floor(p), frac = p - done;
       const fade = u > 11.2 ? 1 - (u - 11.2) / 0.8 : 1;
       const rad = (y) => 0.52 + 0.16 * Math.sin(y * 4.2 + 0.6);
       for (let i = 0; i < done; i++) {
-        const y = i * 0.075, age = (done - i) / L;
-        a.ring(0, y, 0, rad(y), (0.9 - age * 0.45) * fade);
+        const y = i * 0.075, age = (done - i) / L, pts = a.circle(0, y, 0, rad(y));
+        a.fill(pts, a.cu(0.035 * fade));
+        a.path(pts, (0.85 - age * 0.4) * fade, true);
       }
       let ny = done * 0.075, nx, nz;
       if (done < L) {
@@ -817,11 +783,11 @@ dotWord(document.getElementById("field"), "VARUN");
         nx = Math.cos(end) * rad(ny); nz = Math.sin(end) * rad(ny);
       } else { ny -= 0.075; nx = rad(ny); nz = 0; }
       const top = ny + 0.08;
-      a.box(nx - 0.09, top + 0.12, nz - 0.09, nx + 0.09, top + 0.26, nz + 0.09, 0.7, 0.25);
+      a.box(nx - 0.09, top + 0.12, nz - 0.09, nx + 0.09, top + 0.26, nz + 0.09, 0.8, 0.3);
       a.beam([nx, top + 0.12, nz], [nx, top, nz], 0.9);
-      if (done < L) a.flare(nx, top - 0.02, nz, 9, 0.75);
-      a.line([-1.1, top + 0.19, nz], [1.1, top + 0.19, nz], 0.25, 20);
-    }, { dust: 6 }],
+      if (done < L) a.flare(nx, top - 0.02, nz, 8, 0.8);
+      a.line([-1.1, top + 0.19, nz], [1.1, top + 0.19, nz], 0.35);
+    }],
 
   };
 
