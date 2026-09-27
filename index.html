@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=521">
+<link rel="stylesheet" href="css/style.css?v=545">
 <script>document.documentElement.classList.add("js");</script>
 
 <script type="application/ld+json">
@@ -59,16 +59,18 @@
     <nav class="nav-links" id="navLinks" aria-label="Sections">
       <a href="#socials" data-spy="socials">Socials</a>
       <a href="#work" data-spy="work">Work</a>
-      <a href="#stack" data-spy="stack">Stack</a>
-      <a href="#building" data-spy="building">Commits</a>
       <a href="#awards" data-spy="awards">Awards</a>
       <a href="#contact" data-spy="contact">Contact</a>
     </nav>
     <div class="nav-right">
-      <a class="chip chip-gh" href="https://github.com/vrun-systems26" target="_blank" rel="noopener" aria-label="GitHub, contributions in the last year">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        <b class="js-commits">469</b>
-      </a>
+      <span class="music music-nav">
+        <button type="button" class="music-tip" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange">
+          <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="music-label">recommended: play music for a better experience</span>
+          <span class="music-short">music</span>
+        </button>
+        <a class="music-credit" href="https://soundcloud.com/bloodorange/champagne-coast" target="_blank" rel="noopener" hidden><span class="cr-long">Blood Orange &middot; </span>SoundCloud &#8599;</a>
+      </span>
       <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="navLinks" aria-label="Menu"><span></span><span></span></button>
     </div>
   </div>
@@ -79,38 +81,19 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" aria-labelledby="hero-h">
-    <div class="field" aria-hidden="true">
-      <canvas class="field-canvas" id="field"></canvas>
+    <div class="hero-text">
+      <div class="field" aria-hidden="true">
+        <canvas class="field-canvas" id="field"></canvas>
+      </div>
+      <p class="hello">Hello, I'm Varun Chilukuri</p>
+      <h1 class="headline" id="hero-h">
+        <span>I build</span>
+        <span><u>robots</u>, mechatronics &amp; <u>embedded systems</u>.</span>
+      </h1>
+      <p class="lead">High schooler at Leland turning CAD, 3D prints, and wiring into working prototypes, mostly at hackathons. Engineering in the bay.</p>
     </div>
-    <p class="hello">Hello, I'm Varun Chilukuri</p>
-    <h1 class="headline" id="hero-h">
-      <span>I build</span>
-      <span><u>robots</u>, mechatronics &amp; <u>embedded systems</u>.</span>
-    </h1>
-    <p class="lead">High schooler at Leland turning CAD, 3D prints, and wiring into working prototypes, mostly at hackathons. Engineering in the bay.</p>
-    <div class="meta">
-      <span class="meta-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0112 2.5a7 7 0 017 7C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-        San Jose, CA
-      </span>
-      <span class="meta-pill">Mechatronics &bull; Embedded Systems &bull; Robotics &bull; CAD</span>
-      <span class="music music-inline">
-        <button type="button" class="music-tip" aria-pressed="false" aria-label="Play music, Champagne Coast by Blood Orange">
-          <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="music-label">recommended: play music for a better experience</span>
-        </button>
-        <a class="music-credit" href="https://soundcloud.com/bloodorange/champagne-coast" target="_blank" rel="noopener" hidden>Blood Orange &middot; SoundCloud &#8599;</a>
-      </span>
-    </div>
+    <div class="hero-art" aria-hidden="true"><canvas id="gears"></canvas></div>
   </section>
-
-  <!-- stats -->
-  <dl class="stats">
-    <div class="stat"><dd><span class="count" data-to="3">0</span></dd><dt>hackathons competed in</dt></div>
-    <div class="stat"><dd><span class="count" data-to="3">0</span></dd><dt>hackathon wins, 3 for 3</dt></div>
-    <div class="stat"><dd><span class="count" data-to="8">0</span></dd><dt>builds documented</dt></div>
-    <div class="stat"><dd><span class="count js-commits-count" data-to="469">0</span></dd><dt>GitHub contributions, last year</dt></div>
-  </dl>
 
   <!-- ============ SOCIALS ============ -->
   <section class="block" id="socials" aria-labelledby="socials-h">
@@ -162,7 +145,7 @@
 
   <!-- ============ WORK ============ -->
   <section class="block" id="work" aria-labelledby="work-h">
-    <h2 class="block-head" id="work-h"><span>Work</span><canvas class="scene" data-scene="gears" aria-hidden="true"></canvas></h2>
+    <h2 class="block-head" id="work-h"><span>Work</span><canvas class="scene" data-scene="printer" aria-hidden="true"></canvas></h2>
 
     <div class="folder">
       <p class="folder-name f1">
@@ -172,15 +155,15 @@
       <ul class="rows">
         <li><button type="button" class="row" data-open="fetch">
           <span class="row-name">Fetch</span><span class="row-desc">Trash-can robot that comes when you call it</span>
-          <span class="tag tag-hot"><i></i>1st place</span><span class="row-cat">// Mobile robotics</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="tag tag-hot">1st place</span><span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
         <li><button type="button" class="row" data-open="ceres">
           <span class="row-name">Ceres</span><span class="row-desc">Crop-scouting robot with a custom-trained VLM</span>
-          <span class="tag">2nd place</span><span class="row-cat">// Agriculture</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="tag">2nd place</span><span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
         <li><button type="button" class="row" data-open="sweeper">
           <span class="row-name">Street Sweeper</span><span class="row-desc">Trash robot that doubles as a coding lesson</span>
-          <span class="tag">2nd place</span><span class="row-cat">// Education</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="tag">2nd place</span><span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
       </ul>
     </div>
@@ -193,60 +176,27 @@
       <ul class="rows">
         <li><button type="button" class="row" data-open="arm">
           <span class="row-name">HocDiuTempusSumpsit</span><span class="row-desc">Bluetooth 4-bar robotic arm</span>
-          <span class="tag tag-dim">solo</span><span class="row-cat">// Mechanisms</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="tag tag-dim">solo</span><span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
         <li><button type="button" class="row" data-open="eclipse">
           <span class="row-name">The Eclipse Lamp</span><span class="row-desc">A lamp that quietly watches the room</span>
-          <span class="row-cat">// Covert hardware</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
         <li><button type="button" class="row" data-open="maglift">
           <span class="row-name">MagLift</span><span class="row-desc">Magnetic crane prototype</span>
-          <span class="tag">2nd place</span><span class="row-cat">// Science fair</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="tag">2nd place</span><span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
         <li><button type="button" class="row" data-open="mars">
           <span class="row-name">MARS-61</span><span class="row-desc">Heavy arm with a herringbone reduction</span>
-          <span class="tag tag-dim">on hold</span><span class="row-cat">// Concept</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="tag tag-dim">on hold</span><span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
         <li><button type="button" class="row" data-open="mouse">
           <span class="row-name">Gaming Mouse</span><span class="row-desc">A mouse built from scratch</span>
-          <span class="row-cat">// Peripherals</span><span class="row-go" aria-hidden="true">&#8599;</span>
+          <span class="row-go" aria-hidden="true">&#8599;</span>
         </button></li>
       </ul>
     </div>
     <p class="block-foot"><a href="https://github.com/vrun-systems26" target="_blank" rel="noopener">see everything on GitHub <span aria-hidden="true">&rarr;</span></a></p>
-  </section>
-
-  <!-- ============ STACK ============ -->
-  <section class="block" id="stack" aria-labelledby="stack-h">
-    <h2 class="block-head" id="stack-h"><span>Stack</span><canvas class="scene" data-scene="printer" aria-hidden="true"></canvas></h2>
-    <div class="stack">
-      <div class="stack-row"><span class="stack-label">01 Compute</span><ul class="stack-items"><li>Raspberry Pi 4</li><li>Arduino Uno R4</li><li>ESP32</li><li>Raspberry Pi 5</li><li>Raspberry Pi Pico</li><li>Arduino Mega</li><li>Arduino Nano</li><li>ESP-WROOM-32</li><li>XIAO ESP32-S3</li><li>ESP8266</li><li>STM32</li><li>Teensy</li></ul></div>
-      <div class="stack-row"><span class="stack-label">02 Motors</span><ul class="stack-items"><li>NEMA 17</li><li>MG996R</li><li>DC gear motors</li><li>SG90</li><li>MG90S</li><li>N20 micro motors</li><li>Spektrum A330</li><li>Continuous-rotation servos</li><li>Brushless motors</li></ul></div>
-      <div class="stack-row"><span class="stack-label">03 Drivers</span><ul class="stack-items"><li>L298N</li><li>PCA9685</li><li>TB6600</li><li>TB6612FNG</li><li>A4988</li><li>DRV8825</li><li>ESCs</li><li>Relays</li><li>MOSFETs</li></ul></div>
-      <div class="stack-row"><span class="stack-label">04 Sensors</span><ul class="stack-items"><li>mmWave radar</li><li>HC-SR04</li><li>Pi Camera</li><li>VL53L0X ToF</li><li>MPU6050 IMU</li><li>PMW optical</li><li>STEMMA soil</li><li>Rotary encoders</li><li>Limit switches</li><li>IR sensors</li><li>USB webcams</li><li>Joysticks</li><li>Touch pads</li></ul></div>
-      <div class="stack-row"><span class="stack-label">05 Power</span><ul class="stack-items"><li>LiPo packs</li><li>Buck converters</li><li>18650 cells</li><li>Boost converters</li><li>LM2596</li><li>AMS1117 / 7805</li><li>BMS boards</li><li>Bench supply</li></ul></div>
-      <div class="stack-row"><span class="stack-label">06 Mechanisms</span><ul class="stack-items"><li>Mecanum wheels</li><li>4-bar linkages</li><li>Rack &amp; pinion</li><li>GT2 belts &amp; pulleys</li><li>Lead screws</li><li>V-slot extrusion</li><li>Bearings</li><li>Spur gears</li><li>Helical gears</li><li>Herringbone gears</li><li>Differentials</li><li>Pan-tilt turrets</li></ul></div>
-      <div class="stack-row"><span class="stack-label">07 Fabrication</span><ul class="stack-items"><li>3D printing</li><li>Fusion 360</li><li>Ender 3</li><li>Onshape</li><li>Tinkercad</li><li>PLA / PETG / TPU</li><li>Cura</li><li>Heat-set inserts</li><li>Laser cutting</li><li>Drill press</li><li>Dremel</li><li>Hand &amp; power tools</li></ul></div>
-      <div class="stack-row"><span class="stack-label">08 Electronics</span><ul class="stack-items"><li>Soldering</li><li>PCB design</li><li>Multimeter</li><li>KiCad</li><li>EasyEDA</li><li>Perfboard</li><li>Breadboarding</li><li>JST / Dupont crimping</li><li>Heat shrink</li><li>Oscilloscope</li><li>Logic analyzer</li></ul></div>
-      <div class="stack-row"><span class="stack-label">09 Software</span><ul class="stack-items"><li>Python</li><li>C / C++</li><li>Flask</li><li>Arduino IDE</li><li>PlatformIO</li><li>MicroPython</li><li>OpenCV</li><li>AprilTags</li><li>VLMs</li><li>Linux</li><li>bash</li><li>SSH</li><li>Git</li><li>GitHub</li></ul></div>
-      <div class="stack-row"><span class="stack-label">10 Protocols</span><ul class="stack-items"><li>UART</li><li>I2C</li><li>BLE</li><li>SPI</li><li>PWM</li><li>WiFi</li><li>Serial</li><li>HTTP</li></ul></div>
-    </div>
-  </section>
-
-  <!-- ============ BUILDING ============ -->
-  <section class="block" id="building" aria-labelledby="building-h">
-    <h2 class="block-head" id="building-h"><span>Commits</span></h2>
-    <div class="activity">
-      <div class="heat" id="heat" role="img" aria-label="GitHub contribution graph for the last year">
-        <div class="heat-months" id="heatMonths"></div>
-        <div class="heat-grid" id="heatGrid"></div>
-      </div>
-      <div class="heat-foot">
-        <span><b class="js-commits">469</b> contributions in the last year</span>
-        <span class="heat-legend" aria-hidden="true">less <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> more</span>
-      </div>
-      <div class="heat-tip" id="heatTip" hidden></div>
-    </div>
   </section>
 
   <!-- ============ AWARDS ============ -->
@@ -278,7 +228,6 @@
   <div class="foot-top">
   <div class="foot-scan" aria-hidden="true">
     <canvas class="scene" data-scene="map" aria-hidden="true"></canvas>
-    <p>a room,<br>mapped by Fetch</p>
   </div>
   <svg class="sig" id="sig" viewBox="0 0 280 130" aria-label="Varun, signed" role="img">
     <path class="sig-stroke" d="M20 30 C 26 52, 34 76, 44 94 C 52 72, 60 44, 74 22 C 70 44, 76 70, 90 70 C 98 70, 102 60, 104 54 C 98 50, 84 58, 86 72 C 88 84, 102 80, 106 66 L 106 80 C 108 88, 114 88, 120 80 C 122 72, 124 64, 126 58 C 128 66, 128 76, 128 86 C 130 72, 138 60, 148 62 C 148 70, 146 80, 152 84 C 160 88, 166 76, 168 64 C 168 74, 168 84, 174 84 C 180 84, 184 76, 186 68 C 188 62, 188 72, 188 86 C 192 72, 198 62, 206 64 C 214 66, 212 80, 216 84 C 222 90, 236 80, 246 68"/>
@@ -358,6 +307,6 @@
   </article>
 </div>
 
-<script src="js/script.js?v=520"></script>
+<script src="js/script.js?v=545"></script>
 </body>
 </html>

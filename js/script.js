@@ -46,72 +46,6 @@ document.querySelectorAll(".js-year").forEach((el) => (el.textContent = new Date
   targets.forEach(([, el]) => el && io.observe(el));
 })();
 
-// ---------- stat counters ----------
-(function () {
-  const counts = document.querySelectorAll(".count[data-to]");
-  const run = (el) => {
-    if (reduceMotion) { el.textContent = el.dataset.to; el.dataset.done = "1"; return; }
-    const start = performance.now(), dur = 1200;
-    const step = (t) => {
-      const to = +el.dataset.to; // read each frame so a live value can land mid-count
-      const p = Math.min(1, (t - start) / dur);
-      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(step); else el.dataset.done = "1";
-    };
-    requestAnimationFrame(step);
-  };
-  if (!("IntersectionObserver" in window)) { counts.forEach(run); return; }
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
-  }, { threshold: 0.5 });
-  counts.forEach((el) => io.observe(el));
-})();
-
-// ---------- stack: each row shows what fits on one line, "+N" reveals the rest ----------
-(function () {
-  const rows = Array.from(document.querySelectorAll(".stack-row"));
-  const setups = rows.map((row) => {
-    const list = row.querySelector(".stack-items");
-    const items = Array.from(list.querySelectorAll("li"));
-    const more = document.createElement("button");
-    more.type = "button";
-    more.className = "stack-more";
-    more.setAttribute("aria-expanded", "false");
-    row.appendChild(more);
-    const topic = row.querySelector(".stack-label").textContent;
-
-    function fit() {
-      if (row.classList.contains("is-open")) return;
-      items.forEach((li) => li.classList.remove("is-extra"));
-      more.hidden = false;
-      let shown = Math.min(3, items.length);
-      const apply = () => items.forEach((li, i) => li.classList.toggle("is-extra", i >= shown));
-      apply();
-      while (shown > 1 && list.scrollWidth > list.clientWidth + 1) { shown--; apply(); }
-      const rest = items.length - shown;
-      more.hidden = rest <= 0;
-      more.textContent = `+${rest}`;
-      more.setAttribute("aria-label", `Show ${rest} more in ${topic}`);
-    }
-    more.addEventListener("click", () => {
-      const open = row.classList.toggle("is-open");
-      more.setAttribute("aria-expanded", String(open));
-      if (open) {
-        items.forEach((li) => li.classList.remove("is-extra"));
-        more.textContent = "less";
-      } else {
-        fit();
-      }
-    });
-    return fit;
-  });
-  const fitAll = () => setups.forEach((f) => f());
-  fitAll();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
-  let t = 0;
-  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(fitAll, 150); });
-})();
-
 // ---------- copy email ----------
 document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   btn.addEventListener("click", async () => {
@@ -240,7 +174,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     o.font = font(fs);
     m = o.measureText(WORD);
     wordW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
-    wordX = Math.max(0, (W - wordW) / 2); // centered in its box
+    wordX = 0; // the name sits on the left edge of its box
     o.fillStyle = "#fff";
     o.fillText(WORD, wordX + m.actualBoundingBoxLeft, (H - (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)) / 2 + m.actualBoundingBoxAscent);
 
@@ -329,71 +263,6 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
   ready.then(() => { build(); start(); });
 })();
 
-// ---------- commit heatmap: live from GitHub, saved snapshot as fallback ----------
-(function () {
-  const grid = document.getElementById("heatGrid");
-  const months = document.getElementById("heatMonths");
-  const tip = document.getElementById("heatTip");
-  if (!grid || !months) return;
-  const LIVE = "https://github-contributions-api.jogruber.de/v4/vrun-systems26?y=last";
-  const SNAPSHOT = "data/contributions.json";
-  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const ordinal = (n) => { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
-
-  function render(data) {
-    const days = (data && data.contributions) || [];
-    if (!days.length) return;
-    const total = data.total && (data.total.lastYear ?? Object.values(data.total)[0]);
-    if (total != null) {
-      document.querySelectorAll(".js-commits").forEach((el) => (el.textContent = total));
-      document.querySelectorAll(".js-commits-count").forEach((el) => {
-        el.dataset.to = total;
-        if (el.dataset.done) el.textContent = total;
-      });
-    }
-    grid.innerHTML = "";
-    months.innerHTML = "";
-    const pad = new Date(days[0].date + "T12:00:00").getDay();
-    for (let i = 0; i < pad; i++) { const c = document.createElement("i"); c.className = "is-pad"; grid.appendChild(c); }
-    let lastMonth = -1;
-    days.forEach((d, i) => {
-      const date = new Date(d.date + "T12:00:00");
-      const c = document.createElement("i");
-      if (d.level > 0) c.className = "l" + Math.min(4, d.level);
-      c.dataset.label = `${date.toLocaleString("en-US", { month: "long" })} ${ordinal(date.getDate())}, ${date.getFullYear()}: ${d.count} contribution${d.count === 1 ? "" : "s"}`;
-      grid.appendChild(c);
-      const col = Math.floor((i + pad) / 7);
-      if (date.getMonth() !== lastMonth && date.getDate() <= 7) {
-        const m = document.createElement("span");
-        m.textContent = MONTHS[date.getMonth()];
-        m.style.gridColumn = `${col + 1} / span 3`;
-        months.appendChild(m);
-        lastMonth = date.getMonth();
-      }
-    });
-    const cols = Math.ceil((days.length + pad) / 7);
-    grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-    months.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-  }
-
-  if (tip) {
-    const box = grid.closest(".activity");
-    grid.addEventListener("mouseover", (e) => {
-      const c = e.target;
-      if (c.tagName !== "I" || !c.dataset.label) return;
-      const r = c.getBoundingClientRect(), b = box.getBoundingClientRect();
-      tip.textContent = c.dataset.label;
-      tip.style.left = r.left - b.left + r.width / 2 + "px";
-      tip.style.top = r.top - b.top + "px";
-      tip.hidden = false;
-    });
-    grid.addEventListener("mouseleave", () => (tip.hidden = true));
-  }
-
-  const get = (url) => fetch(url, { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
-  get(LIVE).then(render).catch(() => get(SNAPSHOT).then(render).catch(() => {}));
-})();
-
 // ---------- signature writes itself as you reach the bottom ----------
 (function () {
   const sig = document.getElementById("sig");
@@ -456,6 +325,8 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       b.setAttribute("aria-pressed", String(on));
       const label = b.querySelector(".music-label");
       if (label) label.textContent = text || (on ? "now playing: Champagne Coast (click to stop)" : "recommended: play music for a better experience");
+      const short = b.querySelector(".music-short");
+      if (short) short.textContent = on ? "Blood Orange" : "music"; // with the credit link under it, this names the artist
     });
     if (on) credits.forEach((c) => (c.hidden = false));
   }
@@ -536,6 +407,174 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
     else if (frame && frame.classList.contains("is-shown")) stop(); // second tap while the strip is up: put it away
     else play();
   }));
+})();
+
+// ---------- hero: two solid gears turning in mesh, white faces and dark sides, lit from the upper left ----------
+(function () {
+  const canvas = document.getElementById("gears");
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+  const TAU = Math.PI * 2;
+  const YAW = -0.62, PITCH = 0.8; // camera: looking down at the gears from the front left
+  const THICK = 0.27;              // how deep the gears are
+  const SPEED = 0.32;              // radians per second for the big gear
+
+  // two gears with the same tooth pitch, so they mesh
+  const A = { R: 1, teeth: 20, h: 0.12, holes: 7 };
+  const B = { R: 0.8, teeth: 16, h: 0.12, holes: 6 };
+  const PHI = 0.95; // where B sits around A, radians
+  const D = A.R + B.R + A.h * 0.35;
+  A.x = -Math.cos(PHI) * D / 2; A.z = -Math.sin(PHI) * D / 2;
+  B.x = A.x + Math.cos(PHI) * D; B.z = A.z + Math.sin(PHI) * D;
+  // phase so a tooth of one always sits in a gap of the other where they meet
+  const PHASE = ((PHI * (A.teeth + B.teeth)) / TAU + B.teeth / 2 - 0.5) * TAU / B.teeth;
+
+  let W = 1, H = 1, S = 1, cx = 0, cy = 0, raf = 0, visible = true, last = performance.now(), rot = 0.4;
+  let sx = 0, sy = 0, sz = 0;
+  const cyw = Math.cos(YAW), syw = Math.sin(YAW), cp = Math.cos(PITCH), sp = Math.sin(PITCH);
+  function P(x, y, z) {
+    const X = x * cyw - z * syw, Z = x * syw + z * cyw;
+    const Y2 = y * cp + Z * sp, Z2 = Z * cp - y * sp;
+    const k = 9 / (9 + Z2);
+    sx = cx + X * S * k; sy = cy - Y2 * S * k; sz = Z2;
+  }
+
+  // gear outline in world space: rounded, flat-topped teeth
+  function outline(g, r) {
+    const n = g.teeth * 16, pts = [];
+    for (let i = 0; i < n; i++) {
+      const th = (i / n) * TAU;
+      const s = Math.cos(g.teeth * (th - r));
+      const rr = g.R - g.h / 2 + g.h * Math.min(1, Math.max(0, 0.5 + 0.85 * s));
+      pts.push([g.x + Math.cos(th) * rr, g.z + Math.sin(th) * rr, th]);
+    }
+    return pts;
+  }
+  function holes(g, r) {
+    const list = [[g.x, g.z, g.R * 0.3]];
+    for (let k = 0; k < g.holes; k++) {
+      const a = r + (k * TAU) / g.holes;
+      list.push([g.x + Math.cos(a) * g.R * 0.63, g.z + Math.sin(a) * g.R * 0.63, g.R * 0.13]);
+    }
+    return list;
+  }
+
+  // walls: dark, warmer where they face the light
+  const LX = -0.75, LZ = -0.66;
+  function wallColor(nx, nz, inner) {
+    const lit = Math.max(0, nx * LX + nz * LZ);
+    const v = inner ? 0.35 + 0.35 * lit : 0.45 + 0.55 * lit;
+    return `rgb(${Math.round(22 + 70 * v)},${Math.round(17 + 50 * v)},${Math.round(14 + 38 * v)})`;
+  }
+  function quad(a, b, c, d, fill) {
+    ctx.beginPath();
+    P(a[0], a[1], a[2]); ctx.moveTo(sx, sy);
+    P(b[0], b[1], b[2]); ctx.lineTo(sx, sy);
+    P(c[0], c[1], c[2]); ctx.lineTo(sx, sy);
+    P(d[0], d[1], d[2]); ctx.lineTo(sx, sy);
+    ctx.closePath();
+    ctx.fillStyle = fill; ctx.strokeStyle = fill; ctx.lineWidth = 0.6;
+    ctx.fill(); ctx.stroke();
+  }
+
+  function drawGear(g, r) {
+    const out = outline(g, r), hs = holes(g, r);
+    // soft shadow the gear casts below itself
+    P(g.x, -THICK - 0.35, g.z);
+    const sh = ctx.createRadialGradient(sx, sy, 0, sx, sy, g.R * S * 1.1);
+    sh.addColorStop(0, "rgba(0,0,0,0.45)"); sh.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = sh; ctx.fillRect(sx - g.R * S * 1.2, sy - g.R * S * 1.2, g.R * S * 2.4, g.R * S * 2.4);
+    // outer side walls, farthest first so tooth flanks overlap correctly
+    const walls = [];
+    for (let i = 0; i < out.length; i++) {
+      const p = out[i], q = out[(i + 1) % out.length];
+      const ex = q[0] - p[0], ez = q[1] - p[1], len = Math.hypot(ex, ez) || 1;
+      P((p[0] + q[0]) / 2, -THICK / 2, (p[1] + q[1]) / 2);
+      walls.push([sz, p, q, wallColor(ez / len, -ex / len, false)]);
+    }
+    walls.sort((u, v) => v[0] - u[0]);
+    for (const [, p, q, col] of walls) quad([p[0], 0, p[1]], [q[0], 0, q[1]], [q[0], -THICK, q[1]], [p[0], -THICK, p[1]], col);
+    // inner walls of the holes (the top face covers the near halves)
+    for (const [hx, hz, hr] of hs) {
+      const m = Math.max(24, Math.round(hr * 90));
+      for (let i = 0; i < m; i++) {
+        const a0 = (i / m) * TAU, a1 = ((i + 1) / m) * TAU;
+        const p = [hx + Math.cos(a0) * hr, hz + Math.sin(a0) * hr], q = [hx + Math.cos(a1) * hr, hz + Math.sin(a1) * hr];
+        const am = (a0 + a1) / 2;
+        quad([p[0], 0, p[1]], [q[0], 0, q[1]], [q[0], -THICK, q[1]], [p[0], -THICK, p[1]], wallColor(-Math.cos(am), -Math.sin(am), true));
+      }
+    }
+    // the white top face, holes cut out
+    ctx.beginPath();
+    out.forEach((p, i) => { P(p[0], 0, p[1]); if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy); });
+    ctx.closePath();
+    for (const [hx, hz, hr] of hs) {
+      const m = Math.max(24, Math.round(hr * 90));
+      for (let i = 0; i <= m; i++) { const a = (i / m) * TAU; P(hx + Math.cos(a) * hr, 0, hz + Math.sin(a) * hr); if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy); }
+      ctx.closePath();
+    }
+    P(g.x - g.R, 0, g.z - g.R); const gx0 = sx, gy0 = sy;
+    P(g.x + g.R, 0, g.z + g.R);
+    const face = ctx.createLinearGradient(gx0, gy0, sx, sy);
+    face.addColorStop(0, "#fbf8f3"); face.addColorStop(0.55, "#efeae2"); face.addColorStop(1, "#d8d1c6");
+    ctx.fillStyle = face;
+    ctx.fill("evenodd");
+    ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const rb = -rot * (A.teeth / B.teeth) + PHASE;
+    // farther gear first
+    P(A.x, 0, A.z); const za = sz;
+    P(B.x, 0, B.z); const zb = sz;
+    if (za > zb) { drawGear(A, rot); drawGear(B, rb); } else { drawGear(B, rb); drawGear(A, rot); }
+  }
+
+  function size() {
+    const rc = canvas.getBoundingClientRect();
+    W = Math.max(1, Math.round(rc.width)); H = Math.max(1, Math.round(rc.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // fit both gears (and their depth) inside the canvas
+    S = 1; cx = 0; cy = 0;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const g of [A, B]) {
+      for (let i = 0; i < 64; i++) {
+        const th = (i / 64) * TAU, rr = g.R + g.h / 2;
+        for (const y of [0, -THICK]) {
+          P(g.x + Math.cos(th) * rr, y, g.z + Math.sin(th) * rr);
+          x0 = Math.min(x0, sx); x1 = Math.max(x1, sx); y0 = Math.min(y0, sy); y1 = Math.max(y1, sy);
+        }
+      }
+    }
+    const pad = 8;
+    S = Math.min((W - pad * 2) / (x1 - x0), (H - pad * 2) / (y1 - y0));
+    cx = W / 2 - ((x0 + x1) / 2) * S;
+    cy = H / 2 - ((y0 + y1) / 2) * S;
+  }
+
+  function tick(now) {
+    raf = 0;
+    rot += (Math.min(0.05, (now - last) / 1000)) * SPEED;
+    last = now;
+    draw();
+    if (visible) raf = requestAnimationFrame(tick);
+  }
+  const start = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+
+  size();
+  if (reduceMotion) draw();
+  else {
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible) start(); }).observe(canvas);
+    }
+    start();
+  }
+  let rt = 0;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { size(); draw(); }, 150); });
 })();
 
 // ---------- a small scene for each section, plus the footer map of the room Fetch scanned ----------
@@ -798,39 +837,9 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       const blink = 0.55 + 0.45 * Math.sin(t * 5);
       a.flare(0, H + 0.08, 0, 10, 0.55 * blink + 0.2);
       a.dot(0, H + 0.08, 0, 1);
-    }, { dust: 6, after: (t, a) => a.label("tx · 2.4 GHz", "4 nodes") }],
+    }, { dust: 6 }],
 
-    // Work: two gears in mesh, seen from above; rims stand up in dots like the scan's walls
-    gears: [{ pitch: 0.95 }, (t, a) => {
-      a.v.yaw = -0.2; // a fixed view: only the gears move
-      a.floor(2.2, 0);
-      const gear = (cx, R, teeth, rot, holes) => {
-        const n = Math.round(R * 160), rim = [];
-        for (let i = 0; i <= n; i++) {
-          const th = (i / n) * TAU;
-          const f = ((((th - rot) * teeth) / TAU) % 1 + 1) % 1;
-          // squared-off teeth with short flanks
-          const rr = f < 0.04 ? R - 0.02 + (f / 0.04) * 0.15 : f < 0.46 ? R + 0.13 : f < 0.5 ? R + 0.13 - ((f - 0.46) / 0.04) * 0.15 : R - 0.02;
-          rim.push([cx + Math.cos(th) * rr, 0.12, Math.sin(th) * rr]);
-        }
-        a.fill(rim, a.cu(0.12));
-        for (let row = 0; row < 3; row++) for (let i = 0; i < rim.length; i += 2) a.dot(rim[i][0], row * 0.04, rim[i][2], 0.28 + row * 0.12);
-        a.path(rim, 0.95, true, 2);
-        for (let k = 0; k < holes; k++) {
-          const th = rot + (k * TAU) / holes;
-          a.ring(cx + Math.cos(th) * R * 0.56, 0.12, Math.sin(th) * R * 0.56, R * 0.16, 0.7);
-        }
-        a.ring(cx, 0.12, 0, R * 0.2, 0.9);
-        a.dot(cx, 0.12, 0, 1);
-      };
-      const rot = t * 0.45;
-      const xa = -0.85, xb = -0.85 + 1.0 + 0.667 + 0.11;
-      gear(xa, 1.0, 12, rot, 5);
-      gear(xb, 0.667, 8, -rot * 1.5, 3);
-      a.flare(xa + 1.055, 0.12, 0, 8, 0.3);
-    }, { dust: 6, after: (t, a) => a.label("12 : 8", `${Math.round(0.45 / TAU * 60 * 10) / 10} rpm`) }],
-
-    // Stack: a printer laying a vase down one layer at a time
+    // Work: a printer laying a vase down one layer at a time
     printer: [{ pitch: 0.4 }, (t, a) => {
       a.v.yaw = 0.55; // a fixed view: only the print grows
       a.floor(1.7, 0);
@@ -856,13 +865,7 @@ document.querySelectorAll(".soc-copy[data-copy]").forEach((btn) => {
       a.beam([nx, top + 0.12, nz], [nx, top, nz], 0.9);
       if (done < L) a.flare(nx, top - 0.02, nz, 9, 0.75);
       a.line([-1.1, top + 0.19, nz], [1.1, top + 0.19, nz], 0.25, 20);
-    }, {
-      dust: 6,
-      after: (t, a) => {
-        const u = t % 12, layer = Math.min(16, Math.floor(Math.min(1, u / 10) * 16) + 1);
-        a.label(`layer ${String(layer).padStart(2, "0")}/16`, "215°C");
-      },
-    }],
+    }, { dust: 6 }],
 
     // Footer: the same room as the flat map the scan leaves behind, with Fetch driving its route
     map: [{ pitch: 0.78 }, (t, a) => {
