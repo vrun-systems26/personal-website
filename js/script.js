@@ -29,6 +29,9 @@ Object.values(PAL).forEach((p) => (p.stops = p.ramp.map(hex)));
 const field = (function () {
   const cv = document.getElementById("field");
   const ctx = cv.getContext("2d");
+  const sv = document.getElementById("sweep");
+  const sctx = sv.getContext("2d");
+  let sweep = null;                      // the band crossing a column right now, if any
   let G = 18, GAP = 2;                   // tile pitch and the gap between tiles
   let W = 1, H = 1, cols = 0, rows = 0, ox = 0, oy = 0;
   let eFrom, eTo, eT0, eDelay, pDelay;   // per row: the covered edge and its motion; the palette sweep
@@ -104,14 +107,13 @@ const field = (function () {
     if (gc >= f.w) return 0;
     return f.g[NAME[g]][lr][gc] === "1" ? 1 : 0;
   }
-  // the ring of tiles just around the letters, shaded a touch so the name reads on any palette
-  function nameHalo(at, c, r) {
-    if (!at) return 0;
-    const lc = c - at.c, lr = r - at.r;
-    if (lc < -1 || lr < -1 || lc > at.f.cw || lr > at.f.h) return 0;
-    if (nameHit(at, c, r)) return 0;
-    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) if (nameHit(at, c + dc, r + dr)) return 1;
-    return 0;
+  function heatAt(x, y, t) {
+    // two layers of drifting noise, plus a slow wave folded through them (in screen pixels, so tile size doesn't matter)
+    const n1 = vnoise(x * 0.0045 + t * 0.045, y * 0.0045 - t * 0.02, t * 0.05);
+    const n2 = vnoise(x * 0.011 + 11, y * 0.011 + t * 0.03, t * 0.09 + 5);
+    const wave = 0.5 + 0.5 * Math.sin(x * 0.007 + y * 0.004 + t * 0.35 + n1 * 4);
+    // mostly dark, with light only at the peaks
+    return Math.pow(sm(clamp01((n1 * 0.62 + n2 * 0.23 + wave * 0.15 - 0.2) / 0.62)), 1.55);
   }
 
   function edgeAt(r, t) {
@@ -160,9 +162,8 @@ const field = (function () {
       const h = l / (LEVELS - 1);
       let c = mixc(rampAt(palFrom, h), rampAt(palTo, h), m / 4);
       // the name reads against anything: it lifts dark tiles and darkens light ones
-      // letters always lift toward white and the ring around them always sinks, so the word reads the same on any colour
-      if (n === 4) c = mixc(c, [8, 8, 10], 0.3 + h * 0.38);
-      else if (n) c = mixc(c, [246, 246, 244], 0.46 + n * 0.12);
+      // letters lift gently toward white, the same way on any colour
+      if (n) c = mixc(c, [246, 246, 244], 0.3 + n * 0.1);
       colors[k] = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`;
     }
     return colors[k];
@@ -175,6 +176,8 @@ const field = (function () {
     GAP = G < 12 ? 1 : 2;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    sv.width = cv.width; sv.height = cv.height;
+    sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cols = Math.ceil(W / G) + 1; rows = Math.ceil(H / G) + 1;
     ox = Math.round((W - cols * G) / 2); oy = Math.round((H - rows * G) / 2);
     const keep = eTo ? edgeGoal : W;
@@ -206,12 +209,7 @@ const field = (function () {
       for (let c = 0; c < cols; c++) {
         const x = ox + c * G, cxx = x + G / 2;
         if (cxx < e) { off.push(x, y); continue; }
-        // two layers of drifting noise, plus a slow wave folded through them (in screen pixels, so tile size doesn't matter)
-        const n1 = vnoise(cxx * 0.0045 + t * 0.045, cyy * 0.0045 - t * 0.02, t * 0.05);
-        const n2 = vnoise(cxx * 0.011 + 11, cyy * 0.011 + t * 0.03, t * 0.09 + 5);
-        const wave = 0.5 + 0.5 * Math.sin(cxx * 0.007 + cyy * 0.004 + t * 0.35 + n1 * 4);
-        // mostly dark, with light only at the peaks
-        let h = Math.pow(sm(clamp01((n1 * 0.62 + n2 * 0.23 + wave * 0.15 - 0.2) / 0.62)), 1.55);
+        let h = heatAt(cxx, cyy, t);
         for (let i = 0; i < stamps.length; i++) {
           const st = stamps[i], d2 = (cxx - st[0]) ** 2 + (cyy - st[1]) ** 2;
           if (d2 < wakeLim) h += 0.6 * Math.exp(-d2 / wakeS2) * Math.pow(1 - (t - st[2]), 1.5);
@@ -225,11 +223,11 @@ const field = (function () {
         let n = 0;
         const on = nameHit(nameAt, c, r) * nOn + nameHit(nameFrom, c, r) * nOff;
         if (on > 0.02) n = Math.max(1, Math.min(3, Math.round(on * (1 + pulse * 2))));
-        else if (nameHalo(nameAt, c, r) * nOn + nameHalo(nameFrom, c, r) * nOff > 0.5) n = 4;
         const k = (n * 5 + m) * LEVELS + Math.round(h * (LEVELS - 1));
         (buckets[k] || (buckets[k] = [])).push(x, y);
       }
     }
+    drawSweep(t, s);
     ctx.clearRect(0, 0, W, H);
     const rr = Math.min(2, s * 0.12);
     const rect = (x, y) => { if (ctx.roundRect) ctx.roundRect(x, y, s, s, rr); else ctx.rect(x, y, s, s); };
@@ -248,6 +246,47 @@ const field = (function () {
       for (let i = 0; i < b.length; i += 2) rect(b[i], b[i + 1]);
       ctx.fill();
     }
+  }
+
+  const BAND = 10, SWEEP_DUR = 0.85;
+  function startSweep(x0, x1, onMove, onDone) {
+    if (sweep) finishSweep();
+    if (reduceMotion) { onMove(1e5); onDone(); return; }
+    const me = { c0: Math.max(0, Math.round((x0 - ox) / G)), c1: Math.min(cols - 1, Math.round((x1 - ox) / G) - 1), t0: now(), seed: Math.random() * 1000, onMove, onDone };
+    sweep = me;
+    // if frames stall (a throttled tab), never leave the swap half done
+    setTimeout(() => { if (sweep === me) finishSweep(); }, (SWEEP_DUR + 0.6) * 1000);
+    kick();
+  }
+  function finishSweep() {
+    if (!sweep) return;
+    const done = sweep.onDone;
+    sweep = null;
+    sctx.clearRect(0, 0, W, H);
+    done();
+  }
+  function drawSweep(t, s) {
+    if (!sweep) return;
+    sctx.clearRect(0, 0, W, H);
+    const p = clamp01((t - sweep.t0) / SWEEP_DUR);
+    const y = -BAND * G + (H + 2 * BAND * G) * ease(p);   // the band's middle, top of the screen to below the bottom
+    sweep.onMove(y);
+    const mid = Math.round((y - oy) / G), sd = sweep.seed, rr = Math.min(2, s * 0.12);
+    for (let c = sweep.c0 - 1; c <= sweep.c1 + 1; c++) {
+      const top = mid - BAND / 2 - Math.floor(hashf(sd + c * 1.3) * 3);
+      const bot = mid + BAND / 2 + Math.floor(hashf(sd + c * 2.9 + 5) * 3);
+      for (let r = Math.max(0, top); r <= Math.min(rows - 1, bot); r++) {
+        // now and then a row pokes one tile past the column's edges
+        if ((c < sweep.c0 || c > sweep.c1) && hashf(sd + r * 4.1 + c * 0.7) > 0.3) continue;
+        const x = ox + c * G, yy = oy + r * G;
+        const col = rampAt(palTo, clamp01(0.25 + heatAt(x + G / 2, yy + G / 2, t) * 0.75));
+        sctx.fillStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
+        sctx.beginPath();
+        if (sctx.roundRect) sctx.roundRect(x, yy, s, s, rr); else sctx.rect(x, yy, s, s);
+        sctx.fill();
+      }
+    }
+    if (p >= 1) finishSweep();
   }
 
   function loop() {
@@ -274,10 +313,10 @@ const field = (function () {
     }, { passive: true });
     cv.addEventListener("pointerdown", (e) => { ripples.push([e.clientX, e.clientY, now()]); if (ripples.length > 4) ripples.shift(); });
   }
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) kick(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) finishSweep(); else kick(); });
 
   size();
-  return { size, setEdge, setPalette, setStage, pulseName, start, redraw: kick };
+  return { size, setEdge, setPalette, setStage, pulseName, start, redraw: kick, sweep: startSweep, endSweep: finishSweep };
 })();
 
 // ---------- columns: which are open comes from the address, so links, back and forward all just work ----------
@@ -301,6 +340,7 @@ const field = (function () {
     p._tok = (p._tok || 0) + 1;
     p.classList.remove("is-entering", "is-leaving", "is-swapping", "is-fading");
     p.hidden = false;
+    p.style.clipPath = "";
     p.style.setProperty("--i", depth);
     p.style.zIndex = String(20 - depth);
     p.style.order = String(depth);
@@ -314,6 +354,7 @@ const field = (function () {
   function hide(p, cls) {
     p._tok = (p._tok || 0) + 1;
     p.classList.remove("is-entering", "is-swapping");
+    p.style.clipPath = "";
     if (!cls) { p.hidden = true; p.classList.remove("is-leaving", "is-fading"); return; }
     const tok = p._tok;
     p.style.zIndex = String(parseInt(p.style.zIndex || "10", 10) - 1);
@@ -343,8 +384,27 @@ const field = (function () {
     while (k < stack.length && k < next.length && stack[k] === next[k]) k++;
     const leaving = stack.slice(k), entering = next.slice(k);
     const swap = leaving.length > 0 && entering.length > 0;
-    leaving.forEach((id) => hide(panes[id], !animate ? null : wide ? (swap ? "is-fading" : "is-leaving") : (swap ? null : "is-fading")));
-    entering.forEach((id, j) => show(panes[id], k + j, !animate ? null : swap && j === 0 ? "is-swapping" : "is-entering"));
+    // on wide screens a sibling swap happens under a band of tiles sweeping down the column
+    const band = wide && animate && swap;
+    field.endSweep();
+    leaving.forEach((id, j) => {
+      if (band && j === 0) return;
+      hide(panes[id], !animate ? null : wide ? "is-leaving" : swap ? null : "is-fading");
+    });
+    entering.forEach((id, j) => show(panes[id], k + j, !animate ? null : swap && j === 0 ? (band ? null : "is-swapping") : "is-entering"));
+    if (band) {
+      const oldP = panes[leaving[0]], newP = panes[entering[0]];
+      const otok = (oldP._tok = (oldP._tok || 0) + 1), ntok = newP._tok;
+      oldP.style.zIndex = String(19 - k);          // the old one waits underneath until the band has passed
+      newP.style.clipPath = "inset(0 0 100% 0)";
+      const r = newP.getBoundingClientRect();
+      field.sweep(r.left, r.right, (y) => {
+        if (newP._tok === ntok) newP.style.clipPath = `inset(0 0 ${Math.max(0, r.height - y)}px 0)`;
+      }, () => {
+        if (newP._tok === ntok) newP.style.clipPath = "";
+        if (oldP._tok === otok) oldP.hidden = true;
+      });
+    }
     const before = stack;
     stack = next.slice();
     const top = stack[stack.length - 1];
@@ -475,7 +535,7 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
   if (!btn) return;
   const TRACK = "https://soundcloud.com/bloodorange/champagne-coast";
   const KEY = "vc-sound";
-  const VOLUME = 35;
+  const VOLUME = 60;
   const FADE_IN = 4000;
   const FADE_OUT = 1100;
   let widget = null, frame = null, ready = null, fadeTimer = 0, checkTimer = 0, level = 0, playing = false, offered = false;
