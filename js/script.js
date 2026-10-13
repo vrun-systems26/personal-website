@@ -22,6 +22,8 @@ const PAL = {
   maglift: { ramp: ["#350e0c", "#7a1b15", "#d2362b", "#f48b81", "#ffdedb"], accent: "#f69a91" },
   mars: { ramp: ["#30170b", "#6b2e11", "#b5561f", "#e79b6c", "#fbe2d2"], accent: "#eba47a" },
   mouse: { ramp: ["#0a2b2d", "#0f5a5e", "#16a0a4", "#63d6d8", "#d4f6f6"], accent: "#6fdadc" },
+  dial: { ramp: ["#2e1411", "#6b2b22", "#cf5a43", "#f59a86", "#ffe1d9"], accent: "#f6a592" },
+  wattwatch: { ramp: ["#0b2233", "#124766", "#1f86b8", "#6cc6ee", "#dcf3ff"], accent: "#7ccdf0" },
 };
 Object.values(PAL).forEach((p) => (p.stops = p.ramp.map(hex)));
 
@@ -268,11 +270,11 @@ const field = (function () {
   document.querySelectorAll(".pane[data-pane]").forEach((p) => (panes[p.dataset.pane] = p));
   const ROUTES = {
     "": ["index"],
-    fetch: ["index", "fetch"], ceres: ["index", "ceres"], sweeper: ["index", "sweeper"],
+    fetch: ["index", "fetch"], ceres: ["index", "ceres"], sweeper: ["index", "sweeper"], dial: ["index", "dial"],
     builds: ["index", "builds"], awards: ["index", "awards"],
     "builds/arm": ["index", "builds", "arm"], "builds/eclipse": ["index", "builds", "eclipse"],
     "builds/maglift": ["index", "builds", "maglift"], "builds/mars": ["index", "builds", "mars"],
-    "builds/mouse": ["index", "builds", "mouse"],
+    "builds/mouse": ["index", "builds", "mouse"], "builds/wattwatch": ["index", "builds", "wattwatch"],
   };
   const parse = () => ROUTES[location.hash.replace(/^#\/?/, "").replace(/\/$/, "")] || ["index"];
   const hrefFor = (stack) => "#/" + (Object.keys(ROUTES).find((k) => ROUTES[k].join() === stack.join()) || "");
