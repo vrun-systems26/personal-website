@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Bricolage+Grotesque:opsz,wght@12..96,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=762">
+<link rel="stylesheet" href="css/style.css?v=770">
 <noscript><style>.pane[hidden] { display: block !important; } .close { display: none !important; }</style></noscript>
 
 <script type="application/ld+json">
@@ -69,6 +69,7 @@
       </nav>
       <nav class="list" aria-label="More">
         <a href="#/builds" data-to="builds">Side builds</a>
+        <a href="#/now" data-to="now">Currently</a>
         <a href="#/awards" data-to="awards">Awards</a>
       </nav>
 
@@ -110,6 +111,22 @@
     </div>
   </section>
 
+  <!-- ============ CURRENTLY ============ -->
+  <section class="pane" data-pane="now" aria-labelledby="h-now" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-now" tabindex="-1">Currently</h2>
+        <a class="close" href="#/" aria-label="Close currently"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <ul class="notes">
+        <li><b>Quicksilver 604</b><span>My school's robotics team. I also volunteer teaching LEGO robotics to elementary and middle schoolers.</span></li>
+        <li><b>Synopsys Championship</b><span>Structure-Borne Vibration Communication and Localization for In-Pipe Inspection Robots</span></li>
+        <li><b>Hackathon Club</b><span>Co-founder and vice president. About 40 members; we teach students to build projects and win hackathons.</span></li>
+        <li><b>Speech &amp; Debate</b><span>Public forum and impromptu.</span></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- ============ AWARDS (all of them live here, nowhere else) ============ -->
   <section class="pane" data-pane="awards" aria-labelledby="h-awards" hidden>
     <div class="pane-in">
@@ -122,6 +139,7 @@
         <li><span class="place">2nd</span><div><b>Open Hardware, Berkeley Robotics Hackathon</b><span>Ceres &middot; 80+ teams, high schoolers only</span></div></li>
         <li><span class="place">2nd</span><div><b>Interactive Learning, Milpitas Hacks</b><span>Street Sweeper &middot; 220+ participants</span></div></li>
         <li><span class="place">2nd</span><div><b>Leland High School Science Fair</b><span>MagLift &middot; 30+ submissions</span></div></li>
+        <li><span class="place">1st</span><div><b>Dan black belt, Taekwondo</b><span>Testing for 2nd Dan in December</span></div></li>
       </ol>
     </div>
   </section>
@@ -320,6 +338,6 @@
 
 <div class="toast" role="status" aria-live="polite"></div>
 
-<script src="js/script.js?v=762"></script>
+<script src="js/script.js?v=770"></script>
 </body>
 </html>

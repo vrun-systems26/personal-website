@@ -13,6 +13,7 @@ const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), pa
 const PAL = {
   index: { ramp: ["#1b1c20", "#303238", "#555961", "#979ba4", "#eceef1"], accent: "#e4e6ea" },
   builds: { ramp: ["#241b40", "#46308a", "#7650dc", "#b095ff", "#ebe2ff"], accent: "#c2adff" },
+  now: { ramp: ["#221d16", "#4a3f30", "#8a7a60", "#cbb994", "#f5ecd9"], accent: "#d9c7a0" },
   awards: { ramp: ["#33260a", "#735208", "#c68a0e", "#f0c444", "#fff1bd"], accent: "#f0c444" },
   fetch: { ramp: ["#0f2b20", "#15573a", "#1f9a60", "#5fd79a", "#d6f7e6"], accent: "#6fdca5" },
   ceres: { ramp: ["#232a0e", "#4a5d16", "#83a022", "#c2dc5c", "#eff7ca"], accent: "#c2dc5c" },
@@ -271,7 +272,7 @@ const field = (function () {
   const ROUTES = {
     "": ["index"],
     fetch: ["index", "fetch"], ceres: ["index", "ceres"], sweeper: ["index", "sweeper"], dial: ["index", "dial"],
-    builds: ["index", "builds"], awards: ["index", "awards"],
+    builds: ["index", "builds"], awards: ["index", "awards"], now: ["index", "now"],
     "builds/arm": ["index", "builds", "arm"], "builds/eclipse": ["index", "builds", "eclipse"],
     "builds/maglift": ["index", "builds", "maglift"], "builds/mars": ["index", "builds", "mars"],
     "builds/mouse": ["index", "builds", "mouse"], "builds/wattwatch": ["index", "builds", "wattwatch"],
