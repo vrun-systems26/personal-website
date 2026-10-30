@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Bricolage+Grotesque:opsz,wght@12..96,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=770">
+<link rel="stylesheet" href="css/style.css?v=780">
 <noscript><style>.pane[hidden] { display: block !important; } .close { display: none !important; }</style></noscript>
 
 <script type="application/ld+json">
@@ -66,6 +66,7 @@
         <a href="#/ceres" data-to="ceres">Ceres</a>
         <a href="#/sweeper" data-to="sweeper">Street Sweeper</a>
         <a href="#/dial" data-to="dial">Dial</a>
+        <a href="#/arrival" data-to="arrival">Arrival</a>
       </nav>
       <nav class="list" aria-label="More">
         <a href="#/builds" data-to="builds">Side builds</a>
@@ -231,6 +232,26 @@
     </div>
   </section>
 
+  <section class="pane" data-pane="arrival" aria-labelledby="h-arrival" hidden>
+    <div class="pane-in">
+      <header class="pane-head">
+        <h2 id="h-arrival" tabindex="-1">Arrival</h2>
+        <a class="close" href="#/" aria-label="Close Arrival"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></a>
+      </header>
+      <p class="meta">Team of 30 &middot; people &amp; safety lead &middot; Nebius &times; NVIDIA AI Hackathon</p>
+      <figure class="gallery">
+        <img class="main" src="images/arrival-1.jpg" alt="One iPhone scan of a kitchen drawn up as a floor plan, with the scan path" loading="lazy">
+        <div class="thumbs">
+          <button type="button" aria-pressed="true" aria-label="Photo 1"><img src="images/arrival-1.jpg" alt="One iPhone scan of a kitchen drawn up as a floor plan, with the scan path" loading="lazy"></button>
+          <button type="button" aria-pressed="false" aria-label="Photo 2"><img src="images/arrival-2.jpg" alt="The kitchen as a physics twin, every door and drawer a joint the simulator can move" loading="lazy"></button>
+        </div>
+      </figure>
+      <p>One iPhone scan of a kitchen becomes a physics twin, a robot arm working around walking people, and a dataset NVIDIA GR00T trains on. Fine-tuned on it, GR00T passed 39 of 48 trials, up from 26. I stress-tested every room (288 of 288 runs, zero contacts with people), hunted down bugs and gaps, and recorded much of the demo video.</p>
+      <dl class="spec"><div><dt>Led</dt><dd>People &amp; safety</dd></div><div><dt>Built</dt><dd>RoboCasa layouts within 2.5 cm; 104 demos from 14 human ones</dd></div><div><dt>Fixed</dt><dd>Walker contacts 3 &rarr; 0; Franka oven 12/14 &rarr; 14/14</dd></div><div><dt>Shipped</dt><dd>41 of 418 merged PRs</dd></div></dl>
+      <p class="out"><a href="https://github.com/AvnehSBhatia/ExeaLabsNvidiaHacks" target="_blank" rel="noopener">GitHub &#8599;</a><a href="https://arrival.exealabs.org" target="_blank" rel="noopener">Live &#8599;</a><a href="https://www.youtube.com/watch?v=EdZCukpGx00" target="_blank" rel="noopener">Demo &#8599;</a></p>
+    </div>
+  </section>
+
   <section class="pane" data-pane="arm" aria-labelledby="h-arm" hidden>
     <div class="pane-in">
       <header class="pane-head">
@@ -338,6 +359,6 @@
 
 <div class="toast" role="status" aria-live="polite"></div>
 
-<script src="js/script.js?v=770"></script>
+<script src="js/script.js?v=780"></script>
 </body>
 </html>

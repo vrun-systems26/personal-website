@@ -23,6 +23,7 @@ const PAL = {
   maglift: { ramp: ["#350e0c", "#7a1b15", "#d2362b", "#f48b81", "#ffdedb"], accent: "#f69a91" },
   mars: { ramp: ["#30170b", "#6b2e11", "#b5561f", "#e79b6c", "#fbe2d2"], accent: "#eba47a" },
   mouse: { ramp: ["#0a2b2d", "#0f5a5e", "#16a0a4", "#63d6d8", "#d4f6f6"], accent: "#6fdadc" },
+  arrival: { ramp: ["#161b22", "#2a3442", "#4f6177", "#8fa3bb", "#dde6f0"], accent: "#a9bad0" },
   dial: { ramp: ["#2e1411", "#6b2b22", "#cf5a43", "#f59a86", "#ffe1d9"], accent: "#f6a592" },
   wattwatch: { ramp: ["#0b2233", "#124766", "#1f86b8", "#6cc6ee", "#dcf3ff"], accent: "#7ccdf0" },
 };
@@ -271,7 +272,7 @@ const field = (function () {
   document.querySelectorAll(".pane[data-pane]").forEach((p) => (panes[p.dataset.pane] = p));
   const ROUTES = {
     "": ["index"],
-    fetch: ["index", "fetch"], ceres: ["index", "ceres"], sweeper: ["index", "sweeper"], dial: ["index", "dial"],
+    fetch: ["index", "fetch"], ceres: ["index", "ceres"], sweeper: ["index", "sweeper"], dial: ["index", "dial"], arrival: ["index", "arrival"],
     builds: ["index", "builds"], awards: ["index", "awards"], now: ["index", "now"],
     "builds/arm": ["index", "builds", "arm"], "builds/eclipse": ["index", "builds", "eclipse"],
     "builds/maglift": ["index", "builds", "maglift"], "builds/mars": ["index", "builds", "mars"],
