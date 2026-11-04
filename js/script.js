@@ -118,7 +118,7 @@ const deck = document.getElementById("deck"), cv = document.getElementById("c"),
 deck.innerHTML = `<aside class="side card" id="s"><h1 class="name">${S.name()}</h1><p class="bio">${S.esc(SITE.bio)}</p>${S.nav()}<div class="foot"><div class="foot-row">${S.links()}<div class="ctl"><button type="button" class="theme" aria-label="Switch background"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3.8a8.2 8.2 0 0 1 0 16.4z" fill="currentColor"/></svg></button>${S.soundBtn()}</div></div>${S.credit()}</div></aside><section class="pop card" id="stack" hidden></section><section class="pop card" id="pop" hidden></section>`;
 const pop = document.getElementById("pop"), stack = document.getElementById("stack");
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const phone = () => innerWidth < 900;
+const phone = () => innerWidth < 1100;   // below this the graphic gets its own section on top, with cards under it
 
 // ---------- the dots ----------
 const CAP = Math.min(250000, Math.round(Math.max(phone() ? 56000 : 115000, innerWidth * innerHeight * (phone() ? 0.17 : 0.16))));
@@ -138,15 +138,12 @@ function ink(r, g, b, out) {
   const k = paper ? Math.min(1, 118 / m) : (m < 190 ? 190 / m : 255 / Math.max(m, 255));
   out[0] = Math.max(0, Math.min(255, r * k)); out[1] = Math.max(0, Math.min(255, g * k)); out[2] = Math.max(0, Math.min(255, b * k));
 }
-let cross = "#e4e6ea", accent = "#e4e6ea";
 function paintTheme() {
   document.documentElement.dataset.bg = paper ? "paper" : "black";
   const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = paper ? "#ebe4d4" : "#050505";
   document.querySelector('meta[name="color-scheme"]').content = paper ? "light" : "dark";
-  setCross();
 }
-function setCross() { const c = hexRGB(accent); cross = paper ? `rgb(${c[0] * 0.5 | 0},${c[1] * 0.5 | 0},${c[2] * 0.5 | 0})` : accent; }
-function setAccent(id) { accent = (SITE.palette[id] || SITE.palette.index).accent; document.documentElement.style.setProperty("--ac", accent); setCross(); favicon(id); }
+function setAccent(id) { document.documentElement.style.setProperty("--ac", (SITE.palette[id] || SITE.palette.index).accent); }
 function recolor() {
   const o = [0, 0, 0];
   if (!lastRaw) return;
@@ -156,16 +153,21 @@ function recolor() {
 
 function size() {
   dpr = Math.min(devicePixelRatio || 1, 2);
-  const W = cv.clientWidth, H = cv.clientHeight;
-  bw = Math.round(W * dpr); bh = Math.round(H * dpr); cv.width = bw; cv.height = bh;
+  // a tab loading in the background can report no size yet; never let that stop the page
+  const W = cv.clientWidth || innerWidth || 800, H = cv.clientHeight || innerHeight || 600;
+  bw = Math.max(1, Math.round(W * dpr)); bh = Math.max(1, Math.round(H * dpr)); cv.width = bw; cv.height = bh;
   image = x.createImageData(bw, bh); d32 = new Uint32Array(image.data.buffer);
 }
-// where a picture goes: large, bleeding softly behind the panels on a computer; the open top of the screen on a phone
-function photoBox() {
-  const W = cv.clientWidth, H = cv.clientHeight;
-  if (phone()) { const top = deckTop(), w = Math.min(W + 40, top * 1.34), h = w * 3 / 4; box = { x: ((W - w) / 2) * dpr, y: (Math.max(8, (top - h) / 2)) * dpr, w: w * dpr, h: h * dpr }; return; }
-  const left = 270, right = W - 390, aw = right - left, h0 = H * 0.98, w = Math.min(aw * 1.3, h0 * 4 / 3), h = w * 3 / 4;
-  box = { x: (left + (aw - w) / 2) * dpr, y: ((H - h) / 2) * dpr, w: w * dpr, h: h * dpr };
+// where a picture goes: fitted whole inside the space that belongs to the graphic, never under the text
+function freeSpace() {
+  const W = cv.clientWidth || innerWidth || 800, H = cv.clientHeight || innerHeight || 600;
+  if (phone()) return { l: 10, r: W - 10, t: 10, b: H - 10 };
+  const panel = document.body.classList.contains("is-open") ? pop : document.getElementById("s"), info = panel.offsetLeft + panel.offsetWidth;   // layout position, unaffected by the slide-in
+  return { l: info + 28, r: W - 28, t: 28, b: H - 28 };
+}
+function photoBox(aspect) {
+  const f = freeSpace(), aw = f.r - f.l, ah = f.b - f.t, w = Math.min(aw, ah * aspect), h = w / aspect;
+  box = { x: (f.l + (aw - w) / 2) * dpr, y: (f.t + (ah - h) / 2) * dpr, w: w * dpr, h: h * dpr };
 }
 const deckTop = () => parseFloat(getComputedStyle(deck).paddingTop) || 300;
 
@@ -188,8 +190,8 @@ function sample(draw, ramp) {
     const a = Math.max(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), b0 = Math.min(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), sat = a ? (a - b0) / a : 0;
     if (ramp) { if (Math.random() > 0.34 * Math.pow(l, 1.7) + Math.min(1, e * 7) * 0.85) continue; }
     else {
-      const eu = u / cw - 0.5, ev = v / ch - 0.5, fall = Math.min(1, Math.max(0, 1.5 - Math.hypot(eu * 1.45, ev * 1.45) * 2));
-      if (Math.random() > fall * (0.05 * l * l + Math.min(1, e * 9) * 0.9 + Math.pow(sat, 1.4) * 0.55 * (0.35 + l))) continue;
+      const edge = Math.min(u, cw - u, v, ch - v) / cw, fall = Math.min(1, 0.55 + edge / 0.012);
+      if (Math.random() > fall * (0.03 + 0.2 * Math.pow(l, 1.25) + Math.min(1, e * 9) * 0.9 + Math.pow(sat, 1.4) * 0.5 * (0.35 + l))) continue;
     }
     let r = d[i * 4], g = d[i * 4 + 1], bl = d[i * 4 + 2];
     if (ramp) { const t = Math.min(1, (u / cw) * 0.6 + Math.random() * 0.4), p = ramp[t < 0.5 ? 0 : 1], q = ramp[t < 0.5 ? 1 : 2], f = t < 0.5 ? t * 2 : t * 2 - 1; r = p[0] + (q[0] - p[0]) * f; g = p[1] + (q[1] - p[1]) * f; bl = p[2] + (q[2] - p[2]) * f; }
@@ -202,8 +204,6 @@ function sample(draw, ramp) {
   return { pos, raw };
 }
 
-const targets = Array.from({ length: 5 }, () => ({ i: 0 }));
-function retarget() { targets.forEach((g) => { g.i = (Math.random() * M) | 0; }); }
 function burst(i, rn, cx, cy) { const a = Math.atan2(py[i] - cy, px[i] - cx) + (rn - 0.5) * 0.8, f = (3 + rn * 11) * dpr; vx[i] += Math.cos(a) * f; vy[i] += Math.sin(a) * f; }
 function setForm(s, m, sp) {
   g3d = null; last = s; lastRaw = s.raw; mode = m; t0 = performance.now(); spin = sp || null; hid.fill(0);
@@ -219,7 +219,7 @@ function setForm(s, m, sp) {
     else dl[i] = 0.7 + rn * 0.5 + u * 0.15;                                           // ring: pulled into a circle first
     if (sp) grp[i] = Math.hypot(hx[i] - sp[0].x, hy[i] - sp[0].y) / sp[0].r <= Math.hypot(hx[i] - sp[1].x, hy[i] - sp[1].y) / sp[1].r ? 0 : 1;
   }
-  recolor(); retarget();
+  recolor();
   if (still) settleNow();
 }
 function settleNow() { for (let i = 0; i < CAP; i++) { px[i] = hx[i]; py[i] = hy[i]; cr[i] = tr[i]; cg[i] = tg[i]; cb[i] = tb[i]; } t0 = performance.now() - 1e5; requestAnimationFrame(frame); }
@@ -278,14 +278,14 @@ function buildGears() {
 function showGears() {
   ++token;
   setAccent("index");
-  const G = g3dBuilt || (g3dBuilt = buildGears()), W = cv.clientWidth, H = cv.clientHeight;
-  const left = phone() ? 6 : 268, right = phone() ? W - 6 : W - 18, top = phone() ? 8 : 10, bot = phone() ? deckTop() - 6 : H - 10;
+  const G = g3dBuilt || (g3dBuilt = buildGears());
+  const f = freeSpace(), left = f.l, right = f.r, top = f.t, bot = f.b;
   const S2 = Math.min((right - left) / (G.a1 - G.a0), (bot - top) / (G.b1 - G.b0));
   G.S = S2 * dpr; G.ox = ((left + right) / 2 - (((G.a0 + G.a1) / 2) * S2)) * dpr; G.oy = ((top + bot) / 2 - (((G.b0 + G.b1) / 2) * S2)) * dpr;
   g3d = G; last = null; lastRaw = G.raw; spin = null; mode = 2; t0 = performance.now(); hid.fill(0);
   const rn = () => Math.random();
   for (let i = 0; i < CAP; i++) { dl[i] = 0.12 + rn() * 0.75; burst(i, rn(), G.ox, G.oy); big[i] = 0; }
-  recolor(); retarget();
+  recolor();
   gearPose(performance.now() / 1000);
   if (still) settleNow();
 }
@@ -318,15 +318,11 @@ function photo(src, cb) { if (cache[src]) return cb(cache[src]); const im = new 
 let token = 0, nextMode = 0;
 function showPhoto(src, m) {
   const me = ++token;
-  photoBox();
-  photo(src, (im) => { if (me !== token) return; setForm(sample((o, w, h) => {
-    const s = Math.max(w / im.width, h / im.height), dw = im.width * s, dh = im.height * s;
-    o.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh);
-  }), m === undefined ? nextMode++ % 5 : m); });
+  photo(src, (im) => { if (me !== token) return; photoBox(im.width / im.height); setForm(sample((o, w, h) => { o.drawImage(im, 0, 0, w, h); }), m === undefined ? nextMode++ % 5 : m); });
 }
 const rampOf = (id) => { const r = SITE.palette[id].ramp; return [hexRGB(r[2]), hexRGB(r[3]), hexRGB(r[4])]; };
 function showForm(id) {
-  ++token; photoBox();
+  ++token; photoBox(4 / 3);
   const ramp = rampOf(id);
   if (id === "builds") {
     // a coiled spring, seen along its length
@@ -382,18 +378,10 @@ function frame(now) {
     if (sp2 > 16) { const a = (X - vx[i] * 0.6) | 0, b = (Y - vy[i] * 0.6) | 0; if (a >= 0 && b >= 0 && a < bw && b < bh) d32[b * bw + a] = col; }
   }
   x.putImageData(image, 0, 0);
-  // little targets riding on a few dots, tied together with a thin line
-  x.strokeStyle = cross; x.lineWidth = dpr;
-  x.globalAlpha = 0.3; x.beginPath();
-  targets.forEach((g, k) => { x[k ? "lineTo" : "moveTo"](px[g.i], py[g.i]); }); x.stroke();
-  x.globalAlpha = 0.95; x.beginPath();
-  const s = 9 * dpr, c = 4 * dpr;
-  targets.forEach((g) => { const a = px[g.i], b = py[g.i]; [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([u, v]) => { x.moveTo(a + u * s, b + v * (s - c)); x.lineTo(a + u * s, b + v * s); x.lineTo(a + u * (s - c), b + v * s); }); }); x.stroke();
-  x.globalAlpha = 1;
   // a slower machine simply gets fewer dots rather than a choppy picture
   if (fl && now - fl < 200 && now - fl > 30) slow++; else if (slow > 0) slow -= 0.25;
   fl = now;
-  if (slow > 45 && M > 26000) { M = Math.round(M * 0.8); slow = 0; retarget(); }
+  if (slow > 45 && M > 26000) { M = Math.round(M * 0.8); slow = 0; }
   if (!still) requestAnimationFrame(frame);
 }
 
@@ -408,7 +396,7 @@ function route(id) {
   pop.classList.remove("in"); void pop.offsetWidth; pop.classList.add("in");
   setAccent(id);
   if (S.P[id]) showPhoto(S.img(S.P[id].images[0].src)); else showForm(id);
-  if (phone() && booted) pop.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+  if (phone() && booted) window.scrollTo({ top: 0, behavior: still ? "auto" : "smooth" });
 }
 let booted = false;
 size();
@@ -423,20 +411,10 @@ document.querySelector(".theme").addEventListener("click", () => {
 pop.addEventListener("photo", (e) => showPhoto(e.detail));
 S.router(route);
 booted = true;
-if (phone() && S.current() !== "index") document.fonts && document.fonts.ready.then(() => pop.scrollIntoView({ block: "start" }));
 if (!still) requestAnimationFrame(frame);
+if (!cv.clientWidth) addEventListener("load", () => { size(); route(S.current()); }, { once: true });
 let rt = 0, lastW = innerWidth;
 addEventListener("resize", () => { if (phone() && innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rt); rt = setTimeout(() => { size(); route(S.current()); }, 160); });
-
-// favicon: a small grid of tiles in the open page's colours
-function favicon(key) {
-  const link = document.getElementById("favicon"), pal = SITE.palette[key];
-  if (!link || !pal) return;
-  const c = document.createElement("canvas"); c.width = c.height = 64;
-  const o = c.getContext("2d"), pick = [[1, 2, 3], [2, 4, 2], [3, 2, 1]];
-  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { o.fillStyle = pal.ramp[pick[i][j]]; o.beginPath(); if (o.roundRect) o.roundRect(1 + j * 21, 1 + i * 21, 20, 20, 4); else o.rect(1 + j * 21, 1 + i * 21, 20, 20); o.fill(); }
-  link.href = c.toDataURL("image/png");
-}
 
 // the same opt-in SoundCloud player as the live site: quiet fades, a credit while it plays,
 // a thin strip if a browser needs a tap inside it, and it remembers being on for the next visit

@@ -23,9 +23,9 @@ em { font-style: inherit; }
 :focus-visible { outline: 2px solid var(--act); outline-offset: 3px; }
 ::selection { background: var(--act); color: var(--bk); }
 
-#c { position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100lvh; display: block; cursor: crosshair; }
+#c { position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100lvh; display: block; }
 
-.side { position: fixed; left: 0; top: 0; bottom: 0; width: 310px; display: flex; flex-direction: column; padding: 26px; overflow-y: auto; scrollbar-width: none; z-index: 2; background: linear-gradient(90deg, var(--card) 76%, transparent); }
+.side { position: fixed; left: 0; top: 0; bottom: 0; width: 270px; display: flex; flex-direction: column; padding: 26px 22px 22px 26px; overflow-y: auto; scrollbar-width: none; z-index: 3; background: var(--bk); border-right: 1px solid var(--rule); transition: background 0.7s, border-color 0.7s; }
 .name { font: 400 17px/1.4 var(--mono); letter-spacing: 0.32em; text-transform: uppercase; }
 .name span, .name em { display: block; }
 .bio { margin: 16px 0 22px; color: var(--mu); }
@@ -55,9 +55,9 @@ em { font-style: inherit; }
 .now:hover { color: var(--act); }
 .sound-note { font-size: 13.5px; color: var(--mu); }
 
-.pop { position: fixed; right: 0; top: 0; bottom: 0; width: 400px; padding: 26px 26px 40px 54px; overflow-y: auto; background: linear-gradient(90deg, transparent, var(--card) 11%); z-index: 3; scrollbar-width: none; }
+.pop { position: fixed; left: 270px; top: 0; bottom: 0; width: 350px; padding: 26px 24px 40px; overflow-y: auto; background: var(--bk); border-right: 1px solid var(--rule); z-index: 2; scrollbar-width: thin; scrollbar-color: var(--rule) transparent; transition: background 0.7s, border-color 0.7s; }
 .pop.in { animation: slide 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
-@keyframes slide { from { transform: translateX(60px); opacity: 0; } }
+@keyframes slide { from { transform: translateX(-100%); } }
 .pane-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
 .pane-head h2 { min-width: 0; overflow-wrap: anywhere; font: 400 20px/1.35 var(--mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--act); padding-top: 8px; }
 .close { flex: 0 0 auto; width: 44px; height: 44px; display: grid; place-items: center; color: var(--mu); }
@@ -65,12 +65,12 @@ em { font-style: inherit; }
 .close svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .meta { color: var(--mu); margin-bottom: 14px; }
 .gallery { margin-bottom: 16px; }
-.gallery .main { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.gallery .main { width: 100%; height: auto; max-height: 52vh; object-fit: contain; }
 .thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .thumbs button { width: 60px; height: 44px; overflow: hidden; border: 1px solid var(--rule); opacity: 0.7; transition: opacity 0.2s; }
 .thumbs button:hover { opacity: 1; }
 .thumbs button[aria-pressed="true"] { border-color: var(--act); opacity: 1; }
-.thumbs img { width: 100%; height: 100%; object-fit: cover; }
+.thumbs img { width: 100%; height: 100%; object-fit: contain; }
 .body { margin-bottom: 14px; }
 .spec { margin-bottom: 10px; }
 .spec div { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rule); }
@@ -91,19 +91,20 @@ em { font-style: inherit; }
 .toast { position: fixed; left: 50%; bottom: 24px; z-index: 90; max-width: calc(100vw - 32px); padding: 12px 18px; background: var(--w); color: var(--bk); font-size: 14.5px; opacity: 0; transform: translate(-50%, 16px); pointer-events: none; transition: opacity 0.25s, transform 0.3s; }
 .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
 
-/* ---------- phones and small tablets: dust up top, rounded cards stacked below ---------- */
-@media (max-width: 899px) {
+/* ---------- phones and tablets: the graphic has its own section on top; solid cards below, the open one first ---------- */
+@media (max-width: 1099px) {
+  :root { --top: clamp(270px, 54svh, 560px); }
   html, body { height: auto; }
   body { overflow: auto; overflow-x: hidden; }
-  .deck { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 16px; max-width: 640px; margin: 0 auto; padding: clamp(280px, 56svh, 520px) 12px 28px; }
-  .card { border: 1px solid var(--rule); border-radius: 16px; background: var(--card); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-  .side, .pop { position: relative; inset: auto; width: auto; overflow: visible; padding: 24px 20px 18px; }
+  #c { position: absolute; height: var(--top); }
+  .deck { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; max-width: 680px; margin: 0 auto; padding: var(--top) 12px 28px; }
+  .card { border: 1px solid var(--rule); border-radius: 16px; background: var(--bk); }
+  .side, .pop { position: relative; inset: auto; width: auto; overflow: visible; padding: 22px 20px 16px; }
   .name { font-size: 18px; }
   .foot { margin-top: 4px; }
-  .pop { scroll-margin-top: 44svh; }
+  body.is-open .pop { order: 1; } body.is-open #stack { order: 2; } body.is-open .side { order: 3; }
   .pop.in { animation: rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1); }
   @keyframes rise { from { transform: translateY(-14px); opacity: 0; } }
-  .side .list a:hover, .side .list a.is-open { padding-left: 16px; }
   .pane-head { margin-bottom: 6px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
