@@ -168,6 +168,11 @@ const SITE = {
     "sub": "Co-founder and vice president. About 40 members; we teach students to build projects and win hackathons."
    },
    {
+    "title": "Almaden Hacks",
+    "href": "https://almadenhacks.com/",
+    "sub": "Helping host this high school hackathon for software and hardware projects in San Jose."
+   },
+   {
     "title": "Speech & Debate",
     "sub": "Public forum and impromptu."
    }

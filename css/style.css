@@ -81,6 +81,8 @@ em { font-style: inherit; }
 .awards li { display: grid; grid-template-columns: 58px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
 .notes li { padding: 12px 0; border-bottom: 1px solid var(--rule); }
 .awards b, .notes b, .sub { display: block; }
+.ext { display: inline-flex; align-items: center; min-height: 44px; margin: -11px 0 -8px; text-underline-offset: 4px; }
+.ext:hover { color: var(--act); }
 .place { color: var(--act); letter-spacing: 0.1em; }
 .sub { color: var(--mu); }
 .pop .list a { color: var(--w); }

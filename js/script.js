@@ -30,7 +30,7 @@ const S = (() => {
   const project = (id) => { const p = P[id]; return meta(p) + gallery(p) + text(p) + spec(p) + out(p); };
   const buildsList = () => `<nav class="list" aria-label="${esc(B.title)}">${B.items.map((i) => `<a href="${i.href}" data-to="${i.to}">${esc(i.label)}</a>`).join("")}</nav>`;
   const awards = () => `<ol class="awards">${SITE.awards.items.map((a) => `<li><span class="place${a.first ? " is-first" : ""}">${esc(a.place)}</span><div><b>${esc(a.title)}</b><span class="sub">${esc(a.sub)}</span></div></li>`).join("")}</ol>`;
-  const notes = () => `<ul class="notes">${SITE.now.items.map((n) => `<li><b>${esc(n.title)}</b><span class="sub">${esc(n.sub)}</span></li>`).join("")}</ul>`;
+  const notes = () => `<ul class="notes">${SITE.now.items.map((n) => `<li><b>${n.href ? `<a class="ext" href="${n.href}">${esc(n.title)} ↗</a>` : esc(n.title)}</b><span class="sub">${esc(n.sub)}</span></li>`).join("")}</ul>`;
   const bodyOf = (id) => (id === "builds" ? buildsList() : id === "awards" ? awards() : id === "now" ? notes() : project(id));
   const closeLink = (id) => `<a class="close" href="${href(parent(id))}" aria-label="Close ${esc(titleOf(id))}">${icon}</a>`;
   const detail = (id) => `<header class="pane-head"><h2 tabindex="-1">${rawTitle(id)}</h2>${closeLink(id)}</header>${bodyOf(id)}`;
