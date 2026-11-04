@@ -1,541 +1,479 @@
 // =========================================================
 // Varun Chilukuri, portfolio
-// columns open side by side (stacked downward on phones) over a moving heat grid
+// pictures made of dust, with a 3D gear train to open
 // =========================================================
 
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const wideQuery = window.matchMedia("(min-width: 1100px)");
-const TAU = Math.PI * 2;
-document.documentElement.classList.add("js-load");
-
-// ---------- palettes: five stops from low to high heat; accent is the text-safe colour for that page ----------
-const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-const PAL = {
-  index: { ramp: ["#1b1c20", "#303238", "#555961", "#979ba4", "#eceef1"], accent: "#e4e6ea" },
-  builds: { ramp: ["#241b40", "#46308a", "#7650dc", "#b095ff", "#ebe2ff"], accent: "#c2adff" },
-  now: { ramp: ["#221d16", "#4a3f30", "#8a7a60", "#cbb994", "#f5ecd9"], accent: "#d9c7a0" },
-  awards: { ramp: ["#33260a", "#735208", "#c68a0e", "#f0c444", "#fff1bd"], accent: "#f0c444" },
-  fetch: { ramp: ["#0f2b20", "#15573a", "#1f9a60", "#5fd79a", "#d6f7e6"], accent: "#6fdca5" },
-  ceres: { ramp: ["#232a0e", "#4a5d16", "#83a022", "#c2dc5c", "#eff7ca"], accent: "#c2dc5c" },
-  sweeper: { ramp: ["#341b07", "#763b08", "#cd6f10", "#f6a84a", "#ffe4c2"], accent: "#f6a84a" },
-  arm: { ramp: ["#34101f", "#761e4b", "#c63c84", "#f18dbf", "#ffdeee"], accent: "#f39bc7" },
-  eclipse: { ramp: ["#151a39", "#262f76", "#4a57c6", "#8f9bf1", "#e0e4ff"], accent: "#a3adf5" },
-  maglift: { ramp: ["#350e0c", "#7a1b15", "#d2362b", "#f48b81", "#ffdedb"], accent: "#f69a91" },
-  mars: { ramp: ["#30170b", "#6b2e11", "#b5561f", "#e79b6c", "#fbe2d2"], accent: "#eba47a" },
-  mouse: { ramp: ["#0a2b2d", "#0f5a5e", "#16a0a4", "#63d6d8", "#d4f6f6"], accent: "#6fdadc" },
-  arrival: { ramp: ["#161b22", "#2a3442", "#4f6177", "#8fa3bb", "#dde6f0"], accent: "#a9bad0" },
-  dial: { ramp: ["#2e1411", "#6b2b22", "#cf5a43", "#f59a86", "#ffe1d9"], accent: "#f6a592" },
-  wattwatch: { ramp: ["#0b2233", "#124766", "#1f86b8", "#6cc6ee", "#dcf3ff"], accent: "#7ccdf0" },
-};
-Object.values(PAL).forEach((p) => (p.stops = p.ramp.map(hex)));
-
-// ---------- the heat grid ----------
-const field = (function () {
-  const cv = document.getElementById("field");
-  const ctx = cv.getContext("2d");
-  const sv = document.getElementById("sweep");
-  const sctx = sv.getContext("2d");
-  let sweep = null;                      // the band crossing a column right now, if any
-  let G = 18, GAP = 2;                   // tile pitch and the gap between tiles
-  let W = 1, H = 1, cols = 0, rows = 0, ox = 0, oy = 0;
-  let eFrom, eTo, eT0, eDelay, pDelay;   // per row: the covered edge and its motion; the palette sweep
-  let edgeGoal = 0;
-  let palFrom = PAL.index, palTo = PAL.index, palT0 = -99;
-  const stamps = [], ripples = [];
-  let running = false, raf = 0;
-  const T0 = performance.now();
-  const now = () => (performance.now() - T0) / 1000;
-  const EDGE_DUR = 0.5, PAL_DUR = 0.32, LEVELS = 40;
-
-  const hash3 = (x, y, z) => {
-    let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(z, 1440662683)) | 0;
-    h = Math.imul(h ^ (h >>> 13), 1274126177);
-    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+const S = (() => {
+  const P = SITE.projects, B = SITE.builds, TAU = Math.PI * 2;
+  const img = (s) => s;
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+  const isBuild = (id) => B.items.some((i) => i.to === id);
+  const parent = (id) => (isBuild(id) ? "builds" : "index");
+  const href = (id) => {
+    if (id === "index") return "#/";
+    const b = B.items.find((i) => i.to === id);
+    return b ? b.href : "#/" + id;
   };
-  const hashf = (v) => { const s = Math.sin(v * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
-  const sm = (f) => f * f * (3 - 2 * f);
-  function vnoise(x, y, z) {
-    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
-    const xf = sm(x - xi), yf = sm(y - yi), zf = sm(z - zi);
-    const l = (a, b, f) => a + (b - a) * f;
-    const c = (dx, dy, dz) => hash3(xi + dx, yi + dy, zi + dz);
-    return l(l(l(c(0, 0, 0), c(1, 0, 0), xf), l(c(0, 1, 0), c(1, 1, 0), xf), yf),
-             l(l(c(0, 0, 1), c(1, 0, 1), xf), l(c(0, 1, 1), c(1, 1, 1), xf), yf), zf);
-  }
-  const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
-  const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const titleOf = (id) => (P[id] ? P[id].title : SITE[id] ? SITE[id].title : SITE.name.join(" "));
+  const rawTitle = (id) => (P[id] ? P[id].rawTitle : esc(titleOf(id)));
+  const ids = () => [...SITE.nav[0].map((n) => n.to), ...B.items.map((i) => i.to)];
 
-  // ----- the name, in 5x7 pixel letters, laid into the grid -----
-  function heatAt(x, y, t) {
-    // two layers of drifting noise, plus a slow wave folded through them (in screen pixels, so tile size doesn't matter)
-    const n1 = vnoise(x * 0.0045 + t * 0.045, y * 0.0045 - t * 0.02, t * 0.05);
-    const n2 = vnoise(x * 0.011 + 11, y * 0.011 + t * 0.03, t * 0.09 + 5);
-    const wave = 0.5 + 0.5 * Math.sin(x * 0.007 + y * 0.004 + t * 0.35 + n1 * 4);
-    // mostly dark, with light only at the peaks
-    return Math.pow(sm(clamp01((n1 * 0.62 + n2 * 0.23 + wave * 0.15 - 0.2) / 0.62)), 1.55);
-  }
+  const gallery = (p) => `<figure class="gallery">
+    <img class="main" src="${img(p.images[0].src)}" alt="${esc(p.images[0].alt)}">
+    ${p.images.length > 1 ? `<div class="thumbs">${p.images.map((m, i) => `<button type="button" aria-pressed="${i === 0}" aria-label="Photo ${i + 1}"><img src="${img(m.src)}" alt="${esc(m.alt)}" loading="lazy"></button>`).join("")}</div>` : ""}
+  </figure>`;
+  const meta = (p) => `<p class="meta">${esc(p.meta)}</p>`;
+  const text = (p) => p.body.map((b) => `<p class="body">${esc(b)}</p>`).join("");
+  const spec = (p) => (p.spec.length ? `<dl class="spec">${p.spec.map(([a, b]) => `<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join("")}</dl>` : "");
+  const out = (p) => (p.out.length ? `<p class="out">${p.out.map((o) => `<a href="${o.href}">${esc(o.label)}</a>`).join("")}</p>` : "");
+  const project = (id) => { const p = P[id]; return meta(p) + gallery(p) + text(p) + spec(p) + out(p); };
+  const buildsList = () => `<nav class="list" aria-label="${esc(B.title)}">${B.items.map((i) => `<a href="${i.href}" data-to="${i.to}">${esc(i.label)}</a>`).join("")}</nav>`;
+  const awards = () => `<ol class="awards">${SITE.awards.items.map((a) => `<li><span class="place${a.first ? " is-first" : ""}">${esc(a.place)}</span><div><b>${esc(a.title)}</b><span class="sub">${esc(a.sub)}</span></div></li>`).join("")}</ol>`;
+  const notes = () => `<ul class="notes">${SITE.now.items.map((n) => `<li><b>${esc(n.title)}</b><span class="sub">${esc(n.sub)}</span></li>`).join("")}</ul>`;
+  const bodyOf = (id) => (id === "builds" ? buildsList() : id === "awards" ? awards() : id === "now" ? notes() : project(id));
+  const closeLink = (id) => `<a class="close" href="${href(parent(id))}" aria-label="Close ${esc(titleOf(id))}">${icon}</a>`;
+  const detail = (id) => `<header class="pane-head"><h2 tabindex="-1">${rawTitle(id)}</h2>${closeLink(id)}</header>${bodyOf(id)}`;
+  const name = () => `<span>${esc(SITE.name[0])}</span> <em>${esc(SITE.name[1])}</em>`;
+  const nav = () => SITE.nav.map((g) => `<nav class="list">${g.map((n) => `<a href="${n.href}" data-to="${n.to}">${esc(n.label)}</a>`).join("")}</nav>`).join("");
+  const links = () => `<nav class="links" aria-label="Elsewhere">${SITE.links.map((l) => `<a href="${l.href}">${esc(l.label)}</a>`).join("")}${SITE.copies.map((c) => `<button type="button" data-copy="${c.copy}" data-done="${esc(c.done)}">${esc(c.label)}</button>`).join("")}</nav>`;
+  const soundBtn = () => `<button type="button" class="sound" aria-pressed="false" aria-label="Sound on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5h3l4.5-4v13l-4.5-4h-3z"/></svg><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span></button>`;
+  const credit = () => `<a class="now" href="${SITE.credit.href}" hidden>${esc(SITE.credit.label)}</a><p class="sound-note" role="status" hidden></p>`;
+  const foot = () => `<div class="foot-row">${links()}${soundBtn()}</div>${credit()}`;
 
-  function edgeAt(r, t) {
-    const p = clamp01((t - eT0[r] - eDelay[r]) / EDGE_DUR);
-    return eFrom[r] + (eTo[r] - eFrom[r]) * ease(p);
-  }
-  function edgeMotion(r, t) {
-    const p = (t - eT0[r] - eDelay[r]) / EDGE_DUR;
-    return p > 0 && p < 1 && eFrom[r] !== eTo[r] ? Math.sin(Math.PI * p) : 0;
-  }
-  // rows move in bands of a few, each band on its own delay, so the edge crawls in steps instead of one straight line
-  function setEdge(px, animate) {
-    const t = now(), seed = Math.random() * 1000;
-    const lag = animate && px < edgeGoal ? 0.12 : 0;   // closing: let the column pull away first
-    edgeGoal = px;
-    let r = 0;
-    while (r < rows) {
-      const band = 1 + Math.floor(hashf(seed + r * 3.1) * 4);
-      const d = animate ? lag + hashf(seed + r * 7.7 + 1) * 0.36 : 0;
-      for (let k = 0; k < band && r < rows; k++, r++) {
-        eFrom[r] = animate ? edgeAt(r, t) : px; eTo[r] = px; eT0[r] = t; eDelay[r] = d;
-      }
-    }
-    kick();
-  }
-  // a new palette sweeps down the rows, a little unevenly
-  let colors = [];
-  function setPalette(key, animate) {
-    const next = PAL[key] || PAL.index;
-    if (next === palTo) return;
-    palFrom = animate ? palTo : next; palTo = next; palT0 = now();
-    const seed = Math.random() * 1000;
-    for (let r = 0; r < rows; r++) pDelay[r] = (r / Math.max(1, rows)) * 0.55 + hashf(seed + r) * 0.12;
-    colors = [];
-    kick();
-  }
-
-  const mixc = (a, b, f) => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
-  function rampAt(p, h) { const pos = h * 4, i = Math.min(3, Math.floor(pos)); return mixc(p.stops[i], p.stops[i + 1], pos - i); }
-  // colour for a heat level, palette mix step, and how strongly the name is lit on that tile
-  // colour for a heat level and a step of the palette sweep
-  function colorFor(m, l) {
-    const k = m * LEVELS + l;
-    if (!colors[k]) {
-      const c = mixc(rampAt(palFrom, l / (LEVELS - 1)), rampAt(palTo, l / (LEVELS - 1)), m / 4);
-      colors[k] = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`;
-    }
-    return colors[k];
-  }
-
-  function size() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = window.innerWidth; H = Math.max(window.innerHeight, Math.round(cv.getBoundingClientRect().height));
-    G = W < 700 ? 13 : 18;
-    GAP = G < 12 ? 1 : 2;
-    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    sv.width = cv.width; sv.height = cv.height;
-    sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    cols = Math.ceil(W / G) + 1; rows = Math.ceil(H / G) + 1;
-    ox = Math.round((W - cols * G) / 2); oy = Math.round((H - rows * G) / 2);
-    const keep = eTo ? edgeGoal : W;
-    eFrom = new Float32Array(rows).fill(keep); eTo = new Float32Array(rows).fill(keep);
-    eT0 = new Float32Array(rows); eDelay = new Float32Array(rows); pDelay = new Float32Array(rows);
-    colors = [];
-  }
-
-  const buckets = [];
-  const off = [];
-  function frame(t) {
-    const palDone = t - palT0 > 0.55 + 0.12 + PAL_DUR;
-    if (palDone && palFrom !== palTo) { palFrom = palTo; colors = []; }
-    while (stamps.length && t - stamps[0][2] > 1) stamps.shift();
-    while (ripples.length && t - ripples[0][2] > 1.4) ripples.shift();
-    const wakeS2 = 2 * (G * 1.7) ** 2, wakeLim = (G * 5.5) ** 2, rw = G * 1.1;
-    for (const b of buckets) if (b) b.length = 0;
-    off.length = 0;
-    const s = G - GAP;
-    for (let r = 0; r < rows; r++) {
-      const y = oy + r * G, cyy = y + G / 2, e = edgeAt(r, t), glow = edgeMotion(r, t);
-      const m = palFrom === palTo ? 4 : Math.round(clamp01((t - palT0 - pDelay[r]) / PAL_DUR) * 4);
-      for (let c = 0; c < cols; c++) {
-        const x = ox + c * G, cxx = x + G / 2;
-        if (cxx < e) { off.push(x, y); continue; }
-        let h = heatAt(cxx, cyy, t);
-        for (let i = 0; i < stamps.length; i++) {
-          const st = stamps[i], d2 = (cxx - st[0]) ** 2 + (cyy - st[1]) ** 2;
-          if (d2 < wakeLim) h += 0.6 * Math.exp(-d2 / wakeS2) * Math.pow(1 - (t - st[2]), 1.5);
-        }
-        for (let i = 0; i < ripples.length; i++) {
-          const rp = ripples[i], u = t - rp[2], d = Math.hypot(cxx - rp[0], cyy - rp[1]) - u * 460;
-          if (d > -rw * 3 && d < rw * 3) h += (1 - u / 1.4) * 0.8 * Math.exp(-((d / rw) ** 2));
-        }
-        if (glow) { const dx = cxx - e; if (dx < G * 4) h += 0.8 * glow * Math.exp(-((dx / (G * 1.3)) ** 2)); }
-        h = clamp01(h);
-        const k = m * LEVELS + Math.round(h * (LEVELS - 1));
-        (buckets[k] || (buckets[k] = [])).push(x, y);
-      }
-    }
-    drawSweep(t, s);
-    ctx.clearRect(0, 0, W, H);
-    const rr = Math.min(2, s * 0.12);
-    const rect = (x, y) => { if (ctx.roundRect) ctx.roundRect(x, y, s, s, rr); else ctx.rect(x, y, s, s); };
-    if (off.length) {
-      ctx.fillStyle = "#141416";
-      ctx.beginPath();
-      for (let i = 0; i < off.length; i += 2) rect(off[i], off[i + 1]);
-      ctx.fill();
-    }
-    for (let k = 0; k < buckets.length; k++) {
-      const b = buckets[k];
-      if (!b || !b.length) continue;
-      ctx.fillStyle = colorFor(Math.floor(k / LEVELS), k % LEVELS);
-      ctx.beginPath();
-      for (let i = 0; i < b.length; i += 2) rect(b[i], b[i + 1]);
-      ctx.fill();
-    }
-  }
-
-  const BAND = 10, SWEEP_DUR = 0.85;
-  function startSweep(x0, x1, onMove, onDone, bounds) {
-    if (sweep) finishSweep();
-    if (reduceMotion) { onMove(1e5); onDone(); return; }
-    const me = { c0: Math.max(0, Math.round((x0 - ox) / G)), c1: Math.min(cols - 1, Math.round((x1 - ox) / G) - 1), t0: now(), seed: Math.random() * 1000, onMove, onDone, bounds };
-    sweep = me;
-    // if frames stall (a throttled tab), never leave the swap half done
-    setTimeout(() => { if (sweep === me) finishSweep(); }, (SWEEP_DUR + 0.6) * 1000);
-    kick();
-  }
-  function finishSweep() {
-    if (!sweep) return;
-    const done = sweep.onDone;
-    sweep = null;
-    sctx.clearRect(0, 0, W, H);
-    done();
-  }
-  function drawSweep(t, s) {
-    if (!sweep) return;
-    sctx.clearRect(0, 0, W, H);
-    const p = clamp01((t - sweep.t0) / SWEEP_DUR);
-    const y = -BAND * G + (H + 2 * BAND * G) * ease(p);   // the band's middle, top of the screen to below the bottom
-    sweep.onMove(y);
-    const mid = Math.round((y - oy) / G), sd = sweep.seed, rr = Math.min(2, s * 0.12);
-    // on phones the band only shows over the card it is revealing
-    const bd = sweep.bounds ? sweep.bounds() : null;
-    for (let c = sweep.c0 - 1; c <= sweep.c1 + 1; c++) {
-      const top = mid - BAND / 2 - Math.floor(hashf(sd + c * 1.3) * 3);
-      const bot = mid + BAND / 2 + Math.floor(hashf(sd + c * 2.9 + 5) * 3);
-      for (let r = Math.max(0, top); r <= Math.min(rows - 1, bot); r++) {
-        // now and then a row pokes one tile past the column's edges
-        if ((c < sweep.c0 || c > sweep.c1) && hashf(sd + r * 4.1 + c * 0.7) > 0.3) continue;
-        const x = ox + c * G, yy = oy + r * G;
-        if (bd && (yy + G < bd.top - G * 2 || yy > bd.bottom + G * 2)) continue;
-        const col = rampAt(palTo, clamp01(0.25 + heatAt(x + G / 2, yy + G / 2, t) * 0.75));
-        sctx.fillStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
-        sctx.beginPath();
-        if (sctx.roundRect) sctx.roundRect(x, yy, s, s, rr); else sctx.rect(x, yy, s, s);
-        sctx.fill();
-      }
-    }
-    if (p >= 1) finishSweep();
-  }
-
-  function loop() {
-    raf = 0;
-    if (!running || document.hidden) return;
-    frame(now());
-    raf = requestAnimationFrame(loop);
-  }
-  function kick() {
-    if (reduceMotion) { requestAnimationFrame(() => frame(8)); return; }
-    if (!running || document.hidden) return;
-    if (!raf) raf = requestAnimationFrame(loop);
-  }
-  function start() { running = true; kick(); }
-
-  // the cursor leaves a warm wake; a click sends a ring out through the grid
-  let lx = -1e4, ly = -1e4;
-  if (!reduceMotion) {
-    window.addEventListener("pointermove", (e) => {
-      if ((e.clientX - lx) ** 2 + (e.clientY - ly) ** 2 < (G * 0.6) ** 2) return;
-      lx = e.clientX; ly = e.clientY;
-      stamps.push([lx, ly, now()]);
-      if (stamps.length > 36) stamps.shift();
-    }, { passive: true });
-    cv.addEventListener("pointerdown", (e) => { ripples.push([e.clientX, e.clientY, now()]); if (ripples.length > 4) ripples.shift(); });
-  }
-  document.addEventListener("visibilitychange", () => { if (document.hidden) finishSweep(); else kick(); });
-
-  size();
-  return { size, setEdge, setPalette, start, redraw: kick, sweep: startSweep, endSweep: finishSweep };
-})();
-
-// ---------- columns: which are open comes from the address, so links, back and forward all just work ----------
-(function () {
-  const panes = {};
-  document.querySelectorAll(".pane[data-pane]").forEach((p) => (panes[p.dataset.pane] = p));
-  const ROUTES = {
-    "": ["index"],
-    fetch: ["index", "fetch"], ceres: ["index", "ceres"], sweeper: ["index", "sweeper"], dial: ["index", "dial"], arrival: ["index", "arrival"],
-    builds: ["index", "builds"], awards: ["index", "awards"], now: ["index", "now"],
-    "builds/arm": ["index", "builds", "arm"], "builds/eclipse": ["index", "builds", "eclipse"],
-    "builds/maglift": ["index", "builds", "maglift"], "builds/mars": ["index", "builds", "mars"],
-    "builds/mouse": ["index", "builds", "mouse"], "builds/wattwatch": ["index", "builds", "wattwatch"],
-  };
-  const parse = () => ROUTES[location.hash.replace(/^#\/?/, "").replace(/\/$/, "")] || ["index"];
-  const hrefFor = (stack) => "#/" + (Object.keys(ROUTES).find((k) => ROUTES[k].join() === stack.join()) || "");
-  let stack = [];
-
-  function show(p, depth, cls) {
-    p._tok = (p._tok || 0) + 1;
-    p.classList.remove("is-entering", "is-leaving", "is-swapping", "is-fading");
-    p.hidden = false;
-    p.style.clipPath = "";
-    p.style.setProperty("--i", depth);
-    p.style.zIndex = String(20 - depth);
-    p.style.order = String(depth);
-    p.scrollTop = 0;
-    if (cls) {
-      p.classList.add(cls);
-      const tok = p._tok;
-      p.addEventListener("animationend", () => { if (p._tok === tok) p.classList.remove(cls); }, { once: true });
-    }
-  }
-  function hide(p, cls) {
-    p._tok = (p._tok || 0) + 1;
-    p.classList.remove("is-entering", "is-swapping");
-    p.style.clipPath = "";
-    if (!cls) { p.hidden = true; p.classList.remove("is-leaving", "is-fading"); return; }
-    const tok = p._tok;
-    p.style.zIndex = String(parseInt(p.style.zIndex || "10", 10) - 1);
-    p.classList.add(cls);
-    const done = () => { if (p._tok !== tok) return; p.hidden = true; p.classList.remove(cls); };
-    p.addEventListener("animationend", done, { once: true });
-    setTimeout(done, 700);
-  }
-
-  function paneWidth() { return panes.index.getBoundingClientRect().width; }
-  // the grid starts where the open columns end; on phones the cards sit on top of it instead
-  function place(animate) {
-    field.setEdge(wideQuery.matches ? stack.length * paneWidth() : 0, animate);
-  }
-
-  function apply(next, how) {
-    const animate = how !== "instant" && !reduceMotion;
-    const wide = wideQuery.matches;
-    let k = 0;
-    while (k < stack.length && k < next.length && stack[k] === next[k]) k++;
-    const leaving = stack.slice(k), entering = next.slice(k);
-    const swap = leaving.length > 0 && entering.length > 0;
-    // on wide screens a sibling swap happens under a band of tiles sweeping down the column;
-    // on phones every card that opens is printed in by the same band
-    const band = animate && entering.length > 0 && (wide ? swap : true);
-    field.endSweep();
-    leaving.forEach((id, j) => {
-      if (band && wide && j === 0) return;
-      hide(panes[id], !animate ? null : wide ? "is-leaving" : swap ? null : "is-fading");
-    });
-    entering.forEach((id, j) => show(panes[id], k + j, !animate ? null : j === 0 && band ? null : swap && j === 0 ? "is-swapping" : "is-entering"));
-    if (band && !wide) {
-      const newP = panes[entering[0]], ntok = newP._tok;
-      newP.style.clipPath = "inset(0 0 100% 0)";
-      const r = newP.getBoundingClientRect();
-      field.sweep(r.left, r.right, (y) => {
-        if (newP._tok !== ntok) return;
-        const b = newP.getBoundingClientRect();
-        newP.style.clipPath = `inset(0 0 ${Math.max(0, Math.min(b.height, b.bottom - y))}px 0)`;
-      }, () => {
-        if (newP._tok === ntok) newP.style.clipPath = "";
-      }, () => newP.getBoundingClientRect());
-    } else if (band) {
-      const oldP = panes[leaving[0]], newP = panes[entering[0]];
-      const otok = (oldP._tok = (oldP._tok || 0) + 1), ntok = newP._tok;
-      oldP.style.zIndex = String(19 - k);          // the old one waits underneath until the band has passed
-      newP.style.clipPath = "inset(0 0 100% 0)";
-      const r = newP.getBoundingClientRect();
-      field.sweep(r.left, r.right, (y) => {
-        if (newP._tok === ntok) newP.style.clipPath = `inset(0 0 ${Math.max(0, r.height - y)}px 0)`;
-      }, () => {
-        if (newP._tok === ntok) newP.style.clipPath = "";
-        if (oldP._tok === otok) oldP.hidden = true;
+  // the open page comes from the address, so links, back and forward all just work
+  const current = () => { const k = location.hash.replace(/^#\/?/, "").replace(/\/$/, "").split("/").pop(); return k && (P[k] || (k === "builds" || k === "now" || k === "awards")) ? k : "index"; };
+  function router(fn) {
+    const run = () => {
+      const id = current();
+      document.querySelectorAll("a[data-to]").forEach((a) => {
+        const on = a.dataset.to === id || (a.dataset.to === "builds" && isBuild(id));
+        a.classList.toggle("is-open", on);
+        if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
       });
-    }
-    const before = stack;
-    stack = next.slice();
-    const top = stack[stack.length - 1];
-
-    document.querySelectorAll("a[data-to]").forEach((a) => {
-      const on = stack.includes(a.dataset.to);
-      a.classList.toggle("is-open", on);
-      if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+      document.title = id === "index" ? SITE.name.join(" ") : `${titleOf(id)} · ${SITE.name.join(" ")}`;
+      fn(id);
+    };
+    window.addEventListener("hashchange", run);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && current() !== "index") location.hash = href(parent(current())); });
+    run();
+  }
+  // a modal sheet for versions that open details over the page
+  function sheet(onOpen) {
+    const d = document.createElement("dialog");
+    d.className = "sheet";
+    d.innerHTML = '<div class="sheet-in"></div>';
+    document.body.appendChild(d);
+    d.addEventListener("cancel", (e) => { e.preventDefault(); location.hash = href(parent(current())); });
+    d.addEventListener("click", (e) => { if (e.target === d) location.hash = href(parent(current())); });
+    router((id) => {
+      if (id === "index") { if (d.open) d.close(); return; }
+      const inner = d.firstChild;
+      inner.innerHTML = detail(id);
+      if (!d.open) d.showModal();
+      inner.scrollTop = 0; d.scrollTop = 0;
+      inner.querySelector("h2").focus({ preventScroll: true });
+      if (onOpen) onOpen(id, inner);
     });
-    const h = panes[top].querySelector("h1, h2");
-    document.title = top === "index" ? "Varun Chilukuri" : `${h.textContent} · Varun Chilukuri`;
-    document.documentElement.style.setProperty("--accent", PAL[top].accent);
-    field.setPalette(top, animate);
-    place(animate && how !== "first");
-    favicon(top);
-
-    if (how === "nav") {
-      if (entering.length) {
-        h.focus({ preventScroll: true });
-        if (!wide) panes[top].scrollIntoView({ behavior: animate ? "smooth" : "auto", block: "start" });
-      } else if (leaving.length) {
-        const back = panes[top].querySelector(`[data-to="${before[before.length - 1]}"]`) || panes[top].querySelector(`[data-to="${leaving[0]}"]`);
-        if (back) back.focus({ preventScroll: true });
-        if (!wide) panes[top].scrollIntoView({ behavior: animate ? "smooth" : "auto", block: "nearest" });
-      }
-    }
   }
 
-  // the open item in a list closes its column when clicked again
-  document.querySelectorAll("a[data-to]").forEach((a) => a.addEventListener("click", (e) => {
-    if (stack[stack.length - 1] === a.dataset.to) {
-      e.preventDefault();
-      location.hash = hrefFor(stack.slice(0, -1));
-    }
-  }));
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && stack.length > 1) location.hash = hrefFor(stack.slice(0, -1));
+  // tap a thumbnail to see it large (works for anything on the page, whenever it was drawn)
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest(".thumbs button");
+    if (!b) return;
+    const g = b.closest(".gallery"), m = g.querySelector(".main"), i = b.querySelector("img");
+    m.src = i.getAttribute("src"); m.alt = i.alt;
+    g.querySelectorAll(".thumbs button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    g.dispatchEvent(new CustomEvent("photo", { bubbles: true, detail: i.getAttribute("src") }));
   });
-  window.addEventListener("hashchange", () => apply(parse(), "nav"));
 
-  let rt = 0, lastW = window.innerWidth;
-  window.addEventListener("resize", () => {
-    // on phones a height-only change is the address bar sliding; the grid already covers that
-    if (!wideQuery.matches && window.innerWidth === lastW) return;
-    lastW = window.innerWidth;
-    clearTimeout(rt);
-    rt = setTimeout(() => { field.size(); place(false); field.setPalette(stack[stack.length - 1], false); field.redraw(); }, 120);
-  });
-  wideQuery.addEventListener("change", () => { field.size(); place(false); });
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="http"]');
+    if (a) { a.target = "_blank"; a.rel = "noopener"; }
+  }, true);
 
-  // first paint: open straight to whatever the address says, then let the field crawl in from the right
-  apply(parse(), "instant");
-  field.setEdge(window.innerWidth, false);
-  place(true);
-  field.start();
-  if (!wideQuery.matches && stack.length > 1) {
-    const top = panes[stack[stack.length - 1]];
-    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => top.scrollIntoView({ block: "start" }));
+  // copy email / discord, with a short note
+  let toastEl = null, tm = 0;
+  function toast(msg) {
+    if (!toastEl) { toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.appendChild(toastEl); }
+    toastEl.textContent = msg; toastEl.classList.add("is-on");
+    clearTimeout(tm); tm = setTimeout(() => toastEl.classList.remove("is-on"), 2200);
   }
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest && e.target.closest("[data-copy]");
+    if (!b) return;
+    try { await navigator.clipboard.writeText(b.dataset.copy); } catch (err) {
+      const t = document.createElement("textarea"); t.value = b.dataset.copy; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); } catch (e2) { /* nothing more to try */ }
+      t.remove();
+    }
+    toast(b.dataset.done);
+  });
+
+  return { P, B, TAU, img, esc, icon, ids, href, parent, isBuild, titleOf, rawTitle, gallery, meta, text, spec, out, project, buildsList, awards, notes, bodyOf, closeLink, detail, name, nav, links, soundBtn, credit, foot, current, router, sheet, toast };
 })();
 
-// ---------- favicon: a small grid of tiles in the open page's colours ----------
-function favicon(key) {
-  const link = document.getElementById("favicon");
-  if (!link) return;
-  const c = document.createElement("canvas"); c.width = c.height = 64;
-  const o = c.getContext("2d");
-  const st = PAL[key].stops, pick = [[1, 2, 3], [2, 4, 2], [3, 2, 1]];
-  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
-    const col = st[pick[i][j]];
-    o.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`;
-    o.beginPath();
-    if (o.roundRect) o.roundRect(1 + j * 21, 1 + i * 21, 20, 20, 4); else o.rect(1 + j * 21, 1 + i * 21, 20, 20);
-    o.fill();
+// ---------- the page ----------
+const deck = document.getElementById("deck"), cv = document.getElementById("c"), x = cv.getContext("2d");
+deck.innerHTML = `<aside class="side card" id="s"><h1 class="name">${S.name()}</h1><p class="bio">${S.esc(SITE.bio)}</p>${S.nav()}<div class="foot"><div class="foot-row">${S.links()}<div class="ctl"><button type="button" class="theme" aria-label="Switch background"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3.8a8.2 8.2 0 0 1 0 16.4z" fill="currentColor"/></svg></button>${S.soundBtn()}</div></div>${S.credit()}</div></aside><section class="pop card" id="stack" hidden></section><section class="pop card" id="pop" hidden></section>`;
+const pop = document.getElementById("pop"), stack = document.getElementById("stack");
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const phone = () => innerWidth < 900;
+
+// ---------- the dots ----------
+const CAP = Math.min(250000, Math.round(Math.max(phone() ? 56000 : 115000, innerWidth * innerHeight * (phone() ? 0.17 : 0.16))));
+let M = CAP;                                                 // how many are live; drops on slow machines
+const px = new Float32Array(CAP), py = new Float32Array(CAP), vx = new Float32Array(CAP), vy = new Float32Array(CAP), hx = new Float32Array(CAP), hy = new Float32Array(CAP), dl = new Float32Array(CAP);
+const cr = new Float32Array(CAP), cg = new Float32Array(CAP), cb = new Float32Array(CAP), tr = new Float32Array(CAP), tg = new Float32Array(CAP), tb = new Float32Array(CAP);
+const big = new Uint8Array(CAP), grp = new Uint8Array(CAP), hid = new Uint8Array(CAP);
+let bw = 1, bh = 1, dpr = 1, image, d32, box = { x: 0, y: 0, w: 1, h: 1 }, t0 = 0, ct0 = 0, mode = 2, spin = null, last = null, lastRaw = null;
+const hexRGB = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+
+// the background: black, or the warm paper. dots re-ink themselves to stay readable on either
+let paper = false;
+try { paper = localStorage.getItem("vc-bg") === "paper"; } catch (e) { /* private mode */ }
+function ink(r, g, b, out) {
+  const gr = (r + g + b) / 3; r = gr + (r - gr) * 1.55; g = gr + (g - gr) * 1.55; b = gr + (b - gr) * 1.55;
+  const m = Math.max(r, g, b, 1);
+  const k = paper ? Math.min(1, 118 / m) : (m < 190 ? 190 / m : 255 / Math.max(m, 255));
+  out[0] = Math.max(0, Math.min(255, r * k)); out[1] = Math.max(0, Math.min(255, g * k)); out[2] = Math.max(0, Math.min(255, b * k));
+}
+let cross = "#e4e6ea", accent = "#e4e6ea";
+function paintTheme() {
+  document.documentElement.dataset.bg = paper ? "paper" : "black";
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = paper ? "#ebe4d4" : "#050505";
+  document.querySelector('meta[name="color-scheme"]').content = paper ? "light" : "dark";
+  setCross();
+}
+function setCross() { const c = hexRGB(accent); cross = paper ? `rgb(${c[0] * 0.5 | 0},${c[1] * 0.5 | 0},${c[2] * 0.5 | 0})` : accent; }
+function setAccent(id) { accent = (SITE.palette[id] || SITE.palette.index).accent; document.documentElement.style.setProperty("--ac", accent); setCross(); favicon(id); }
+function recolor() {
+  const o = [0, 0, 0];
+  if (!lastRaw) return;
+  for (let i = 0; i < CAP; i++) { const j = i * 3; ink(lastRaw[j], lastRaw[j + 1], lastRaw[j + 2], o); tr[i] = o[0]; tg[i] = o[1]; tb[i] = o[2]; }
+  ct0 = performance.now();
+}
+
+function size() {
+  dpr = Math.min(devicePixelRatio || 1, 2);
+  const W = cv.clientWidth, H = cv.clientHeight;
+  bw = Math.round(W * dpr); bh = Math.round(H * dpr); cv.width = bw; cv.height = bh;
+  image = x.createImageData(bw, bh); d32 = new Uint32Array(image.data.buffer);
+}
+// where a picture goes: large, bleeding softly behind the panels on a computer; the open top of the screen on a phone
+function photoBox() {
+  const W = cv.clientWidth, H = cv.clientHeight;
+  if (phone()) { const top = deckTop(), w = Math.min(W + 40, top * 1.34), h = w * 3 / 4; box = { x: ((W - w) / 2) * dpr, y: (Math.max(8, (top - h) / 2)) * dpr, w: w * dpr, h: h * dpr }; return; }
+  const left = 270, right = W - 390, aw = right - left, h0 = H * 0.98, w = Math.min(aw * 1.3, h0 * 4 / 3), h = w * 3 / 4;
+  box = { x: (left + (aw - w) / 2) * dpr, y: ((H - h) / 2) * dpr, w: w * dpr, h: h * dpr };
+}
+const deckTop = () => parseFloat(getComputedStyle(deck).paddingTop) || 300;
+
+// a picture becomes dots: they gather on edges and colour, thinning out toward the edges of the picture
+function sample(draw, ramp) {
+  const cw = Math.min(1200, Math.round(box.w)), ch = Math.round(cw * (box.h / box.w));
+  const c = document.createElement("canvas"); c.width = cw; c.height = ch;
+  const o = c.getContext("2d", { willReadFrequently: true });
+  o.fillStyle = "#000"; o.fillRect(0, 0, cw, ch); draw(o, cw, ch);
+  const d = o.getImageData(0, 0, cw, ch).data, L = new Float32Array(cw * ch), B = new Float32Array(cw * ch);
+  let lo = 1, hi = 0;
+  for (let i = 0; i < L.length; i++) { const v = (d[i * 4] * 0.3 + d[i * 4 + 1] * 0.59 + d[i * 4 + 2] * 0.11) / 255; L[i] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
+  for (let v = 1; v < ch - 1; v++) for (let u = 1; u < cw - 1; u++) { const i = v * cw + u; B[i] = (L[i] * 4 + (L[i - 1] + L[i + 1] + L[i - cw] + L[i + cw]) * 2 + L[i - cw - 1] + L[i - cw + 1] + L[i + cw - 1] + L[i + cw + 1]) / 16; }
+  const span = Math.max(0.05, hi - lo), pos = new Float32Array(CAP * 3), raw = new Float32Array(CAP * 3);
+  let n = 0, tries = 0;
+  while (n < CAP && tries < CAP * 60) {
+    tries++;
+    const u = 1 + (Math.random() * (cw - 4)) | 0, v = 1 + (Math.random() * (ch - 4)) | 0, i = v * cw + u;
+    const l = (L[i] - lo) / span, e = Math.abs(B[i] - B[i + 2]) + Math.abs(B[i] - B[i + cw * 2]);
+    const a = Math.max(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), b0 = Math.min(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), sat = a ? (a - b0) / a : 0;
+    if (ramp) { if (Math.random() > 0.34 * Math.pow(l, 1.7) + Math.min(1, e * 7) * 0.85) continue; }
+    else {
+      const eu = u / cw - 0.5, ev = v / ch - 0.5, fall = Math.min(1, Math.max(0, 1.5 - Math.hypot(eu * 1.45, ev * 1.45) * 2));
+      if (Math.random() > fall * (0.05 * l * l + Math.min(1, e * 9) * 0.9 + Math.pow(sat, 1.4) * 0.55 * (0.35 + l))) continue;
+    }
+    let r = d[i * 4], g = d[i * 4 + 1], bl = d[i * 4 + 2];
+    if (ramp) { const t = Math.min(1, (u / cw) * 0.6 + Math.random() * 0.4), p = ramp[t < 0.5 ? 0 : 1], q = ramp[t < 0.5 ? 1 : 2], f = t < 0.5 ? t * 2 : t * 2 - 1; r = p[0] + (q[0] - p[0]) * f; g = p[1] + (q[1] - p[1]) * f; bl = p[2] + (q[2] - p[2]) * f; }
+    const j = n * 3;
+    pos[j] = (u + Math.random()) / cw; pos[j + 1] = (v + Math.random()) / ch; pos[j + 2] = l;
+    raw[j] = r; raw[j + 1] = g; raw[j + 2] = bl;
+    n++;
   }
+  for (; n < CAP; n++) { const j = n * 3, k = ((Math.random() * Math.max(1, n)) | 0) * 3; pos[j] = pos[k] + (Math.random() - 0.5) * 0.004; pos[j + 1] = pos[k + 1] + (Math.random() - 0.5) * 0.004; pos[j + 2] = pos[k + 2]; raw[j] = raw[k]; raw[j + 1] = raw[k + 1]; raw[j + 2] = raw[k + 2]; }
+  return { pos, raw };
+}
+
+const targets = Array.from({ length: 5 }, () => ({ i: 0 }));
+function retarget() { targets.forEach((g) => { g.i = (Math.random() * M) | 0; }); }
+function burst(i, rn, cx, cy) { const a = Math.atan2(py[i] - cy, px[i] - cx) + (rn - 0.5) * 0.8, f = (3 + rn * 11) * dpr; vx[i] += Math.cos(a) * f; vy[i] += Math.sin(a) * f; }
+function setForm(s, m, sp) {
+  g3d = null; last = s; lastRaw = s.raw; mode = m; t0 = performance.now(); spin = sp || null; hid.fill(0);
+  const cx = box.x + box.w / 2, cy = box.y + box.h / 2, pos = s.pos;
+  for (let i = 0; i < CAP; i++) {
+    const j = i * 3, u = pos[j], v = pos[j + 1], rn = Math.random();
+    hx[i] = box.x + u * box.w; hy[i] = box.y + v * box.h;
+    big[i] = pos[j + 2] > 0.86 && dpr > 1 && i % 4 === 0 ? 1 : 0;
+    if (m === 0) dl[i] = u * 0.7 + rn * 0.3;                                          // wind: sweeps across
+    else if (m === 1) dl[i] = 0.35 + Math.hypot(u - 0.5, v - 0.5) * 1.1 + rn * 0.2;   // vortex: from the middle out
+    else if (m === 2) { dl[i] = 0.1 + rn * 0.5; burst(i, rn, cx, cy); }                // burst
+    else if (m === 3) dl[i] = (1 - v) * 0.75 + rn * 0.3;                              // fall: drops, then builds up from the bottom
+    else dl[i] = 0.7 + rn * 0.5 + u * 0.15;                                           // ring: pulled into a circle first
+    if (sp) grp[i] = Math.hypot(hx[i] - sp[0].x, hy[i] - sp[0].y) / sp[0].r <= Math.hypot(hx[i] - sp[1].x, hy[i] - sp[1].y) / sp[1].r ? 0 : 1;
+  }
+  recolor(); retarget();
+  if (still) settleNow();
+}
+function settleNow() { for (let i = 0; i < CAP; i++) { px[i] = hx[i]; py[i] = hy[i]; cr[i] = tr[i]; cg[i] = tg[i]; cb[i] = tb[i]; } t0 = performance.now() - 1e5; requestAnimationFrame(frame); }
+
+// ---------- the opening image: a real 3D gear train, viewed from above at a diagonal ----------
+const YAW = -0.62, PITCH = 0.6, THICK = 0.52, TOOTH = 0.095, FOCAL = 4.6, ROLL = -0.17;
+const cr0 = Math.cos(ROLL), sr0 = Math.sin(ROLL);
+const cyw = Math.cos(YAW), syw = Math.sin(YAW), cp = Math.cos(PITCH), sp0 = Math.sin(PITCH);
+let g3d = null;
+const lx = new Float32Array(CAP), ly = new Float32Array(CAP), lz = new Float32Array(CAP), nlx = new Float32Array(CAP), nlz = new Float32Array(CAP), gid = new Uint8Array(CAP);
+function buildGears() {
+  // the big gear sits low on the screen; the two above it each mesh with it, and not with each other
+  const Rc = 1, Nc = 34, pitch = Rc / Nc;
+  const mk = (n, col) => ({ n, R: n * pitch, h: TOOTH, col, twist: (Math.PI * 2 / n) * 1.0, holes: n > 30 ? 7 : n > 24 ? 6 : 5 });
+  const C = mk(Nc, [226, 232, 244]), A = mk(26, [242, 150, 86]), B = mk(20, [86, 176, 240]);
+  const view = (X, Z) => ({ x: X * cyw + Z * syw, z: -X * syw + Z * cyw });     // screen-aligned to world
+  const cc = view(0, -0.86); C.x = cc.x; C.z = cc.z;
+  const place = (g, deg) => { const D = C.R + g.R - TOOTH * 0.34, a = (deg * Math.PI) / 180, p = view(Math.cos(a) * D, -0.86 + Math.sin(a) * D); g.x = p.x; g.z = p.z; g.phi = Math.atan2(g.z - C.z, g.x - C.x); };
+  place(A, 128); place(B, 50);
+  const gears = [A, B, C], total = gears.reduce((s, g) => s + g.R * g.R + g.R * 0.4, 0);
+  const rr = (g, th) => { const s = 0.5 + 0.5 * Math.cos(g.n * th); return g.R - g.h * 0.55 + g.h * Math.pow(s, 2.2); };
+  const raw = new Float32Array(CAP * 3);
+  let i = 0;
+  gears.forEach((g, id) => {
+    const count = g === C ? CAP - i : Math.round((CAP * (g.R * g.R + g.R * 0.4)) / total), end = i + count;
+    const holeR = g.R * 0.13, holeAt = g.R * 0.6, hubR = g.R * 0.24;
+    const holeC = Array.from({ length: g.holes }, (_, k) => { const a = (k * Math.PI * 2) / g.holes; return [Math.cos(a) * holeAt, Math.sin(a) * holeAt]; });
+    const rings = Array.from({ length: 16 }, (_, k) => hubR * 1.1 + ((g.R * 0.86 - hubR * 1.1) * k) / 15);
+    const put = (X, Y, Z, nx, nz, shade) => { if (i >= end) return; lx[i] = X; ly[i] = Y; lz[i] = Z; nlx[i] = nx; nlz[i] = nz; gid[i] = id; const j = i * 3; raw[j] = g.col[0] * shade; raw[j + 1] = g.col[1] * shade; raw[j + 2] = g.col[2] * shade; i++; };
+    while (i < end) {
+      const t = Math.random(), th = Math.random() * Math.PI * 2;
+      if (t < 0.2) { const r = rr(g, th); put(Math.cos(th) * r, 0, Math.sin(th) * r, 0, 0, 1.12); }
+      else if (t < 0.27) { const a = th - g.twist, r = rr(g, th), dr = (rr(g, th + 0.004) - r) / 0.004; let nx = Math.cos(a) * r + Math.sin(a) * dr, nz = Math.sin(a) * r - Math.cos(a) * dr; const q = Math.hypot(nx, nz) || 1; nx /= q; nz /= q; put(Math.cos(a) * r, -THICK, Math.sin(a) * r, nx, nz, 0.95); }                 // crisp tooth outline
+      else if (t < 0.6) {                                                                                               // tooth flanks, winding helically down the depth
+        const f = Math.random(), a = th - g.twist * f, r = rr(g, th), dr = (rr(g, th + 0.004) - r) / 0.004;
+        let nx = Math.cos(a) * r - Math.sin(a) * -dr, nz = Math.sin(a) * r + Math.cos(a) * -dr; const q = Math.hypot(nx, nz) || 1; nx /= q; nz /= q;
+        put(Math.cos(a) * r, -THICK * f, Math.sin(a) * r, nx, nz, 0.34 + 0.66 * Math.max(0, nx * -0.7 + nz * -0.71));
+      } else if (t < 0.85) {                                                                                             // the face: fine turned rings, like a machined part
+        const r = rings[(Math.random() * rings.length) | 0] + (Math.random() - 0.5) * 0.004, X = Math.cos(th) * r, Z = Math.sin(th) * r;
+        if (holeC.some(([u, v]) => Math.hypot(X - u, Z - v) < holeR)) continue;
+        put(X, 0, Z, 0, 0, 0.62 + 0.3 * Math.sin(th + 2.4));
+      } else if (t < 0.93) {                                                                                             // bore and hole rims
+        const k = (Math.random() * (g.holes + 1)) | 0, c = k < g.holes ? holeC[k] : [0, 0], hr = k < g.holes ? holeR : hubR;
+        put(c[0] + Math.cos(th) * hr, 0, c[1] + Math.sin(th) * hr, 0, 0, 1.05);
+      } else {                                                                                                           // inside the holes
+        const k = (Math.random() * (g.holes + 1)) | 0, c = k < g.holes ? holeC[k] : [0, 0], hr = k < g.holes ? holeR : hubR;
+        put(c[0] + Math.cos(th) * hr, -THICK * Math.random(), c[1] + Math.sin(th) * hr, -Math.cos(th), -Math.sin(th), 0.42);
+      }
+    }
+  });
+  // fit the whole train into the space
+  let a0 = 1e9, a1 = -1e9, b0 = 1e9, b1 = -1e9;
+  gears.forEach((g) => { for (let k = 0; k < 48; k++) for (const y of [0, -THICK]) { const th = (k / 48) * Math.PI * 2, r = g.R + g.h * 0.45, X0 = g.x + Math.cos(th) * r, Z0 = g.z + Math.sin(th) * r, X = X0 * cyw - Z0 * syw, Z = X0 * syw + Z0 * cyw, Y2 = y * cp + Z * sp0, Z2 = Z * cp - y * sp0, q = FOCAL / (FOCAL + Z2), rx = X * q, ry = -Y2 * q, sx = rx * cr0 - ry * sr0, sy = rx * sr0 + ry * cr0; a0 = Math.min(a0, sx); a1 = Math.max(a1, sx); b0 = Math.min(b0, sy); b1 = Math.max(b1, sy); } });
+  return { gears, raw, a0, a1, b0, b1, C };
+}
+function showGears() {
+  ++token;
+  setAccent("index");
+  const G = g3dBuilt || (g3dBuilt = buildGears()), W = cv.clientWidth, H = cv.clientHeight;
+  const left = phone() ? 6 : 268, right = phone() ? W - 6 : W - 18, top = phone() ? 8 : 10, bot = phone() ? deckTop() - 6 : H - 10;
+  const S2 = Math.min((right - left) / (G.a1 - G.a0), (bot - top) / (G.b1 - G.b0));
+  G.S = S2 * dpr; G.ox = ((left + right) / 2 - (((G.a0 + G.a1) / 2) * S2)) * dpr; G.oy = ((top + bot) / 2 - (((G.b0 + G.b1) / 2) * S2)) * dpr;
+  g3d = G; last = null; lastRaw = G.raw; spin = null; mode = 2; t0 = performance.now(); hid.fill(0);
+  const rn = () => Math.random();
+  for (let i = 0; i < CAP; i++) { dl[i] = 0.12 + rn() * 0.75; burst(i, rn(), G.ox, G.oy); big[i] = 0; }
+  recolor(); retarget();
+  gearPose(performance.now() / 1000);
+  if (still) settleNow();
+}
+let g3dBuilt = null;
+const WC = 0.2;
+function gearPose(t) {
+  const G = g3d, rc = t * WC, F = FOCAL, tc = G.C, poses = G.gears.map((g, id) => {
+    let r = rc;
+    if (g !== tc) r = g.phi + Math.PI - (Math.PI - tc.n * (g.phi - rc)) / g.n;   // always a tooth in a gap where they meet
+    return { c: Math.cos(r), s: Math.sin(r), x: g.x, z: g.z, front: g === tc };
+  });
+  // the front gear is solid: anything of the others that falls behind its body is not drawn
+  const tcX = tc.x * cyw - tc.z * syw, tcZ = tc.x * syw + tc.z * cyw, occ = (tc.R - tc.h * 0.5) ** 2, slant = cp / sp0;
+  for (let i = 0; i < M; i++) {
+    const p = poses[gid[i]], X0 = lx[i] * p.c - lz[i] * p.s, Z0 = lx[i] * p.s + lz[i] * p.c, wx = p.x + X0, wz = p.z + Z0, y = ly[i];
+    const nx0 = nlx[i], nz0 = nlz[i];
+    let hide = 0;
+    if (nx0 || nz0) { const nx = nx0 * p.c - nz0 * p.s, nz = nx0 * p.s + nz0 * p.c; hide = (nx * syw + nz * cyw) * cp > 0.02 ? 1 : 0; }
+    const X = wx * cyw - wz * syw, Z = wx * syw + wz * cyw;
+    if (!hide && !p.front) { const dx = X - tcX, z0 = Z + y * slant - tcZ, z1 = Z + (y + THICK) * slant - tcZ; if (dx * dx + z0 * z0 < occ || dx * dx + z1 * z1 < occ) hide = 1; }
+    hid[i] = hide;
+    const Y2 = y * cp + Z * sp0, Z2 = Z * cp - y * sp0, q = F / (F + Z2);
+    const rx = X * q, ry = -Y2 * q; hx[i] = G.ox + (rx * cr0 - ry * sr0) * G.S; hy[i] = G.oy + (rx * sr0 + ry * cr0) * G.S;
+  }
+}
+
+// ---------- forms and photos ----------
+const cache = {};
+function photo(src, cb) { if (cache[src]) return cb(cache[src]); const im = new Image(); im.onload = () => cb((cache[src] = im)); im.src = src; }
+let token = 0, nextMode = 0;
+function showPhoto(src, m) {
+  const me = ++token;
+  photoBox();
+  photo(src, (im) => { if (me !== token) return; setForm(sample((o, w, h) => {
+    const s = Math.max(w / im.width, h / im.height), dw = im.width * s, dh = im.height * s;
+    o.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  }), m === undefined ? nextMode++ % 5 : m); });
+}
+const rampOf = (id) => { const r = SITE.palette[id].ramp; return [hexRGB(r[2]), hexRGB(r[3]), hexRGB(r[4])]; };
+function showForm(id) {
+  ++token; photoBox();
+  const ramp = rampOf(id);
+  if (id === "builds") {
+    // a coiled spring, seen along its length
+    setForm(sample((o, w, h) => { o.strokeStyle = "#fff"; o.lineWidth = 1.8; for (let k = 0; k < 15; k++) { const cx = w * (0.14 + (k * 0.72) / 14); o.beginPath(); o.ellipse(cx, h / 2, w * 0.05, h * 0.3, 0.26, 0, S.TAU); o.stroke(); } o.lineWidth = 1; o.beginPath(); o.moveTo(w * 0.06, h * 0.5); o.lineTo(w * 0.94, h * 0.5); o.stroke(); }, ramp), 1);
+  } else if (id === "now") {
+    setForm(sample((o, w, h) => { o.strokeStyle = "#fff"; for (let k = 1; k <= 11; k++) { o.lineWidth = 1 + k * 0.22; o.beginPath(); o.arc(w * 0.5, h * 0.5, (k * h) / 23, 0, S.TAU); o.stroke(); } }, ramp), 1);
+  } else {
+    setForm(sample((o, w, h) => { o.strokeStyle = "#fff"; o.lineCap = "round"; for (let k = 0; k < 64; k++) { const a = (k * S.TAU) / 64, r0 = h * (k % 2 ? 0.14 : 0.2), r1 = h * (k % 4 === 0 ? 0.47 : k % 2 ? 0.34 : 0.4); o.lineWidth = k % 4 === 0 ? 3 : 1.5; o.beginPath(); o.moveTo(w / 2 + Math.cos(a) * r0, h / 2 + Math.sin(a) * r0); o.lineTo(w / 2 + Math.cos(a) * r1, h / 2 + Math.sin(a) * r1); o.stroke(); } o.fillStyle = "#fff"; o.beginPath(); o.arc(w / 2, h / 2, h * 0.09, 0, S.TAU); o.fill(); }, ramp), 2);
+  }
+}
+
+// the pointer pushes dots aside; a click sends out a ring
+let mx = -1e5, my = -1e5, shock = null;
+addEventListener("pointermove", (e) => { if (e.pointerType === "touch") return; const r = cv.getBoundingClientRect(); mx = (e.clientX - r.left) * dpr; my = (e.clientY - r.top) * dpr; }, { passive: true });
+cv.addEventListener("pointerdown", (e) => { const r = cv.getBoundingClientRect(); shock = { x: (e.clientX - r.left) * dpr, y: (e.clientY - r.top) * dpr, t: performance.now() }; });
+
+let slow = 0, fl = 0;
+function frame(now) {
+  const el = (now - t0) / 1000, t = now / 1000, cx = box.x + box.w / 2, cy = box.y + box.h / 2, R = 62 * dpr, R2 = R * R;
+  const ringR = Math.min(box.w, box.h) * 0.38, settle = el > 3.2, wob = g3d ? 0 : 0.5 * dpr, fading = now - ct0 < 1600;
+  const scan = g3d ? -1e5 : box.y + ((t * 0.13) % 1.5) * box.h, sw = 1.6 * dpr, glint = paper ? 0xff1a1712 : 0xffffffff;
+  const sr = shock ? ((now - shock.t) / 1000) * 900 * dpr : 0, sa = shock ? 1 - (now - shock.t) / 900 : 0;
+  if (shock && sa <= 0) shock = null;
+  if (g3d) gearPose(t);
+  d32.fill(0);
+  for (let i = 0; i < M; i++) {
+    if (spin) { const g = spin[grp[i]], dx = hx[i] - g.x, dy = hy[i] - g.y; hx[i] = g.x + dx * g.c - dy * g.s; hy[i] = g.y + dx * g.s + dy * g.c; }
+    let X = px[i], Y = py[i];
+    if (el < dl[i]) {
+      if (mode === 0) { vx[i] += 0.16 * dpr + (Math.random() - 0.4) * 0.3 * dpr; vy[i] += (Math.random() - 0.5) * 0.5 * dpr; vx[i] *= 0.985; }
+      else if (mode === 1) { const a = X - cx, b = Y - cy, q = Math.hypot(a, b) + 1; vx[i] += (-b / q) * 0.5 * dpr - (a / q) * 0.14 * dpr; vy[i] += (a / q) * 0.5 * dpr - (b / q) * 0.14 * dpr; vx[i] *= 0.97; vy[i] *= 0.97; }
+      else if (mode === 3) { vy[i] += 0.2 * dpr; vx[i] += (Math.random() - 0.5) * 0.1; if (Y > bh + 40) { vy[i] = 0; py[i] = bh + 40; } }
+      else if (mode === 4) { const a = X - cx, b = Y - cy, q = Math.hypot(a, b) + 1, n = (ringR - q) * 0.012; vx[i] = (vx[i] + (a / q) * n * 6 - (b / q) * 0.35 * dpr) * 0.9; vy[i] = (vy[i] + (b / q) * n * 6 + (a / q) * 0.35 * dpr) * 0.9; }
+      else { vx[i] *= 0.96; vy[i] *= 0.96; }
+    } else {
+      const k = Math.min(1, (el - dl[i]) * 1.5) * (g3d ? 0.09 : 0.055);
+      vx[i] = (vx[i] + (hx[i] - X) * k) * 0.8; vy[i] = (vy[i] + (hy[i] - Y) * k) * 0.8;
+    }
+    const pd = (X - mx) * (X - mx) + (Y - my) * (Y - my);
+    if (pd < R2 && pd > 1) { const q = Math.sqrt(pd), f = (1 - q / R) * 2.6 * dpr; vx[i] += ((X - mx) / q) * f; vy[i] += ((Y - my) / q) * f; }
+    if (shock) { const a = X - shock.x, b = Y - shock.y, q = Math.hypot(a, b) + 1, gap = Math.abs(q - sr); if (gap < 34 * dpr) { const f = (1 - gap / (34 * dpr)) * sa * 3.4 * dpr; vx[i] += (a / q) * f; vy[i] += (b / q) * f; } }
+    X = px[i] += vx[i]; Y = py[i] += vy[i];
+    if (fading || !settle || i % 8 === 0) { cr[i] += (tr[i] - cr[i]) * 0.07; cg[i] += (tg[i] - cg[i]) * 0.07; cb[i] += (tb[i] - cb[i]) * 0.07; }
+    if (hid[i]) continue;
+    const dx = wob && settle ? Math.sin(hy[i] * 0.011 / dpr + t * 1.3) * wob : 0;
+    const ix = (X + dx) | 0, iy = Y | 0;
+    if (ix < 0 || iy < 0 || ix >= bw - 2 || iy >= bh - 2) continue;
+    const col = Math.abs(Y - scan) < sw ? glint : (0xff000000 | ((cb[i] & 255) << 16) | ((cg[i] & 255) << 8) | (cr[i] & 255));
+    const p = iy * bw + ix;
+    d32[p] = col;
+    if (big[i]) { d32[p + 1] = col; d32[p + bw] = col; }
+    const sp2 = vx[i] * vx[i] + vy[i] * vy[i];
+    if (sp2 > 16) { const a = (X - vx[i] * 0.6) | 0, b = (Y - vy[i] * 0.6) | 0; if (a >= 0 && b >= 0 && a < bw && b < bh) d32[b * bw + a] = col; }
+  }
+  x.putImageData(image, 0, 0);
+  // little targets riding on a few dots, tied together with a thin line
+  x.strokeStyle = cross; x.lineWidth = dpr;
+  x.globalAlpha = 0.3; x.beginPath();
+  targets.forEach((g, k) => { x[k ? "lineTo" : "moveTo"](px[g.i], py[g.i]); }); x.stroke();
+  x.globalAlpha = 0.95; x.beginPath();
+  const s = 9 * dpr, c = 4 * dpr;
+  targets.forEach((g) => { const a = px[g.i], b = py[g.i]; [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([u, v]) => { x.moveTo(a + u * s, b + v * (s - c)); x.lineTo(a + u * s, b + v * s); x.lineTo(a + u * (s - c), b + v * s); }); }); x.stroke();
+  x.globalAlpha = 1;
+  // a slower machine simply gets fewer dots rather than a choppy picture
+  if (fl && now - fl < 200 && now - fl > 30) slow++; else if (slow > 0) slow -= 0.25;
+  fl = now;
+  if (slow > 45 && M > 26000) { M = Math.round(M * 0.8); slow = 0; retarget(); }
+  if (!still) requestAnimationFrame(frame);
+}
+
+// ---------- pages ----------
+function route(id) {
+  const open = id !== "index";
+  pop.hidden = !open; stack.hidden = !(open && S.isBuild(id) && phone());
+  document.body.classList.toggle("is-open", open);
+  if (!open) { setTimeout(() => { if (phone()) window.scrollTo({ top: 0, behavior: "smooth" }); }, 0); showGears(); return; }
+  pop.innerHTML = S.detail(id); pop.scrollTop = 0;
+  if (!stack.hidden) stack.innerHTML = S.detail("builds");
+  pop.classList.remove("in"); void pop.offsetWidth; pop.classList.add("in");
+  setAccent(id);
+  if (S.P[id]) showPhoto(S.img(S.P[id].images[0].src)); else showForm(id);
+  if (phone() && booted) pop.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+}
+let booted = false;
+size();
+for (let i = 0; i < CAP; i++) { px[i] = Math.random() * bw; py[i] = Math.random() * bh; cr[i] = cg[i] = cb[i] = paper ? 90 : 200; }
+paintTheme();
+document.querySelector(".theme").addEventListener("click", () => {
+  paper = !paper;
+  try { localStorage.setItem("vc-bg", paper ? "paper" : "black"); } catch (e) { /* private mode */ }
+  paintTheme(); recolor();
+  if (still) { for (let i = 0; i < CAP; i++) { cr[i] = tr[i]; cg[i] = tg[i]; cb[i] = tb[i]; } requestAnimationFrame(frame); }
+});
+pop.addEventListener("photo", (e) => showPhoto(e.detail));
+S.router(route);
+booted = true;
+if (phone() && S.current() !== "index") document.fonts && document.fonts.ready.then(() => pop.scrollIntoView({ block: "start" }));
+if (!still) requestAnimationFrame(frame);
+let rt = 0, lastW = innerWidth;
+addEventListener("resize", () => { if (phone() && innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rt); rt = setTimeout(() => { size(); route(S.current()); }, 160); });
+
+// favicon: a small grid of tiles in the open page's colours
+function favicon(key) {
+  const link = document.getElementById("favicon"), pal = SITE.palette[key];
+  if (!link || !pal) return;
+  const c = document.createElement("canvas"); c.width = c.height = 64;
+  const o = c.getContext("2d"), pick = [[1, 2, 3], [2, 4, 2], [3, 2, 1]];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { o.fillStyle = pal.ramp[pick[i][j]]; o.beginPath(); if (o.roundRect) o.roundRect(1 + j * 21, 1 + i * 21, 20, 20, 4); else o.rect(1 + j * 21, 1 + i * 21, 20, 20); o.fill(); }
   link.href = c.toDataURL("image/png");
 }
 
-// ---------- galleries: tap a thumbnail to see it large ----------
-document.querySelectorAll(".gallery").forEach((g) => {
-  const main = g.querySelector(".main");
-  const thumbs = g.querySelectorAll(".thumbs button");
-  thumbs.forEach((b) => b.addEventListener("click", () => {
-    const img = b.querySelector("img");
-    main.src = img.getAttribute("src"); main.alt = img.alt;
-    thumbs.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-  }));
-});
-
-// ---------- copy email / discord, with a short note ----------
-const toast = (function () {
-  const el = document.querySelector(".toast");
-  let tm = 0;
-  return (msg) => {
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.add("is-on");
-    clearTimeout(tm);
-    tm = setTimeout(() => el.classList.remove("is-on"), 2200);
-  };
-})();
-document.querySelectorAll("[data-copy]").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const text = btn.dataset.copy;
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (e) {
-      const tmp = document.createElement("textarea");
-      tmp.value = text;
-      document.body.appendChild(tmp);
-      tmp.select();
-      try { document.execCommand("copy"); } catch (err) { /* nothing more to try */ }
-      tmp.remove();
-    }
-    toast(btn.dataset.done || "Copied");
-  });
-});
-
-// ---------- music: opt-in, quiet, fades in and out ----------
-// plays Blood Orange's own upload through a minimized SoundCloud embed; the credit link shows while it plays.
-// browsers that won't start sound from outside the embed get a thin SoundCloud strip to tap instead.
-// once someone turns it on, it comes back on their next visit at their first click or key.
+// the same opt-in SoundCloud player as the live site: quiet fades, a credit while it plays,
+// a thin strip if a browser needs a tap inside it, and it remembers being on for the next visit
 (function () {
-  const btn = document.querySelector(".sound");
-  const credit = document.querySelector(".now");
-  const note = document.querySelector(".sound-note");
+  const btn = document.querySelector(".sound"), cr = document.querySelector(".now"), note = document.querySelector(".sound-note");
   if (!btn) return;
-  const TRACK = "https://soundcloud.com/bloodorange/champagne-coast";
-  const KEY = "vc-sound";
-  const VOLUME = 60;
-  const FADE_IN = 4000;
-  const FADE_OUT = 1100;
+  const TRACK = SITE.credit.href, KEY = "vc-sound", VOLUME = 60, FADE_IN = 4000, FADE_OUT = 1100;
   let widget = null, frame = null, ready = null, fadeTimer = 0, checkTimer = 0, level = 0, playing = false, offered = false;
   const remember = (on) => { try { localStorage.setItem(KEY, on ? "1" : "0"); } catch (e) { /* private mode */ } };
   const wanted = () => { try { return localStorage.getItem(KEY) === "1"; } catch (e) { return false; } };
-
+  const LABEL = "Play music: Champagne Coast by Blood Orange";
+  btn.setAttribute("aria-label", LABEL);
   function fadeTo(target, ms, done) {
     clearInterval(fadeTimer);
     const from = level, steps = Math.max(1, Math.round(ms / 50));
     let i = 0;
-    fadeTimer = setInterval(() => {
-      i++;
-      level = from + (target - from) * (i / steps);
-      if (widget) widget.setVolume(Math.round(level));
-      if (i >= steps) { clearInterval(fadeTimer); if (done) done(); }
-    }, 50);
+    fadeTimer = setInterval(() => { i++; level = from + (target - from) * (i / steps); if (widget) widget.setVolume(Math.round(level)); if (i >= steps) { clearInterval(fadeTimer); if (done) done(); } }, 50);
   }
-  function say(text) { note.textContent = text || ""; note.hidden = !text; }
-  function setState(on, text) {
-    playing = on;
-    btn.setAttribute("aria-pressed", String(on));
-    btn.setAttribute("aria-label", on ? "Stop music" : "Play music: Champagne Coast by Blood Orange");
-    say(text);
-    if (on) credit.hidden = false;
+  const say = (t) => { if (note) { note.textContent = t || ""; note.hidden = !t; } };
+  function setState(on, t) {
+    playing = on; btn.setAttribute("aria-pressed", String(on));
+    btn.setAttribute("aria-label", on ? "Stop music" : LABEL);
+    say(t); if (on && cr) cr.hidden = false;
   }
-  const showStrip = (on) => frame && frame.classList.toggle("is-shown", on);
-
+  const strip = (on) => frame && frame.classList.toggle("is-shown", on);
   function load() {
     if (ready) return ready;
-    ready = new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = "https://w.soundcloud.com/player/api.js";
-      s.onerror = reject;
+    ready = new Promise((res, rej) => {
+      const s = document.createElement("script"); s.src = "https://w.soundcloud.com/player/api.js"; s.onerror = rej;
       s.onload = () => {
-        frame = document.createElement("iframe");
-        frame.className = "sc-frame";
-        frame.title = "Champagne Coast by Blood Orange on SoundCloud";
-        frame.allow = "autoplay; encrypted-media";
-        frame.src = "https://w.soundcloud.com/player/?url=" + encodeURIComponent(TRACK) + "&auto_play=false&visual=false&show_artwork=false&show_comments=false&show_user=true&sharing=false&buying=false&download=false&color=%23b4b8c1";
+        frame = document.createElement("iframe"); frame.className = "sc-frame"; frame.title = "Champagne Coast by Blood Orange on SoundCloud"; frame.allow = "autoplay; encrypted-media";
+        frame.src = "https://w.soundcloud.com/player/?url=" + encodeURIComponent(TRACK) + "&auto_play=false&visual=false&show_artwork=false&show_comments=false&show_user=true&sharing=false&buying=false&download=false";
         document.body.appendChild(frame);
         widget = window.SC.Widget(frame);
         const E = window.SC.Widget.Events;
-        widget.bind(E.READY, () => resolve());
-        widget.bind(E.PLAY, () => {
-          if (!frame.classList.contains("is-shown")) return;
-          showStrip(false);
-          setState(true);
-          fadeTo(VOLUME, FADE_IN);
-          verify();
-        });
+        widget.bind(E.READY, () => res());
+        widget.bind(E.PLAY, () => { if (!frame.classList.contains("is-shown")) return; strip(false); setState(true); fadeTo(VOLUME, FADE_IN); verify(); });
         widget.bind(E.FINISH, () => { if (playing) { widget.seekTo(0); widget.play(); } });
         widget.bind(E.ERROR, () => stop());
       };
@@ -544,50 +482,19 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
     ready.catch(() => { ready = null; stop(); });
     return ready;
   }
-  async function play() {
-    setState(true);
-    remember(true);
-    try { await load(); } catch (e) { return; }
-    if (!playing) return;
-    widget.setVolume(0); level = 0;
-    widget.play();
-    fadeTo(VOLUME, FADE_IN);
-    verify();
-  }
+  async function play() { setState(true); remember(true); try { await load(); } catch (e) { return; } if (!playing) return; widget.setVolume(0); level = 0; widget.play(); fadeTo(VOLUME, FADE_IN); verify(); }
   function verify() {
     clearTimeout(checkTimer);
     checkTimer = setTimeout(() => widget.isPaused((paused) => {
       if (!paused || !playing) return;
       clearInterval(fadeTimer); level = 0; widget.setVolume(0);
-      if (!offered) {
-        offered = true;
-        setState(false, "tap ▶ on the SoundCloud strip to play");
-        showStrip(true);
-      } else {
-        setState(false, "music couldn't start in this browser");
-      }
-      credit.hidden = false;
+      if (!offered) { offered = true; setState(false, "tap ▶ on the SoundCloud strip to play"); strip(true); } else setState(false, "music couldn't start in this browser");
+      if (cr) cr.hidden = false;
     }), 2500);
   }
-  function stop(keep) {
-    clearTimeout(checkTimer);
-    showStrip(false);
-    setState(false);
-    if (!keep) remember(false);
-    fadeTo(0, FADE_OUT, () => {
-      if (playing) return;
-      if (widget) widget.pause();
-      credit.hidden = true;
-    });
-  }
-  btn.addEventListener("click", () => {
-    disarm();
-    if (playing) stop();
-    else if (frame && frame.classList.contains("is-shown")) stop();
-    else play();
-  });
-  // turned on last time: start again on the first click or key anywhere (browsers need that first gesture)
-  const arm = (e) => { if (e.target && e.target.closest && e.target.closest(".sound")) return; disarm(); if (!playing) play(); };
+  function stop() { clearTimeout(checkTimer); strip(false); setState(false); remember(false); fadeTo(0, FADE_OUT, () => { if (playing) return; if (widget) widget.pause(); if (cr) cr.hidden = true; }); }
+  btn.addEventListener("click", () => { disarm(); if (playing || (frame && frame.classList.contains("is-shown"))) stop(); else play(); });
+  const arm = (e) => { if (e.target.closest && e.target.closest(".sound")) return; disarm(); if (!playing) play(); };
   function disarm() { window.removeEventListener("pointerdown", arm, true); window.removeEventListener("keydown", arm, true); }
   if (wanted()) { window.addEventListener("pointerdown", arm, true); window.addEventListener("keydown", arm, true); }
 })();
