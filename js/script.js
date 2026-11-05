@@ -165,13 +165,14 @@ function freeSpace() {
   const panel = document.body.classList.contains("is-open") ? pop : document.getElementById("s"), info = panel.offsetLeft + panel.offsetWidth;   // layout position, unaffected by the slide-in
   return { l: info + 28, r: W - 28, t: 28, b: H - 28 };
 }
-function photoBox(aspect) {
-  const f = freeSpace(), aw = f.r - f.l, ah = f.b - f.t, w = Math.min(aw, ah * aspect), h = w / aspect;
+function photoBox(aspect, room = 1) {
+  const f = freeSpace(), aw = f.r - f.l, ah = f.b - f.t, w = Math.min(aw, ah * aspect) * room, h = w / aspect;
   box = { x: (f.l + (aw - w) / 2) * dpr, y: (f.t + (ah - h) / 2) * dpr, w: w * dpr, h: h * dpr };
 }
 const deckTop = () => parseFloat(getComputedStyle(deck).paddingTop) || 300;
 
-// a picture becomes dots: they gather on edges and colour, thinning out toward the edges of the picture
+// a picture becomes dots: they gather on edges and colour, then thin out and scatter into a soft oval, so no straight border shows
+const OVAL_START = 0.72, OVAL_END = 1.22;
 function sample(draw, ramp) {
   const cw = Math.min(1200, Math.round(box.w)), ch = Math.round(cw * (box.h / box.w));
   const c = document.createElement("canvas"); c.width = cw; c.height = ch;
@@ -182,7 +183,7 @@ function sample(draw, ramp) {
   for (let i = 0; i < L.length; i++) { const v = (d[i * 4] * 0.3 + d[i * 4 + 1] * 0.59 + d[i * 4 + 2] * 0.11) / 255; L[i] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
   for (let v = 1; v < ch - 1; v++) for (let u = 1; u < cw - 1; u++) { const i = v * cw + u; B[i] = (L[i] * 4 + (L[i - 1] + L[i + 1] + L[i - cw] + L[i + cw]) * 2 + L[i - cw - 1] + L[i - cw + 1] + L[i + cw - 1] + L[i + cw + 1]) / 16; }
   const span = Math.max(0.05, hi - lo), pos = new Float32Array(CAP * 3), raw = new Float32Array(CAP * 3);
-  let n = 0, tries = 0;
+  let n = 0, tries = 0, ox = 0, oy = 0, oval = 0;
   while (n < CAP && tries < CAP * 60) {
     tries++;
     const u = 1 + (Math.random() * (cw - 4)) | 0, v = 1 + (Math.random() * (ch - 4)) | 0, i = v * cw + u;
@@ -190,13 +191,15 @@ function sample(draw, ramp) {
     const a = Math.max(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), b0 = Math.min(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), sat = a ? (a - b0) / a : 0;
     if (ramp) { if (Math.random() > 0.34 * Math.pow(l, 1.7) + Math.min(1, e * 7) * 0.85) continue; }
     else {
-      const edge = Math.min(u, cw - u, v, ch - v) / cw, fall = Math.min(1, 0.55 + edge / 0.012);
+      ox = (u / cw - 0.5) * 2; oy = (v / ch - 0.5) * 2; oval = Math.pow(Math.pow(Math.abs(ox), 2.4) + Math.pow(Math.abs(oy), 2.4), 1 / 2.4);
+      const t = Math.min(1, Math.max(0, (OVAL_END - oval) / (OVAL_END - OVAL_START))), fall = t * t * (3 - 2 * t);
       if (Math.random() > fall * (0.03 + 0.2 * Math.pow(l, 1.25) + Math.min(1, e * 9) * 0.9 + Math.pow(sat, 1.4) * 0.5 * (0.35 + l))) continue;
     }
     let r = d[i * 4], g = d[i * 4 + 1], bl = d[i * 4 + 2];
     if (ramp) { const t = Math.min(1, (u / cw) * 0.6 + Math.random() * 0.4), p = ramp[t < 0.5 ? 0 : 1], q = ramp[t < 0.5 ? 1 : 2], f = t < 0.5 ? t * 2 : t * 2 - 1; r = p[0] + (q[0] - p[0]) * f; g = p[1] + (q[1] - p[1]) * f; bl = p[2] + (q[2] - p[2]) * f; }
     const j = n * 3;
-    pos[j] = (u + Math.random()) / cw; pos[j + 1] = (v + Math.random()) / ch; pos[j + 2] = l;
+    const drift = ramp || oval < OVAL_START ? 0 : (oval - OVAL_START) * Math.pow(Math.random(), 2.5) * 0.24 / oval;
+    pos[j] = (u + Math.random()) / cw + ox * drift; pos[j + 1] = (v + Math.random()) / ch + oy * drift; pos[j + 2] = l;
     raw[j] = r; raw[j + 1] = g; raw[j + 2] = bl;
     n++;
   }
@@ -318,7 +321,7 @@ function photo(src, cb) { if (cache[src]) return cb(cache[src]); const im = new 
 let token = 0, nextMode = 0;
 function showPhoto(src, m) {
   const me = ++token;
-  photo(src, (im) => { if (me !== token) return; photoBox(im.width / im.height); setForm(sample((o, w, h) => { o.drawImage(im, 0, 0, w, h); }), m === undefined ? nextMode++ % 5 : m); });
+  photo(src, (im) => { if (me !== token) return; photoBox(im.width / im.height, 0.9); setForm(sample((o, w, h) => { o.drawImage(im, 0, 0, w, h); }), m === undefined ? nextMode++ % 5 : m); });
 }
 const rampOf = (id) => { const r = SITE.palette[id].ramp; return [hexRGB(r[2]), hexRGB(r[3]), hexRGB(r[4])]; };
 function showForm(id) {
@@ -343,7 +346,6 @@ let slow = 0, fl = 0;
 function frame(now) {
   const el = (now - t0) / 1000, t = now / 1000, cx = box.x + box.w / 2, cy = box.y + box.h / 2, R = 62 * dpr, R2 = R * R;
   const ringR = Math.min(box.w, box.h) * 0.38, settle = el > 3.2, wob = g3d ? 0 : 0.5 * dpr, fading = now - ct0 < 1600;
-  const scan = g3d ? -1e5 : box.y + ((t * 0.13) % 1.5) * box.h, sw = 1.6 * dpr, glint = paper ? 0xff1a1712 : 0xffffffff;
   const sr = shock ? ((now - shock.t) / 1000) * 900 * dpr : 0, sa = shock ? 1 - (now - shock.t) / 900 : 0;
   if (shock && sa <= 0) shock = null;
   if (g3d) gearPose(t);
@@ -370,7 +372,7 @@ function frame(now) {
     const dx = wob && settle ? Math.sin(hy[i] * 0.011 / dpr + t * 1.3) * wob : 0;
     const ix = (X + dx) | 0, iy = Y | 0;
     if (ix < 0 || iy < 0 || ix >= bw - 2 || iy >= bh - 2) continue;
-    const col = Math.abs(Y - scan) < sw ? glint : (0xff000000 | ((cb[i] & 255) << 16) | ((cg[i] & 255) << 8) | (cr[i] & 255));
+    const col = 0xff000000 | ((cb[i] & 255) << 16) | ((cg[i] & 255) << 8) | (cr[i] & 255);
     const p = iy * bw + ix;
     d32[p] = col;
     if (big[i]) { d32[p + 1] = col; d32[p + bw] = col; }
