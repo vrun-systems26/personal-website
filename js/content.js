@@ -24,11 +24,6 @@ const SITE = {
     "href": "#/sweeper"
    },
    {
-    "to": "dial",
-    "label": "Dial",
-    "href": "#/dial"
-   },
-   {
     "to": "arrival",
     "label": "Arrival",
     "href": "#/arrival"
@@ -39,6 +34,11 @@ const SITE = {
     "to": "builds",
     "label": "Side builds",
     "href": "#/builds"
+   },
+   {
+    "to": "software",
+    "label": "Software",
+    "href": "#/software"
    },
    {
     "to": "now",
@@ -317,56 +317,6 @@ const SITE = {
     }
    ]
   },
-  "dial": {
-   "title": "Dial",
-   "rawTitle": "Dial",
-   "meta": "Voice payments on Mantle · B@BHacks 2.0",
-   "images": [
-    {
-     "src": "images/dial-1.jpg",
-     "alt": "Dial home page: send money home with one phone call"
-    },
-    {
-     "src": "images/dial-2.jpg",
-     "alt": "The voice call: Dial confirms thirty-five dollars, takes the PIN, and locks the money on the blockchain"
-    },
-    {
-     "src": "images/dial-3.jpg",
-     "alt": "The relative's text in Spanish with the 6-digit collection code"
-    },
-    {
-     "src": "images/dial-4.jpg",
-     "alt": "The corner shop pays out 630 MXN after the code is entered, settled on-chain"
-    }
-   ],
-   "body": [
-    "Send money home by talking to a voice agent in your own language. The dollars lock on the Mantle blockchain in seconds, family picks up cash at a corner shop with a 6-digit code, and anything left uncollected is refunded automatically. No smartphone, bank or app needed on either side."
-   ],
-   "spec": [
-    [
-     "Voice",
-     "ElevenLabs agent, Gemini 2.5 Flash"
-    ],
-    [
-     "Chain",
-     "Solidity checks contract on Mantle"
-    ],
-    [
-     "Server",
-     "Node + Express on Vercel"
-    ]
-   ],
-   "out": [
-    {
-     "label": "GitHub ↗",
-     "href": "https://github.com/vrun-systems26/Dial"
-    },
-    {
-     "label": "Live ↗",
-     "href": "https://dial-a-dollar.vercel.app"
-    }
-   ]
-  },
   "arrival": {
    "title": "Arrival",
    "rawTitle": "Arrival",
@@ -574,6 +524,113 @@ const SITE = {
      "href": "https://github.com/vrun-systems26/WattWatch"
     }
    ]
+  },
+  "dial": {
+   "title": "Dial",
+   "rawTitle": "Dial",
+   "meta": "Voice payments on Mantle",
+   "images": [
+    {
+     "src": "images/dial-1.jpg",
+     "alt": "Dial home page: send money home with one phone call"
+    },
+    {
+     "src": "images/dial-2.jpg",
+     "alt": "The voice call: Dial confirms thirty-five dollars, takes the PIN, and locks the money on the blockchain"
+    },
+    {
+     "src": "images/dial-3.jpg",
+     "alt": "The relative's text in Spanish with the 6-digit collection code"
+    },
+    {
+     "src": "images/dial-4.jpg",
+     "alt": "The corner shop pays out 630 MXN after the code is entered, settled on-chain"
+    }
+   ],
+   "body": [
+    "Send money home by talking to a voice agent in your own language. The dollars lock on the Mantle blockchain in seconds, family picks up cash at a corner shop with a 6-digit code, and anything left uncollected is refunded automatically. No smartphone, bank or app needed on either side."
+   ],
+   "spec": [
+    [
+     "Voice",
+     "ElevenLabs agent, Gemini 2.5 Flash"
+    ],
+    [
+     "Chain",
+     "Solidity checks contract on Mantle"
+    ],
+    [
+     "Server",
+     "Node + Express on Vercel"
+    ]
+   ],
+   "out": [
+    {
+     "label": "GitHub ↗",
+     "href": "https://github.com/vrun-systems26/Dial"
+    },
+    {
+     "label": "Live ↗",
+     "href": "https://dial-a-dollar.vercel.app"
+    }
+   ]
+  },
+  "recall": {
+   "title": "Recall",
+   "rawTitle": "Recall",
+   "meta": "Solo · speech AI for early signs of dementia",
+   "images": [
+    {
+     "src": "images/recall-1.jpg",
+     "alt": "Recall's result for one check-in: a speech-change score and the markers outside the typical range"
+    },
+    {
+     "src": "images/recall-2.jpg",
+     "alt": "The daily check-in: three spoken questions and the recorded answer"
+    },
+    {
+     "src": "images/recall-3.jpg",
+     "alt": "One speaker's scores across interview clips from years before diagnosis"
+    },
+    {
+     "src": "images/recall-4.jpg",
+     "alt": "Average score rising from 10 to 15 years before diagnosis to after symptoms, above healthy speakers"
+    }
+   ],
+   "body": [
+    "A two-minute daily voice check-in for an aging parent. A friendly voice asks one question, the parent answers out loud, and Recall scores how they spoke: pauses, word-finding gaps, vague words, vocabulary. The family watches the trend over weeks and raises a lasting change with a doctor.",
+    "The models that scored highest had learned the recordings, not the people, and failed a sanity check I built. I shipped the best model that passed. A prototype, not medical advice."
+   ],
+   "spec": [
+    [
+     "Data",
+     "450 public interview clips, 215 people (DementiaNet)"
+    ],
+    [
+     "Speech",
+     "faster-whisper transcript, 17 speech markers"
+    ],
+    [
+     "Model",
+     "Knowledge-guided markers + MiniLM ensemble"
+    ],
+    [
+     "Testing",
+     "No speaker in both train and test; synthetic sanity check"
+    ]
+   ],
+   "out": [
+    {
+     "label": "GitHub ↗",
+     "href": "https://github.com/vrun-systems26/recall"
+    }
+   ],
+   "dust": [
+    "images/recall-1-dark.jpg",
+    "images/recall-2-dark.jpg",
+    "images/recall-3-dark.jpg",
+    "images/recall-4-dark.jpg"
+   ]
   }
  },
  "palette": {
@@ -726,6 +783,41 @@ const SITE = {
     "#dcf3ff"
    ],
    "accent": "#7ccdf0"
+  },
+  "software": {
+   "ramp": [
+    "#0e1636",
+    "#1b2f73",
+    "#2f5fd0",
+    "#79a3ff",
+    "#dfe8ff"
+   ],
+   "accent": "#8fb0ff"
+  },
+  "recall": {
+   "ramp": [
+    "#2a1230",
+    "#5b2468",
+    "#a54bbd",
+    "#d995ea",
+    "#f8e2fd"
+   ],
+   "accent": "#e6a7f0"
   }
+ },
+ "software": {
+  "title": "Software",
+  "items": [
+   {
+    "to": "dial",
+    "label": "Dial",
+    "href": "#/software/dial"
+   },
+   {
+    "to": "recall",
+    "label": "Recall",
+    "href": "#/software/recall"
+   }
+  ]
  }
 };

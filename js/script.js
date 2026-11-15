@@ -5,19 +5,21 @@
 
 const S = (() => {
   const P = SITE.projects, B = SITE.builds, TAU = Math.PI * 2;
+  const GROUPS = { builds: SITE.builds, software: SITE.software };   // pages that hold a list of smaller projects
   const img = (s) => s;
   const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
-  const isBuild = (id) => B.items.some((i) => i.to === id);
-  const parent = (id) => (isBuild(id) ? "builds" : "index");
+  const groupOf = (id) => Object.keys(GROUPS).find((g) => GROUPS[g].items.some((i) => i.to === id));
+  const isBuild = (id) => !!groupOf(id);
+  const parent = (id) => groupOf(id) || "index";
   const href = (id) => {
     if (id === "index") return "#/";
-    const b = B.items.find((i) => i.to === id);
+    const g = groupOf(id), b = g && GROUPS[g].items.find((i) => i.to === id);
     return b ? b.href : "#/" + id;
   };
   const titleOf = (id) => (P[id] ? P[id].title : SITE[id] ? SITE[id].title : SITE.name.join(" "));
   const rawTitle = (id) => (P[id] ? P[id].rawTitle : esc(titleOf(id)));
-  const ids = () => [...SITE.nav[0].map((n) => n.to), ...B.items.map((i) => i.to)];
+  const ids = () => [...SITE.nav[0].map((n) => n.to), ...Object.values(GROUPS).flatMap((g) => g.items.map((i) => i.to))];
 
   const gallery = (p) => `<figure class="gallery">
     <img class="main" src="${img(p.images[0].src)}" alt="${esc(p.images[0].alt)}">
@@ -28,10 +30,10 @@ const S = (() => {
   const spec = (p) => (p.spec.length ? `<dl class="spec">${p.spec.map(([a, b]) => `<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join("")}</dl>` : "");
   const out = (p) => (p.out.length ? `<p class="out">${p.out.map((o) => `<a href="${o.href}">${esc(o.label)}</a>`).join("")}</p>` : "");
   const project = (id) => { const p = P[id]; return meta(p) + gallery(p) + text(p) + spec(p) + out(p); };
-  const buildsList = () => `<nav class="list" aria-label="${esc(B.title)}">${B.items.map((i) => `<a href="${i.href}" data-to="${i.to}">${esc(i.label)}</a>`).join("")}</nav>`;
+  const buildsList = (g = "builds") => `<nav class="list" aria-label="${esc(GROUPS[g].title)}">${GROUPS[g].items.map((i) => `<a href="${i.href}" data-to="${i.to}">${esc(i.label)}</a>`).join("")}</nav>`;
   const awards = () => `<ol class="awards">${SITE.awards.items.map((a) => `<li><span class="place${a.first ? " is-first" : ""}">${esc(a.place)}</span><div><b>${esc(a.title)}</b><span class="sub">${esc(a.sub)}</span></div></li>`).join("")}</ol>`;
   const notes = () => `<ul class="notes">${SITE.now.items.map((n) => `<li><b>${n.href ? `<a class="ext" href="${n.href}">${esc(n.title)} ↗</a>` : esc(n.title)}</b><span class="sub">${esc(n.sub)}</span></li>`).join("")}</ul>`;
-  const bodyOf = (id) => (id === "builds" ? buildsList() : id === "awards" ? awards() : id === "now" ? notes() : project(id));
+  const bodyOf = (id) => (GROUPS[id] ? buildsList(id) : id === "awards" ? awards() : id === "now" ? notes() : project(id));
   const closeLink = (id) => `<a class="close" href="${href(parent(id))}" aria-label="Close ${esc(titleOf(id))}">${icon}</a>`;
   const detail = (id) => `<header class="pane-head"><h2 tabindex="-1">${rawTitle(id)}</h2>${closeLink(id)}</header>${bodyOf(id)}`;
   const name = () => `<span>${esc(SITE.name[0])}</span> <em>${esc(SITE.name[1])}</em>`;
@@ -42,12 +44,12 @@ const S = (() => {
   const foot = () => `<div class="foot-row">${links()}${soundBtn()}</div>${credit()}`;
 
   // the open page comes from the address, so links, back and forward all just work
-  const current = () => { const k = location.hash.replace(/^#\/?/, "").replace(/\/$/, "").split("/").pop(); return k && (P[k] || (k === "builds" || k === "now" || k === "awards")) ? k : "index"; };
+  const current = () => { const k = location.hash.replace(/^#\/?/, "").replace(/\/$/, "").split("/").pop(); return k && (P[k] || (GROUPS[k] || k === "now" || k === "awards")) ? k : "index"; };
   function router(fn) {
     const run = () => {
       const id = current();
       document.querySelectorAll("a[data-to]").forEach((a) => {
-        const on = a.dataset.to === id || (a.dataset.to === "builds" && isBuild(id));
+        const on = a.dataset.to === id || a.dataset.to === groupOf(id);
         a.classList.toggle("is-open", on);
         if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
       });
@@ -319,7 +321,11 @@ function gearPose(t) {
 const cache = {};
 function photo(src, cb) { if (cache[src]) return cb(cache[src]); const im = new Image(); im.onload = () => cb((cache[src] = im)); im.src = src; }
 let token = 0, nextMode = 0;
+// a project can name a dark copy of a light screenshot for the dust to draw from
+const DUST = {};
+Object.values(SITE.projects).forEach((p) => (p.dust || []).forEach((d, i) => { DUST[p.images[i].src] = d; }));
 function showPhoto(src, m) {
+  src = DUST[src] || src;
   const me = ++token;
   photo(src, (im) => { if (me !== token) return; photoBox(im.width / im.height, 0.9); setForm(sample((o, w, h) => { o.drawImage(im, 0, 0, w, h); }), m === undefined ? nextMode++ % 5 : m); });
 }
@@ -330,6 +336,9 @@ function showForm(id) {
   if (id === "builds") {
     // a coiled spring, seen along its length
     setForm(sample((o, w, h) => { o.strokeStyle = "#fff"; o.lineWidth = 1.8; for (let k = 0; k < 15; k++) { const cx = w * (0.14 + (k * 0.72) / 14); o.beginPath(); o.ellipse(cx, h / 2, w * 0.05, h * 0.3, 0.26, 0, S.TAU); o.stroke(); } o.lineWidth = 1; o.beginPath(); o.moveTo(w * 0.06, h * 0.5); o.lineTo(w * 0.94, h * 0.5); o.stroke(); }, ramp), 1);
+  } else if (id === "software") {
+    // a voice waveform: both software projects are things you talk to
+    setForm(sample((o, w, h) => { o.fillStyle = "#fff"; for (let k = 0; k < 46; k++) { const x = w * (0.08 + (k * 0.84) / 45), env = Math.sin((k / 45) * Math.PI), a = h * (0.05 + 0.36 * env * (0.45 + 0.55 * Math.abs(Math.sin(k * 1.7) * Math.cos(k * 0.6)))); o.fillRect(x - w * 0.004, h / 2 - a, w * 0.008, a * 2); } }, ramp), 0);
   } else if (id === "now") {
     setForm(sample((o, w, h) => { o.strokeStyle = "#fff"; for (let k = 1; k <= 11; k++) { o.lineWidth = 1 + k * 0.22; o.beginPath(); o.arc(w * 0.5, h * 0.5, (k * h) / 23, 0, S.TAU); o.stroke(); } }, ramp), 1);
   } else {
@@ -394,7 +403,7 @@ function route(id) {
   document.body.classList.toggle("is-open", open);
   if (!open) { setTimeout(() => { if (phone()) window.scrollTo({ top: 0, behavior: "smooth" }); }, 0); showGears(); return; }
   pop.innerHTML = S.detail(id); pop.scrollTop = 0;
-  if (!stack.hidden) stack.innerHTML = S.detail("builds");
+  if (!stack.hidden) stack.innerHTML = S.detail(S.parent(id));
   pop.classList.remove("in"); void pop.offsetWidth; pop.classList.add("in");
   setAccent(id);
   if (S.P[id]) showPhoto(S.img(S.P[id].images[0].src)); else showForm(id);
