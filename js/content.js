@@ -9,6 +9,11 @@ const SITE = {
  "nav": [
   [
    {
+    "to": "index-cabinet",
+    "label": "Index",
+    "href": "#/index-cabinet"
+   },
+   {
     "to": "fetch",
     "label": "Fetch",
     "href": "#/fetch"
@@ -123,6 +128,12 @@ const SITE = {
    {
     "place": "1st",
     "first": true,
+    "title": "Overall, Bay Valley Hacks",
+    "sub": "Index · 400+ hackers"
+   },
+   {
+    "place": "1st",
+    "first": true,
     "title": "Overall, CSI Hacks",
     "sub": "Fetch · 82+ teams"
    },
@@ -179,6 +190,65 @@ const SITE = {
   ]
  },
  "projects": {
+  "index-cabinet": {
+   "title": "Index",
+   "rawTitle": "Index",
+   "meta": "Solo · 1st Overall, Bay Valley Hacks",
+   "images": [
+    {
+     "src": "images/index-1.jpg",
+     "alt": "Index, a robotic cabinet with 15 compartments on a 3-axis gantry, next to the laptop running its voice agent"
+    },
+    {
+     "src": "images/index-2.jpg",
+     "alt": "Index from the side: the vertical rail, the cabinet and the ESP32 wiring on the base"
+    },
+    {
+     "src": "images/index-3.jpg",
+     "alt": "Day one of the build: the first rail, the trays and the parts laid out on a table"
+    },
+    {
+     "src": "images/index-4.jpg",
+     "alt": "Index wiring diagram: the Maker-ESP32 with the two steppers, servo, electromagnet and limit switches"
+    }
+   ],
+   "body": [
+    "A voice-controlled robotic cabinet. Ask for what you need, by voice or from your phone, and a 3-axis robot pulls the exact tray out of 15 compartments, brings it within reach, and puts it back when you're done. Made for people who can't easily reach, search or remember, for about $300 in parts.",
+    "The AI voice agent can only act through verified commands: the page sends GO n, and the robot has to answer ACK n or the move is rejected. It only offers what's in stock and moves only after you say yes."
+   ],
+   "spec": [
+    [
+     "Controller",
+     "Maker-ESP32 with its own Wi-Fi and phone page"
+    ],
+    [
+     "Motion",
+     "X and Z steppers on belts and linear rails; servo rack and pinion for depth"
+    ],
+    [
+     "Gripper",
+     "Electromagnet onto a steel washer in each 3D-printed tray"
+    ],
+    [
+     "Voice",
+     "ElevenLabs agent with three client tools"
+    ]
+   ],
+   "out": [
+    {
+     "label": "GitHub ↗",
+     "href": "https://github.com/vrun-systems26/IndeX"
+    },
+    {
+     "label": "Live ↗",
+     "href": "https://index-robot-cabinet.vercel.app"
+    },
+    {
+     "label": "Demo ↗",
+     "href": "https://youtu.be/VH-3CrXZQcE"
+    }
+   ]
+  },
   "fetch": {
    "title": "Fetch",
    "rawTitle": "Fetch",
@@ -803,6 +873,16 @@ const SITE = {
     "#f8e2fd"
    ],
    "accent": "#e6a7f0"
+  },
+  "index-cabinet": {
+   "ramp": [
+    "#0c2a27",
+    "#13564f",
+    "#1f9e90",
+    "#6cdccd",
+    "#d6f7f2"
+   ],
+   "accent": "#76e0d2"
   }
  },
  "software": {
