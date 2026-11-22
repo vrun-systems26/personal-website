@@ -138,6 +138,12 @@ const SITE = {
     "sub": "Fetch · 82+ teams"
    },
    {
+    "place": "Top 30",
+    "first": false,
+    "title": "High Honors, Veritas AI International High School Hackathon",
+    "sub": "Recall · solo · 1,000+ projects, 1,700+ students, 75+ countries · $1,250 scholarship"
+   },
+   {
     "place": "2nd",
     "first": false,
     "title": "Open Hardware, Berkeley Robotics Hackathon",
