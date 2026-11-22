@@ -29,9 +29,9 @@ const SITE = {
     "href": "#/sweeper"
    },
    {
-    "to": "arrival",
-    "label": "Arrival",
-    "href": "#/arrival"
+    "to": "recall",
+    "label": "Recall",
+    "href": "#/recall"
    }
   ],
   [
@@ -393,54 +393,61 @@ const SITE = {
     }
    ]
   },
-  "arrival": {
-   "title": "Arrival",
-   "rawTitle": "Arrival",
-   "meta": "Team of 30 · people & safety lead · Nebius × NVIDIA AI Hackathon",
+  "recall": {
+   "title": "Recall",
+   "rawTitle": "Recall",
+   "meta": "Solo · speech AI for early signs of dementia",
    "images": [
     {
-     "src": "images/arrival-1.jpg",
-     "alt": "One iPhone scan of a kitchen drawn up as a floor plan, with the scan path"
+     "src": "images/recall-1.jpg",
+     "alt": "Recall's result for one check-in: a speech-change score and the markers outside the typical range"
     },
     {
-     "src": "images/arrival-2.jpg",
-     "alt": "The kitchen as a physics twin, every door and drawer a joint the simulator can move"
+     "src": "images/recall-2.jpg",
+     "alt": "The daily check-in: three spoken questions and the recorded answer"
+    },
+    {
+     "src": "images/recall-3.jpg",
+     "alt": "One speaker's scores across interview clips from years before diagnosis"
+    },
+    {
+     "src": "images/recall-4.jpg",
+     "alt": "Average score rising from 10 to 15 years before diagnosis to after symptoms, above healthy speakers"
     }
    ],
    "body": [
-    "One iPhone scan of a kitchen becomes a physics twin, a robot arm working around walking people, and a dataset NVIDIA GR00T trains on. Fine-tuned on it, GR00T passed 39 of 48 trials, up from 26. I stress-tested every room (288 of 288 runs, zero contacts with people), hunted down bugs and gaps, and recorded much of the demo video."
+    "A two-minute daily voice check-in for an aging parent. A friendly voice asks one question, the parent answers out loud, and Recall scores how they spoke: pauses, word-finding gaps, vague words, vocabulary. The family watches the trend over weeks and raises a lasting change with a doctor.",
+    "The models that scored highest had learned the recordings, not the people, and failed a sanity check I built. I shipped the best model that passed. A prototype, not medical advice."
    ],
    "spec": [
     [
-     "Led",
-     "People & safety"
+     "Data",
+     "450 public interview clips, 215 people (DementiaNet)"
     ],
     [
-     "Built",
-     "RoboCasa layouts within 2.5 cm; 104 demos from 14 human ones"
+     "Speech",
+     "faster-whisper transcript, 17 speech markers"
     ],
     [
-     "Fixed",
-     "Walker contacts 3 → 0; Franka oven 12/14 → 14/14"
+     "Model",
+     "Knowledge-guided markers + MiniLM ensemble"
     ],
     [
-     "Shipped",
-     "41 of 418 merged PRs"
+     "Testing",
+     "No speaker in both train and test; synthetic sanity check"
     ]
    ],
    "out": [
     {
      "label": "GitHub ↗",
-     "href": "https://github.com/AvnehSBhatia/ExeaLabsNvidiaHacks"
-    },
-    {
-     "label": "Live ↗",
-     "href": "https://arrival.exealabs.org"
-    },
-    {
-     "label": "Demo ↗",
-     "href": "https://www.youtube.com/watch?v=EdZCukpGx00"
+     "href": "https://github.com/vrun-systems26/recall"
     }
+   ],
+   "dust": [
+    "images/recall-1-dark.jpg",
+    "images/recall-2-dark.jpg",
+    "images/recall-3-dark.jpg",
+    "images/recall-4-dark.jpg"
    ]
   },
   "arm": {
@@ -651,61 +658,54 @@ const SITE = {
     }
    ]
   },
-  "recall": {
-   "title": "Recall",
-   "rawTitle": "Recall",
-   "meta": "Solo · speech AI for early signs of dementia",
+  "arrival": {
+   "title": "Arrival",
+   "rawTitle": "Arrival",
+   "meta": "Team of 30 · people & safety lead · Nebius × NVIDIA AI Hackathon",
    "images": [
     {
-     "src": "images/recall-1.jpg",
-     "alt": "Recall's result for one check-in: a speech-change score and the markers outside the typical range"
+     "src": "images/arrival-1.jpg",
+     "alt": "One iPhone scan of a kitchen drawn up as a floor plan, with the scan path"
     },
     {
-     "src": "images/recall-2.jpg",
-     "alt": "The daily check-in: three spoken questions and the recorded answer"
-    },
-    {
-     "src": "images/recall-3.jpg",
-     "alt": "One speaker's scores across interview clips from years before diagnosis"
-    },
-    {
-     "src": "images/recall-4.jpg",
-     "alt": "Average score rising from 10 to 15 years before diagnosis to after symptoms, above healthy speakers"
+     "src": "images/arrival-2.jpg",
+     "alt": "The kitchen as a physics twin, every door and drawer a joint the simulator can move"
     }
    ],
    "body": [
-    "A two-minute daily voice check-in for an aging parent. A friendly voice asks one question, the parent answers out loud, and Recall scores how they spoke: pauses, word-finding gaps, vague words, vocabulary. The family watches the trend over weeks and raises a lasting change with a doctor.",
-    "The models that scored highest had learned the recordings, not the people, and failed a sanity check I built. I shipped the best model that passed. A prototype, not medical advice."
+    "One iPhone scan of a kitchen becomes a physics twin, a robot arm working around walking people, and a dataset NVIDIA GR00T trains on. Fine-tuned on it, GR00T passed 39 of 48 trials, up from 26. I stress-tested every room (288 of 288 runs, zero contacts with people), hunted down bugs and gaps, and recorded much of the demo video."
    ],
    "spec": [
     [
-     "Data",
-     "450 public interview clips, 215 people (DementiaNet)"
+     "Led",
+     "People & safety"
     ],
     [
-     "Speech",
-     "faster-whisper transcript, 17 speech markers"
+     "Built",
+     "RoboCasa layouts within 2.5 cm; 104 demos from 14 human ones"
     ],
     [
-     "Model",
-     "Knowledge-guided markers + MiniLM ensemble"
+     "Fixed",
+     "Walker contacts 3 → 0; Franka oven 12/14 → 14/14"
     ],
     [
-     "Testing",
-     "No speaker in both train and test; synthetic sanity check"
+     "Shipped",
+     "41 of 418 merged PRs"
     ]
    ],
    "out": [
     {
      "label": "GitHub ↗",
-     "href": "https://github.com/vrun-systems26/recall"
+     "href": "https://github.com/AvnehSBhatia/ExeaLabsNvidiaHacks"
+    },
+    {
+     "label": "Live ↗",
+     "href": "https://arrival.exealabs.org"
+    },
+    {
+     "label": "Demo ↗",
+     "href": "https://www.youtube.com/watch?v=EdZCukpGx00"
     }
-   ],
-   "dust": [
-    "images/recall-1-dark.jpg",
-    "images/recall-2-dark.jpg",
-    "images/recall-3-dark.jpg",
-    "images/recall-4-dark.jpg"
    ]
   }
  },
@@ -900,9 +900,9 @@ const SITE = {
     "href": "#/software/dial"
    },
    {
-    "to": "recall",
-    "label": "Recall",
-    "href": "#/software/recall"
+    "to": "arrival",
+    "label": "Arrival",
+    "href": "#/software/arrival"
    }
   ]
  }
