@@ -162,6 +162,12 @@ const SITE = {
     "sub": "MagLift · 30+ submissions"
    },
    {
+    "place": "2nd",
+    "first": false,
+    "title": "Novice Impromptu, Jon Lewis SVUDL Invitational",
+    "sub": "Speech & debate · 51 competitors, finals of 7"
+   },
+   {
     "place": "1st",
     "first": false,
     "title": "Dan black belt, Taekwondo",
