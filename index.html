@@ -27,7 +27,7 @@
 <script>(function(){var t=null;try{t=localStorage.getItem("arm-theme")}catch(e){}if(t!=="light"&&t!=="dark"){t="dark"}document.documentElement.dataset.theme=t})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Hanken+Grotesk:wght@400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=DM+Mono:wght@300;400;500&family=Hanken+Grotesk:wght@400..800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0b0d;--ink:#eceef2;--mute:#8f96a0;--fine:#b9bec6;--rule:#ffffff1c;--accent:#6b97ff;--accent-ink:#050b18;--scrim:10,11,13;--btn:#6b97ff;--alt:#ffffff0d;
 --text:"Hanken Grotesk",system-ui,sans-serif;--mono:"DM Mono",ui-monospace,monospace;color-scheme:dark}
@@ -44,8 +44,9 @@ img{display:block;max-width:100%}
 .veil{position:fixed;inset:0;z-index:30;background:var(--bg);pointer-events:none;transition:opacity .8s cubic-bezier(.22,1,.36,1)}
 .veil.off{opacity:0}
 
-/* the column, left: name in spaced mono caps, the nine axes as a quiet dot list, links at the bottom */
-.side{position:fixed;z-index:6;left:0;top:0;bottom:0;width:300px;display:flex;flex-direction:column;padding:30px 22px 22px 32px;background:linear-gradient(90deg,rgba(var(--scrim),.94),rgba(var(--scrim),.8) 70%,rgba(var(--scrim),0));transition:background .4s}
+/* the corner: name in spaced mono caps and the role; the drawers in the cabinet are the navigation, the icon row sits bottom-left */
+.side{position:fixed;z-index:6;left:0;top:0;bottom:0;width:300px;display:flex;flex-direction:column;padding:30px 22px 22px 32px;pointer-events:none}
+.side>*{pointer-events:auto}
 .who{display:flex;flex-direction:column}
 .name{display:inline-flex;flex-direction:column;align-self:flex-start;min-height:44px;justify-content:center;text-decoration:none;font:400 16px/1.45 var(--mono);letter-spacing:.32em;text-transform:uppercase}
 .name:hover{color:var(--accent)}
@@ -95,12 +96,18 @@ body:not([data-view="home"]) .rscrim{opacity:1}
 .list2 a:hover b{color:var(--accent)}
 .list2 .pl{font:400 12px/1 var(--mono);color:var(--mute);letter-spacing:.1em;text-transform:uppercase}
 .list2 .pl.first{color:var(--accent)}
-.hint{margin:18px 0 0;max-width:230px;font:400 12.5px/1.6 var(--mono);color:var(--mute);letter-spacing:.04em;transition:opacity .3s}
+.hint{margin:18px 0 0;white-space:nowrap;font:400 12.5px/1.6 var(--mono);color:var(--mute);letter-spacing:.04em;transition:opacity .3s}
 body:not([data-view="home"]) .hint{opacity:0}
 
 .kit-toast{position:fixed;left:50%;bottom:24px;z-index:45;transform:translate(-50%,16px);opacity:0;background:var(--ink);color:var(--bg);font:400 14px/1.3 var(--mono);padding:13px 18px;transition:opacity .25s cubic-bezier(.16,1,.3,1),transform .3s cubic-bezier(.16,1,.3,1);pointer-events:none}
 .kit-toast.is-on{opacity:1;transform:translate(-50%,0)}
 
+@media (min-width:761px){
+  .list{position:absolute;width:250px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .list:focus-within{position:fixed;z-index:8;left:20px;top:132px;width:250px;height:auto;overflow:visible;clip-path:none;padding:6px 14px;background:rgba(var(--scrim),.94);box-shadow:0 0 0 1px var(--rule)}
+  .hint{margin:-14px 0 0;pointer-events:none}
+  .links{margin-top:auto}
+}
 @media (max-width:1100px){.side{width:290px;padding-left:24px}.panel{width:min(420px,38vw);right:24px}}
 @media (max-width:760px){
   .side{display:contents}
@@ -138,7 +145,7 @@ html.nogl .stage{background:url(images/arm-2.jpg) 60% 50%/auto 80vh no-repeat,va
 <aside class="side">
   <div class="who"><a class="name" href="#/"><span>Varun</span><span>Chilukuri</span></a><p class="role">robotics · San Jose</p></div>
   <nav class="list" id="tabs" aria-label="Sections, one per axis"></nav>
-  <p class="hint" id="hint" aria-hidden="true">tap a joint on the arm, or use ← → to step through the axes</p>
+  <p class="hint" id="hint" aria-hidden="true">tap a drawer or a joint · ← → to step through</p>
   <nav class="links" aria-label="Links">
     <a id="d-gh" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
     <a id="d-li" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a>
@@ -518,14 +525,37 @@ function makeArm(scene) {
 }
 
 
+// a torn strip of cream masking tape with a name in dark-blue marker: uneven ink, paper fibre, ragged ends
+function paintTape(g, W, H, name, ax, fs, seed) {
+  const r = rng(seed); g.clearRect(0, 0, W, H);
+  const y0 = 16, y1 = H - 16, rag = (x0, dir) => { for (let y = y0; y <= y1; y += 11) g.lineTo(x0 + dir * r() * 12, y); };
+  g.beginPath(); g.moveTo(10, y0); g.lineTo(W - 10, y0); rag(W - 10, -1); g.lineTo(10, y1); for (let y = y1; y >= y0; y -= 11) g.lineTo(10 + r() * 12, y); g.closePath();
+  const tg = g.createLinearGradient(0, y0, 0, y1); tg.addColorStop(0, "#ece3cb"); tg.addColorStop(0.5, "#e6dcc2"); tg.addColorStop(1, "#ddd2b6");
+  g.fillStyle = tg; g.fill();
+  g.save(); g.clip();
+  for (let i = 0; i < 900; i++) { g.fillStyle = `rgba(${r() < 0.5 ? "120,100,60" : "255,250,235"},${0.05 + r() * 0.08})`; g.fillRect(r() * W, r() * H, 1 + r() * 3, 0.6 + r()); }   // crepe and fibre
+  for (let i = 0; i < 6; i++) { g.fillStyle = `rgba(150,130,90,${0.04 + r() * 0.05})`; g.fillRect(0, y0 + r() * (y1 - y0), W, 1 + r() * 2); }
+  // marker: two passes slightly offset, then a few dry spots, so the ink isn't one flat black
+  g.textBaseline = "middle"; g.font = `700 ${fs}px Kalam, 'Comic Sans MS', cursive`;
+  const tx = 42, ty = H / 2 + 6;
+  g.fillStyle = "rgba(28,32,48,0.86)"; g.fillText(name, tx, ty);
+  g.fillStyle = "rgba(20,24,40,0.35)"; g.fillText(name, tx + 1.5, ty + 1);
+  g.globalCompositeOperation = "destination-out";
+  for (let i = 0; i < 160; i++) { g.fillStyle = `rgba(0,0,0,${0.12 + r() * 0.25})`; g.beginPath(); g.arc(tx + r() * (W - 90), ty - fs * 0.35 + r() * fs * 0.7, 0.6 + r() * 1.7, 0, 7); g.fill(); }
+  g.globalCompositeOperation = "source-over";
+  g.font = `700 ${Math.round(fs * 0.42)}px Kalam, 'Comic Sans MS', cursive`; g.fillStyle = "rgba(60,64,78,0.75)"; g.textAlign = "right"; g.fillText(ax, W - 30, y0 + fs * 0.3); g.textAlign = "left";
+  g.restore();
+}
+
 /* ============ the parts cabinet: one drawer per section, within the arm's reach behind its left shoulder ============ */
-const CAB_AT = 4.95, CAB_R = 9.0, CAB_FACE = 1.4;   // to the arm's left, clear of its idle sweep; its front turned a little toward you         // bearing (radians, from +Z toward +X) and distance from the base; its front faces the arm
+const CAB_AT = 4.95, CAB_R = 9.1, CAB_FACE = 1.4;   // to the arm's left, clear of its idle sweep; its front turned a little toward you         // bearing (radians, from +Z toward +X) and distance from the base; its front faces the arm
 function buildCabinet(root) {
-  const SC = 1.55, W = 3.16, D = 1.35, PLH = 0.76, DY = PLH - 0.45, BH = 2.14, FW = 0.96, FH = 0.62, TL = 1.1, PULL = 0.8;   // a drawer slides out ~60% of the cabinet's depth
+  const SC = 1.5, W = 3.16, D = 1.35, PLH = 0.76, DY = PLH - 0.45, BH = 2.14, FW = 0.96, FH = 0.62, TL = 1.1, PULL = 0.8;   // a drawer slides out ~60% of the cabinet's depth
   const C = V3(Math.sin(CAB_AT) * CAB_R, 0, Math.cos(CAB_AT) * CAB_R), n = V3(Math.sin(CAB_FACE), 0, Math.cos(CAB_FACE)), yaw = CAB_FACE;
   const cg = grp(root, C.x, 0, C.z); cg.rotation.y = yaw; cg.scale.setScalar(SC);
   const CAB = worn(P({ color: drift(0x1d1f23, 0.03, R), metalness: 0.2, clearcoat: 0.25, clearcoatRoughness: 0.5, bumpMap: peel, bumpScale: 0.25 }), { base: 0.5, prints: 6, scratches: 180, dust: 600, seed: 81 });
   const INNER = S({ color: 0x141518, roughness: 0.8 });
+  const ACC = S({ color: 0x3d7bff, roughness: 0.42, metalness: 0.1 });   // follows the theme: blue in the dark room, burnt orange in the light one
   const FOAM = S({ color: 0x9a9890, roughness: 0.95 }), PCB = S({ color: 0x1f5a3a, roughness: 0.5, metalness: 0.1 });
   // quiet fronts: dark bead-blasted anodised aluminium, each from its own batch
   const FRONTS = [0, 1, 2].map((k) => worn(P({ color: drift(0x30333a, 0.04, R), metalness: 0.65, clearcoat: 0.1, clearcoatRoughness: 0.5 }), { base: 0.46, prints: 4, scratches: 120, dust: 300, seed: 82 + k, bump: 0.06 }));
@@ -536,10 +566,14 @@ function buildCabinet(root) {
   add(cg, rounded(W, 0.05, D, 0.02, 2), CAB, 0, PLH + 0.025, 0);
   for (const x of [-0.51, 0.51]) add(cg, new T.BoxGeometry(0.03, BH - 0.1, D - 0.05), INNER, x, PLH + BH / 2, -0.02);
   for (const y of [1.86 + DY, 1.18 + DY]) add(cg, new T.BoxGeometry(W - 0.1, 0.03, D - 0.05), INNER, 0, y, -0.02);
-  add(cg, rounded(W - 0.16, PLH, D - 0.16, 0.03, 2), BLACK, 0, PLH / 2, 0);
+  add(cg, rounded(W - 0.16, PLH - 0.08, D - 0.16, 0.03, 2), BLACK, 0, PLH / 2 + 0.04, 0);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(cg, new T.CylinderGeometry(0.07, 0.08, 0.08, 20), RUB, sx * (W / 2 - 0.22), 0.04, sz * (D / 2 - 0.2));   // little rubber feet
+  // the maker's plate on the kick-plate
+  const mp = canvasTex(512, 128, (g, Wc, Hc) => { g.fillStyle = "#b9bdc2"; g.fillRect(0, 0, Wc, Hc); speckle(g, Wc, Hc, 1500, 0.06, 1); g.fillStyle = "#25272c"; g.font = "600 46px 'DM Mono', monospace"; g.textBaseline = "middle"; g.fillText("VC PARTS · 9 BINS", 26, Hc / 2 + 2); for (const x of [12, Wc - 12]) { g.fillStyle = "#6c7076"; g.beginPath(); g.arc(x, Hc / 2, 6, 0, 7); g.fill(); } });
+  add(cg, new T.PlaneGeometry(0.7, 0.175), P({ map: mp, metalness: 0.85, roughness: 0.35 }), 0, PLH / 2 + 0.03, D / 2 - 0.075, false);
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) screw(cg, sx * (W / 2 - 0.06), PLH + BH + 0.025, sz * (D / 2 - 0.06), 0.6);
   const sh = contact((W + 0.4) * SC, (D + 0.4) * SC, { dark: 0.8 }); sh.position.set(C.x, 0.034, C.z); sh.rotation.z = yaw; root.add(sh);
-  const drawers = {};
+  const drawers = {}, labels = [];
   SECS.forEach((s, i) => {
     const c = i % 3, r = (i / 3) | 0;
     SEC = s.id;
@@ -553,22 +587,31 @@ function buildCabinet(root) {
     add(dg, new T.BoxGeometry(FW - 0.14, 0.06, TL - 0.06), FOAM, 0, ty + 0.04, tz, false);
     add(dg, rounded(0.36, 0.05, 0.28, 0.012, 1), PCB, -0.12 + (i % 2) * 0.2, ty + 0.095, D / 2 - 0.34, false);
     add(dg, rounded(0.16, 0.09, 0.16, 0.02, 1), BLACK, 0.22 - (i % 3) * 0.1, ty + 0.115, D / 2 - 0.62, false);
-    // the label strip in a little aluminium frame: the section's name, its axis on the right
-    const lt = canvasTex(512, 96, (g, Wc, Hc) => {
-      g.fillStyle = "#b9bcc0"; g.fillRect(0, 0, Wc, Hc); speckle(g, Wc, Hc, 900, 0.07, 1);
-      g.fillStyle = "#1d1f24"; g.font = "500 44px 'DM Mono', monospace"; g.textBaseline = "middle"; g.fillText(titleOf(s.id).toUpperCase().slice(0, 15), 22, Hc / 2 + 3);
-      g.fillStyle = "#b8560f"; g.textAlign = "right"; g.fillText(s.ax, Wc - 20, Hc / 2 + 3);
-    });
-    add(dg, rounded(0.5, 0.11, 0.01, 0.003, 1), ALUF, 0, 0.16, D / 2 - 0.0, false);
-    add(dg, new T.PlaneGeometry(0.46, 0.086), S({ map: lt, roughness: 0.6 }), 0, 0.16, D / 2 + 0.0065, false);
-    // a bar handle on two posts
-    const bar = add(dg, new T.CylinderGeometry(0.024, 0.024, 0.52, 16), ALUF, 0, -0.13, D / 2 + 0.13); bar.rotation.z = PI / 2;
-    for (const sx of [-1, 1]) { const p = add(dg, new T.CylinderGeometry(0.02, 0.022, 0.14, 12), ALUF, sx * 0.22, -0.13, D / 2 + 0.065); p.rotation.x = PI / 2; }
-    const h = new T.Object3D(); h.position.set(0, -0.13, D / 2 + 0.13); dg.add(h);
-    drawers[s.id] = { g: dg, h, open: 0 };
+    // the label: a strip of masking tape on the aluminium holder, the section's name written on it in marker (see paintTape)
+    const lt = canvasTex(768, 232, () => {}); labels.push({ tex: lt, name: titleOf(s.id), ax: s.ax, seed: 11 + i * 7 });
+    lt.anisotropy = 8;
+    add(dg, rounded(0.9, 0.3, 0.012, 0.004, 1), ALUF, 0, 0.135, D / 2 - 0.0, false);
+    { const tp = add(dg, new T.PlaneGeometry(0.86, 0.26), S({ map: lt, roughness: 0.85, transparent: true, alphaTest: 0.05 }), 0, 0.135, D / 2 + 0.0075, false); tp.rotation.z = (R() - 0.5) * 0.05; }   // stuck on by hand: a degree or two off
+    add(dg, new T.BoxGeometry(0.9, 0.014, 0.016), ACC, 0, -0.022, D / 2 + 0.004, false);   // a hairline of the arm's accent under each plate
+    // a bar handle on two posts; it glows softly when the drawer is pointed at or focused
+    const hm = ALUF.clone(); hm.emissive = new T.Color(0x000000);
+    const bar = add(dg, new T.CylinderGeometry(0.024, 0.024, 0.52, 16), hm, 0, -0.17, D / 2 + 0.13); bar.rotation.z = PI / 2;
+    for (const sx of [-1, 1]) { const p = add(dg, new T.CylinderGeometry(0.02, 0.022, 0.14, 12), hm, sx * 0.22, -0.17, D / 2 + 0.065); p.rotation.x = PI / 2; }
+    for (const sx of [-1, 1]) { const c = add(dg, new T.CylinderGeometry(0.03, 0.03, 0.03, 16), ACC, sx * 0.275, -0.17, D / 2 + 0.13, false); c.rotation.z = PI / 2; }
+    const h = new T.Object3D(); h.position.set(0, -0.17, D / 2 + 0.13); dg.add(h);
+    drawers[s.id] = { g: dg, h, hm, open: 0 };
   });
   SEC = null;
-  return { cg, drawers, n, yaw, C, W: W * SC, D: D * SC, H: (PLH + BH) * SC, PULL: PULL * SC, set(id, v) { const d = drawers[id]; d.open = v; d.g.position.z = v * PULL; } };
+  // marker on masking tape, all nine at one shared size (the longest name sets it), drawn once the handwriting font is in
+  const paintAll = () => {
+    const probe = document.createElement("canvas").getContext("2d"); probe.font = "700 100px Kalam, 'Comic Sans MS', cursive";
+    const widest = Math.max(...labels.map((l) => probe.measureText(l.name).width));
+    const fs = Math.floor(Math.min(150, (100 * (768 - 112)) / widest));
+    for (const l of labels) { const g = l.tex.image.getContext("2d"); paintTape(g, 768, 232, l.name, l.ax, fs, l.seed); l.tex.needsUpdate = true; }
+  };
+  paintAll();
+  if (document.fonts && document.fonts.load) document.fonts.load("700 100px Kalam").then(paintAll, () => {});
+  return { cg, drawers, n, yaw, C, acc: ACC, W: W * SC, D: D * SC, H: (PLH + BH) * SC, PULL: PULL * SC, set(id, v) { const d = drawers[id]; d.open = v; d.g.position.z = v * PULL; } };
 }
 
 /* ---------- helical gear: an extruded tooth outline twisted along its width ---------- */
@@ -775,6 +818,7 @@ const ROOM = makeRoom(scene);
 const ARM = makeArm(scene);
 
 /* ============ the fetch: the arm reaches a drawer's handle, grips it and pulls the drawer out (or pushes it shut) ============ */
+let hoverId = null;
 let FX = null, dK = 1, gShown = 0.45, snapCam = false, openId = null, snapDrawers = true;
 const easeIO = (x) => (x = Math.min(1, Math.max(0, x)), x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const lerpA = (a, b, k) => a.map((v, i) => v + (b[i] - v) * k);
@@ -866,7 +910,7 @@ function stepFetch(dt) {
 }
 
 /* poses: [J1..J7] + gripper close; and where the camera stands for each section */
-const HOME = { q: [-0.72, 0.55, 0.06, 1.9, -0.1, 0.7, 0.2], g: 0.45, at: [-1.2, 3.25, 0.9], az: 0.32, el: 0.18, d: 19.8 };
+const HOME = { q: [-0.72, 0.55, 0.06, 1.9, -0.1, 0.7, 0.2], g: 0.45, at: [-1.2, 3.25, 0.9], az: 0.32, el: 0.18, d: 17.3 };
 // with a section open the arm turns a little toward you, off the open drawer, and moves the joint whose ring lights
 const POSE = {
   "index-cabinet": { q: [-0.25, 0.55, 0.06, 1.9, -0.1, 0.42, 0.9], g: 0.15, at: "index-cabinet", az: 0.35, el: 0.34, d: 8.4 },   // gripper: wrist tips it up, fingers open
@@ -882,8 +926,8 @@ const POSE = {
 // idle: one long, calm reach-and-fold (shoulder, elbow and wrist together), plus each joint's own slow sway
 // with a section open (desktop): the camera swings round to the front-right, so the cabinet sits behind the arm and faces you,
 // and the whole bench fits between the column and the panel without shrinking the arm
-const BENCH = { at: [-3.6, 2.8, 0.3], az: 0.32, el: 0.2, d: 39 }, BENCH_X = 0.042;
-const PHONE_HOME_D = 1.9;   // phones: home pulls back so the arm and the whole cabinet fit the narrow screen
+const BENCH = { at: [-3.6, 2.8, 0.3], az: 0.32, el: 0.2, d: 30 }, BENCH_X = 0.112;
+const PHONE_HOME_D = 2.15;   // phones: home pulls back so the arm and the whole cabinet fit the narrow screen
 const REACH = 30;                       // seconds per full extend-and-fold
 const FOLD = [0, 0.2, 0, -0.55, 0, 0.32, 0];
 const DRIFT = [[0.14, 34, 0.2], [0.05, 17, 1.1], [0.22, 21, 2.3], [0.06, 13, 0.4], [0.3, 25, 1.7], [0.12, 15, 2.9], [0.7, 27, 0.8]];
@@ -903,6 +947,7 @@ function applyTheme(m, init) {
   Lt.key.color.copy(c("key")); Lt.key.intensity = n("keyP"); Lt.fill.color.copy(c("fill")); Lt.fill.intensity = n("fillP"); Lt.rim.color.copy(c("rim")); Lt.rim.intensity = n("rimP"); rim2.color.copy(c("rim2")); rim2.intensity = n("rim2P");
   glow.color.copy(c("glow"));
   for (const s of SECS) { ringMats[s.id].color.copy(c("ring")); ringMats[s.id].emissive.copy(c("ringE")); }
+  if (ARM) ARM.cab.acc.color.copy(c("ring"));
   ROOM.forEach((mm) => mm.userData.mix.value = m);
 }
 applyTheme(thMix, true);
@@ -931,7 +976,13 @@ function loop(now) {
   const reach = Math.sin((t / REACH) * PI * 2);
   ARM.G.forEach((g, i) => { const [A, per, ph] = DRIFT[i]; const v = qs[i] + idleK * dK * (FOLD[i] * reach + A * (Math.sin((t / per) * PI * 2 + ph) + 0.25 * Math.sin((t / per) * PI * 4.3 + ph * 2))); const vc = clampQ(v, i); if (g.userData.ax === "y") g.rotation.y = vc; else g.rotation.x = vc; });
   // drawers: the one being worked follows the gripper; the rest ease to shut, the open section's drawer stays out
-  for (const s of SECS) { if (FX && FX.id === s.id) continue; const d = ARM.cab.drawers[s.id], to = s.id === openId ? 1 : 0; ARM.cab.set(s.id, snapDrawers || rm ? to : follow(d.open, to, dt, 6)); }
+  for (const s of SECS) {
+    const d = ARM.cab.drawers[s.id], hot = s.id === hoverId && !(FX && FX.id === s.id);
+    d.hm.emissive.copy(ringMats[s.id].color); d.hm.emissiveIntensity = follow(d.hm.emissiveIntensity || 0, hot ? 0.9 : 0, dt, 10);
+    if (FX && FX.id === s.id) continue;
+    const to = s.id === openId ? 1 : hot ? 0.08 : 0;   // a pointed-at or focused drawer peeks out a little
+    ARM.cab.set(s.id, snapDrawers || rm ? to : follow(d.open, to, dt, 6));
+  }
   snapDrawers = false;
   gShown = Math.min(1, Math.max(0, fx ? fx.gF : gq + (rm ? 0 : 0.5 * dK) * Math.sin((t / 12) * PI * 2)));
   ARM.grip.set(gShown);
@@ -952,7 +1003,7 @@ function loop(now) {
     cam.lookAt(camT);
     const W = innerWidth, H = innerHeight, col = W > 1100 ? 300 : 290;
     // desktop: the arm stands in the space right of the column; with a section open, between the column and the panel
-    const sx = phone ? (cs ? 0 : -W * 0.24) : open ? BENCH_X * W : -col / 2 - W * 0.205;
+    const sx = phone ? (cs ? 0 : -W * 0.25) : open ? BENCH_X * W : -col / 2 - W * 0.155;
     const sy = phone ? (cs ? H * (cs === "awards" ? 0.21 : 0.22) : -H * 0.02) : 0;
     shiftX = rm || frames < 2 || snapCam ? sx : follow(shiftX, sx, dt, 3); shiftY = rm || frames < 2 || snapCam ? sy : follow(shiftY, sy, dt, 4);
     snapCam = false;
@@ -967,7 +1018,7 @@ function loop(now) {
   if (sel) { anchorPos(sel, tmp); glow.position.copy(tmp).lerp(cam.position, 0.06); }
   glow.intensity = glowK * 1.6;
   if (G) G.draw();
-  if (++frames === 2) { const v = $("#veil"); (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(() => v.classList.add("off"), 60)); }
+  if (++frames === 2) { const v = $("#veil"), wait = new Promise((ok) => setTimeout(ok, 900)); Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), wait]).then(() => setTimeout(() => v.classList.add("off"), 60)); }   // a slow font never holds the page blank
 }
 requestAnimationFrame(loop);
 
@@ -982,7 +1033,11 @@ let down = null;
 stage.addEventListener("pointerdown", (e) => { down = { x: e.clientX, y: e.clientY }; });
 stage.addEventListener("pointerup", (e) => { if (!down) return; const d = down; down = null; if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) return; const id = pick(e); if (id) K.go(id); else if (route) K.go(""); });
 let hovT = 0;
-stage.addEventListener("pointermove", (e) => { if (e.pointerType !== "mouse" || performance.now() - hovT < 90) return; hovT = performance.now(); stage.style.cursor = pick(e) ? "pointer" : "default"; });
+stage.addEventListener("pointermove", (e) => { if (e.pointerType !== "mouse" || performance.now() - hovT < 90) return; hovT = performance.now(); const id = pick(e); stage.style.cursor = id ? "pointer" : "default"; hoverId = id; });
+stage.addEventListener("pointerleave", () => { hoverId = null; });
+// keyboard: focusing a section in the (visually hidden) list points at its drawer
+tabsEl.addEventListener("focusin", (e) => { const a = e.target.closest("a"); hoverId = a ? a.dataset.id : null; });
+tabsEl.addEventListener("focusout", () => { hoverId = null; });
 
 K.onRoute((r) => show(r)); booted = true;
 </script>
